@@ -1,0 +1,109 @@
+.login-container {
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login-form {
+    width: 5%;
+    min-width: 800px;
+    background-color: #EEEEEE;
+    height: 350px;
+    border-radius: 20px;
+    box-sizing: border-box;
+    display: flex;
+    overflow: hidden;
+    justify-content: space-between;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.log1 {
+    box-sizing: border-box;
+    padding: 3%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10%;
+    width: 50%;
+    border-top-right-radius: 5% 50%;
+    border-bottom-right-radius: 5% 50%;
+    background-color: #8BC6EC;
+    background-image: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
+}
+.login-title {
+    font-size: 1.4rem;
+    color: white;
+    text-decoration: underline;
+    letter-spacing: 1px;
+}
+.login-infos {
+    color: #F5EFE6;
+    font-size: 0.9rem;
+}
+.log2 {
+    width: 50%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.login-user-img {
+    font-size: 3rem;
+    color: #393E46;
+}
+.alr {
+    font-size: 0.9rem;
+    color: #FF2E63;
+}
+.rememberMe1 {
+    width: 260px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.login-icon {
+    position: absolute;
+    font-size: 1.3rem;
+    color: #393e46cf;
+    left: 10px;
+}
+.login-input {
+    width: 100%;
+    height: 40px;
+    border-radius: 20px;
+    border: 0.5px solid #393e4656;
+    box-sizing: border-box;
+    padding-left: 50px;
+    font-size: 0.9rem;
+}
+.rememberMe2 {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    gap: 10px;
+}
+.login-btn {
+    width: 150px;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    background-color: #A6B1E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 300ms;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+.login-btn:hover {
+    background-color: #424874;
+    color: white;
+}
