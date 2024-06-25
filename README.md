@@ -4,7 +4,7 @@
 
 **Gestion-employees-holidays** is a project currently in development. It is not yet complete and is not free to use. The project is built using the following technologies:
 
-- **Front-End**: React
+- **Front-End**: React & CSS
 - **Back-End**: Express.js
 - **Database**: MySQL
 
