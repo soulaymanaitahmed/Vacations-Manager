@@ -31,7 +31,7 @@ This project is still under development. Please note that it is not ready for pr
 
 ## Contact
 
-If you need the database schema, [contact me](soulayman.dev@gmail.com).
+If you need the database schema, [contact me](mailto:soulayman.dev@gmail.com).
 
 ## License
 
