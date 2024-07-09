@@ -16,11 +16,12 @@ import "./Style/app.css";
 const Users = lazy(() => import("./Pages/Users"));
 const Grades = lazy(() => import("./Pages/Grades"));
 const Employees = lazy(() => import("./Pages/Employees"));
+const Fsanitaire = lazy(() => import("./Pages/Fsanitaire"));
 
 function App() {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState(10);
+  const [view, setView] = useState(5);
 
   useEffect(() => {
     const token = Cookies.get("gestion-des-conges");
@@ -99,6 +100,16 @@ function App() {
               <FaGraduationCap className="nav_icon" />
               <p className="nav-link">Grades</p>
             </div>
+            <div
+              onClick={() => {
+                setView(5);
+              }}
+              className="links1"
+              id={view === 5 ? "selected" : null}
+            >
+              <FaGraduationCap className="nav_icon" />
+              <p className="nav-link">Formation Sanitaire</p>
+            </div>
           </div>
           {userInfo && (
             <div className="nav-user">
@@ -130,6 +141,7 @@ function App() {
             {view === 2 && <Employees />}
             {view === 3 && <Users />}
             {view === 4 && <Grades />}
+            {view === 5 && <Fsanitaire />}
           </Suspense>
         </div>
       </div>

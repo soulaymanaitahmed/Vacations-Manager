@@ -1,0 +1,158 @@
+.user-show1 {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.grade-list {
+  width: 49%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1%;
+  /* background-color: aliceblue; */
+}
+.corps-list {
+  width: 49%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1%;
+  /* background-color: aliceblue; */
+}
+.grade-add {
+  margin-top: 20px;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.corp-select {
+  width: 150px;
+  height: 35px;
+  font-size: 0.9rem;
+  padding-left: 15px;
+  box-sizing: border-box;
+  border: 1px solid silver;
+  border-left: none;
+  border-right: none;
+}
+.grade-input {
+  width: 200px;
+  height: 35px;
+  padding-left: 15px;
+  box-sizing: border-box;
+  border: 1px solid silver;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.btn-grade {
+  width: 120px;
+  height: 35px;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  background-color: #0b314a;
+  color: #fff;
+  box-sizing: border-box;
+  border: 1px solid silver;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  transition: all 300ms;
+}
+#ggm {
+  border-left: none;
+}
+.btn-grade:hover {
+  background-color: #164863;
+  color: #fff;
+}
+.corps-show {
+  width: 100%;
+  margin-top: 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.corp-item:first-child {
+  padding-top: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.corp-item:last-child {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding-bottom: 10px;
+}
+.corp-item {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+  gap: 15px;
+}
+.corp-dd {
+  background-color: #fff;
+  border: 0.5px solid rgba(192, 192, 192, 0.378);
+  box-sizing: border-box;
+  width: 200px;
+  height: 35px;
+  padding-left: 15px;
+  border-radius: 5px;
+}
+#ggll1 {
+  width: 280px;
+}
+#edd5 {
+  width: 160px;
+}
+.corp-dd1 {
+  background-color: #fff;
+  border: 0.5px solid rgba(192, 192, 192, 0.378);
+  box-sizing: border-box;
+  width: 140px;
+  height: 35px;
+  padding-left: 15px;
+  border-radius: 5px;
+}
+.grade-all-btn {
+  width: 100px;
+  height: 30px;
+  border: 0.5px solid silver;
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: #142850;
+  transition: all 300ms;
+}
+.ft1 {
+  font-size: 0.9rem;
+}
+#edit11 {
+  background-color: #164863d7;
+  color: #fff;
+}
+#delete11 {
+  background-color: #f67280;
+  color: #fff;
+}
+#confirm11 {
+  background-color: #1fab89;
+  color: #fff;
+}
+.hdd6 {
+  font-size: 1.2rem;
+  color: #0b314a;
+  letter-spacing: 0.5px;
+}

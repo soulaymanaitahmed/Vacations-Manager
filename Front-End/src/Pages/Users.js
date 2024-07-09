@@ -9,8 +9,6 @@ import axios from "axios";
 import "../Style/users.css";
 
 function Users() {
-  axios.defaults.withCredentials = true;
-
   const [addUser, setAddUser] = useState(false);
   const [passVisible, setPassVisible] = useState(false);
 
@@ -59,6 +57,7 @@ function Users() {
       });
       console.log("User added successfully:", response.data);
       setAddUser(false);
+      setUser(null);
       fetchUsers();
       setUsernameExists(false);
     } catch (error) {
@@ -92,6 +91,7 @@ function Users() {
       );
       console.log("User updated successfully:", response.data);
       fetchUsers();
+      setAddUser(false);
       setUser(null);
       setUsernameExists(false);
     } catch (error) {
@@ -103,6 +103,8 @@ function Users() {
     try {
       const response = await axios.delete(`http://localhost:7766/users/${id}`);
       console.log("User deleted successfully:", response.data);
+      setAddUser(false);
+      setUser(null);
       fetchUsers();
     } catch (error) {
       console.error("There was an error deleting the user:", error);
@@ -112,7 +114,6 @@ function Users() {
   const fetchUsers = async () => {
     try {
       const response = await axios.get("http://localhost:7766/users", {
-        withCredentials: true,
         params: {
           type: filter1 === "*" ? null : filter1,
         },

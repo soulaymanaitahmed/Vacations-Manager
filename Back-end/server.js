@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const express = require("express");
 const mysql = require("mysql");
-const cors = require("cors");
 
 const app = express();
 const PORT = 7766;
@@ -21,18 +20,18 @@ db.connect((err) => {
   }
   console.log("Connected to SQL database");
 });
-
-app.use(cors());
 app.use(express.json());
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  })
-);
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 
 // ------------------------------------------ Login ----------------------------------
-
 app.post("/users/login", (req, res) => {
   const { username, password, rememberMe } = req.body;
 
@@ -58,19 +57,320 @@ app.post("/users/login", (req, res) => {
   });
 });
 
-const verifyTokenMiddleware = (req, res, next) => {
-  const token = req.headers["gestion-des-conges"];
-  if (!token) {
-    return res.status(401).json({ error: "No token provided" });
-  }
-  jwt.verify(token, "your-secret-key", (err, decoded) => {
+// ------------------------------------------ Types ----------------------------------
+app.post("/types", (req, res) => {
+  const { type } = req.body;
+  const checkIfExistsQuery = `SELECT * FROM types WHERE type = ?`;
+  db.query(checkIfExistsQuery, [type], (err, results) => {
     if (err) {
-      return res.status(401).json({ error: "Invalid or expired token" });
+      console.error("Error checking if type exists:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
     }
-    req.user = decoded;
-    next();
+    if (results.length > 0) {
+      res.status(400).json({ error: "Type already exists" });
+      return;
+    }
+    const createTypeQuery = `INSERT INTO types (type) VALUES (?)`;
+    db.query(createTypeQuery, [type], (err, result) => {
+      if (err) {
+        console.error("Error creating type:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+      console.log("Type created successfully");
+      res.status(201).json({ message: "Type created successfully" });
+    });
   });
-};
+});
+app.get("/types", (req, res) => {
+  const getAllTypesQuery = `SELECT * FROM types`;
+  db.query(getAllTypesQuery, (err, results) => {
+    if (err) {
+      console.error("Error fetching types:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+app.put("/types/:id", (req, res) => {
+  const { id } = req.params;
+  const { typeEdited } = req.body;
+
+  const updateTypeQuery = `UPDATE types SET type = ? WHERE id = ?`;
+  db.query(updateTypeQuery, [typeEdited, id], (err, result) => {
+    if (err) {
+      console.error("Error updating type:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Type not found" });
+      return;
+    }
+
+    console.log("Type updated successfully");
+    res.status(200).json({ message: "Type updated successfully" });
+  });
+});
+app.delete("/types/:id", (req, res) => {
+  const typeId = req.params.id;
+  const deleteTypeQuery = `DELETE FROM types WHERE id = ?`;
+  db.query(deleteTypeQuery, [typeId], (err, result) => {
+    if (err) {
+      console.error("Error deleting type:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        error: "Type is referenced in another table and cannot be deleted",
+      });
+    }
+    res.status(200).json({ message: "Type deleted successfully" });
+  });
+});
+
+// ------------------------------------------ Formation Sanitaire ----------------------------------
+app.post("/formation_sanitaires", (req, res) => {
+  const { fSanitaire, type } = req.body;
+  const checkIfExistsQuery = `SELECT * FROM formation_sanitaires WHERE formation_sanitaire = ? AND type_id = ?`;
+  db.query(checkIfExistsQuery, [fSanitaire, type], (err, results) => {
+    if (err) {
+      console.error("Error checking if formation_sanitaire exists:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    if (results.length > 0) {
+      res.status(400).json({ error: "Formation_sanitaire already exists" });
+      return;
+    }
+    const createFSanitaireQuery = `INSERT INTO formation_sanitaires (formation_sanitaire, type_id) VALUES (?, ?)`;
+    db.query(createFSanitaireQuery, [fSanitaire, type], (err, result) => {
+      if (err) {
+        console.error("Error creating formation_sanitaire:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+      console.log("Formation_sanitaire created successfully");
+      res
+        .status(201)
+        .json({ message: "Formation_sanitaire created successfully" });
+    });
+  });
+});
+app.get("/formation_sanitaires", (req, res) => {
+  const getAllFSanitairesQuery = `
+    SELECT formation_sanitaires.*, types.type
+    FROM formation_sanitaires
+    JOIN types ON formation_sanitaires.type_id = types.id
+  `;
+  db.query(getAllFSanitairesQuery, (err, results) => {
+    if (err) {
+      console.error("Error fetching formation_sanitaires:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+app.put("/formation_sanitaires/:id", (req, res) => {
+  const { id } = req.params;
+  const { fs, type_id } = req.body;
+
+  const updateGradeQuery = `UPDATE formation_sanitaires SET formation_sanitaire = ?, type_id = ? WHERE id = ?`;
+  db.query(updateGradeQuery, [fs, type_id, id], (err, result) => {
+    if (err) {
+      console.error("Error updating formation sanitaires:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Formation sanitaires not found" });
+      return;
+    }
+
+    console.log("Formation sanitaires updated successfully");
+    res
+      .status(200)
+      .json({ message: "Formation sanitaires updated successfully" });
+  });
+});
+app.delete("/formation_sanitaires/:id", (req, res) => {
+  const fSanitaireId = req.params.id;
+  const deleteFSanitaireQuery = `DELETE FROM formation_sanitaires WHERE id = ?`;
+  db.query(deleteFSanitaireQuery, [fSanitaireId], (err, result) => {
+    if (err) {
+      console.error("Error deleting formation_sanitaire:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        error:
+          "Formation_sanitaire is referenced in another table and cannot be deleted",
+      });
+    }
+    res
+      .status(200)
+      .json({ message: "Formation_sanitaire deleted successfully" });
+  });
+});
+
+// ------------------------------------------ Grades ----------------------------------
+app.post("/grades", (req, res) => {
+  const { grade, corp } = req.body;
+  const checkIfExistsQuery = `SELECT * FROM grades WHERE grade = ? AND corp_id = ?`;
+  db.query(checkIfExistsQuery, [grade, corp], (err, results) => {
+    if (err) {
+      console.error("Error checking if grade exists:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    if (results.length > 0) {
+      res.status(400).json({ error: "Grade already exists" });
+      return;
+    }
+    const createGradeQuery = `INSERT INTO grades (grade, corp_id) VALUES (?, ?)`;
+    db.query(createGradeQuery, [grade, corp], (err, result) => {
+      if (err) {
+        console.error("Error creating grade:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+      console.log("Grade created successfully");
+      res.status(201).json({ message: "Grade created successfully" });
+    });
+  });
+});
+app.get("/grades", (req, res) => {
+  const getAllGradesQuery = `
+    SELECT grades.*, corps.corp
+    FROM grades
+    JOIN corps ON grades.corp_id = corps.id
+  `;
+  db.query(getAllGradesQuery, (err, results) => {
+    if (err) {
+      console.error("Error fetching grades:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+app.put("/grades/:id", (req, res) => {
+  const { id } = req.params;
+  const { grade, corp_id } = req.body;
+
+  const updateGradeQuery = `UPDATE grades SET grade = ?, corp_id = ? WHERE id = ?`;
+  db.query(updateGradeQuery, [grade, corp_id, id], (err, result) => {
+    if (err) {
+      console.error("Error updating grade:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Grade not found" });
+      return;
+    }
+
+    console.log("Grade updated successfully");
+    res.status(200).json({ message: "Grade updated successfully" });
+  });
+});
+app.delete("/grades/:id", (req, res) => {
+  const GradeId = req.params.id;
+  const deleteGradeQuery = `DELETE FROM grades WHERE id = ?`;
+  db.query(deleteGradeQuery, [GradeId], (err, result) => {
+    if (err) {
+      console.error("Error deleting grade:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        error: "Grade is referenced in another table and cannot be deleted",
+      });
+    }
+    res.status(200).json({ message: "Grade deleted successfully" });
+  });
+});
+
+// ------------------------------------------ Corps ----------------------------------
+app.post("/corps", (req, res) => {
+  const { corp } = req.body;
+  const checkIfExistsQuery = `SELECT * FROM corps WHERE corp = ?`;
+  db.query(checkIfExistsQuery, [corp], (err, results) => {
+    if (err) {
+      console.error("Error checking if corp exists:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    if (results.length > 0) {
+      res.status(400).json({ error: "Corp already exists" });
+      return;
+    }
+    const createCorpQuery = `INSERT INTO corps (corp) VALUES (?)`;
+    db.query(createCorpQuery, [corp], (err, result) => {
+      if (err) {
+        console.error("Error creating corp:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+      console.log("Corp created successfully");
+      res.status(201).json({ message: "Corp created successfully" });
+    });
+  });
+});
+app.get("/corps", (req, res) => {
+  const getAllCorpsQuery = `SELECT * FROM corps`;
+  db.query(getAllCorpsQuery, (err, results) => {
+    if (err) {
+      console.error("Error fetching corps:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+app.put("/corps/:id", (req, res) => {
+  const { id } = req.params;
+  const { corpEdited } = req.body;
+
+  const updateCorpQuery = `UPDATE corps SET corp = ? WHERE id = ?`;
+  db.query(updateCorpQuery, [corpEdited, id], (err, result) => {
+    if (err) {
+      console.error("Error updating corp:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Corp not found" });
+      return;
+    }
+
+    console.log("Corp updated successfully");
+    res.status(200).json({ message: "Corp updated successfully" });
+  });
+});
+app.delete("/corps/:id", (req, res) => {
+  const corpId = req.params.id;
+  const deleteCorpQuery = `DELETE FROM corps WHERE id = ?`;
+  db.query(deleteCorpQuery, [corpId], (err, result) => {
+    if (err) {
+      console.error("Error deleting corp:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        error: "Corp is referenced in another table and cannot be deleted",
+      });
+    }
+    res.status(200).json({ message: "Corp deleted successfully" });
+  });
+});
 
 // ------------------------------------------ Users ----------------------------------
 app.post("/users", (req, res) => {
