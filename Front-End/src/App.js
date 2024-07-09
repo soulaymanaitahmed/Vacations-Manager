@@ -2,6 +2,7 @@ import React, { useEffect, useState, lazy, Suspense } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
+import { HiMiniBuildingOffice2 } from "react-icons/hi2";
 import { MdSpaceDashboard } from "react-icons/md";
 import { FaUsersGear } from "react-icons/fa6";
 import { FaUserDoctor } from "react-icons/fa6";
@@ -107,7 +108,7 @@ function App() {
               className="links1"
               id={view === 5 ? "selected" : null}
             >
-              <FaGraduationCap className="nav_icon" />
+              <HiMiniBuildingOffice2 className="nav_icon" />
               <p className="nav-link">Formation Sanitaire</p>
             </div>
           </div>
