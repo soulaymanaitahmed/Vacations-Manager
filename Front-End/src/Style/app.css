@@ -107,7 +107,7 @@
 }
 .main-container {
   width: 82%;
-  height: fit-content;
+  min-height: 95vh;
   background-color: #eeeeee;
   box-sizing: border-box;
   border-radius: 20px;

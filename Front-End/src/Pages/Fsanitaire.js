@@ -166,7 +166,7 @@ function Fsanitaire() {
             <input
               type="text"
               className="grade-input"
-              placeholder="Grade"
+              placeholder="Formation Sanitaire"
               minLength={2}
               maxLength={50}
               onChange={(e) => {
@@ -284,7 +284,7 @@ function Fsanitaire() {
             <input
               type="text"
               className="grade-input"
-              placeholder="Corp"
+              placeholder="Type"
               minLength={2}
               maxLength={50}
               required

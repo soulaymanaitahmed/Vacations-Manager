@@ -57,6 +57,72 @@ app.post("/users/login", (req, res) => {
   });
 });
 
+// ------------------------------------------ Employees ----------------------------------
+app.post("/employees", (req, res) => {
+  const { nom, prenom, cin, ppr, affec, grade } = req.body;
+
+  const checkIfExistsQuery = `
+    SELECT * FROM personnels 
+    WHERE (nom = ? AND prenom = ?) OR cin = ? OR ppr = ?
+  `;
+  db.query(checkIfExistsQuery, [nom, prenom, cin, ppr], (err, results) => {
+    if (err) {
+      console.error("Error checking if employee exists:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    if (results.length > 0) {
+      res.status(400).json({ error: "Employee already exists" });
+      return;
+    }
+
+    const createEmployeeQuery = `
+      INSERT INTO personnels (nom, prenom, cin, ppr, affectation, grade) 
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    db.query(
+      createEmployeeQuery,
+      [nom, prenom, cin, ppr, affec, grade],
+      (err, result) => {
+        if (err) {
+          console.error("Error creating employee:", err);
+          res.status(500).json({ error: "Internal server error" });
+          return;
+        }
+        console.log("Employee created successfully");
+        res.status(201).json({ message: "Employee created successfully" });
+      }
+    );
+  });
+});
+app.get("/employees", (req, res) => {
+  const query = `
+    SELECT 
+      personnels.nom,
+      personnels.prenom,
+      personnels.cin,
+      personnels.ppr,
+      grades.grade,
+      corps.corp,
+      corps.corp_nbr,
+      formation_sanitaires.formation_sanitaire,
+      types.type
+    FROM personnels
+    INNER JOIN grades ON personnels.grade = grades.id
+    INNER JOIN corps ON grades.corp_id = corps.id
+    LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
+    LEFT JOIN types ON formation_sanitaires.type_id = types.id
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching employees:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+
 // ------------------------------------------ Types ----------------------------------
 app.post("/types", (req, res) => {
   const { type } = req.body;

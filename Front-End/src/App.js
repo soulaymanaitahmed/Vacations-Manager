@@ -22,7 +22,7 @@ const Fsanitaire = lazy(() => import("./Pages/Fsanitaire"));
 function App() {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState(5);
+  const [view, setView] = useState(2);
 
   useEffect(() => {
     const token = Cookies.get("gestion-des-conges");
@@ -140,8 +140,14 @@ function App() {
         <div className="main-container">
           <Suspense fallback={<div>Loading...</div>}>
             {view === 2 && <Employees />}
+          </Suspense>
+          <Suspense fallback={<div>Loading...</div>}>
             {view === 3 && <Users />}
+          </Suspense>
+          <Suspense fallback={<div>Loading...</div>}>
             {view === 4 && <Grades />}
+          </Suspense>
+          <Suspense fallback={<div>Loading...</div>}>
             {view === 5 && <Fsanitaire />}
           </Suspense>
         </div>

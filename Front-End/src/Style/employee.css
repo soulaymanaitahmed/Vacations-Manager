@@ -1,7 +1,177 @@
 .employees {
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.user-show22 {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  gap: 20px;
+}
+.add-person {
+  width: 100%;
+  padding: 2%;
+  display: flex;
+  gap: 5%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.line11 {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.input-lab1 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ggv1 {
+  width: 120px;
+  color: #0b314a;
+}
+.person-input {
+  width: 280px;
+  height: 30px;
+  padding-left: 15px;
+  border-radius: 5px;
+  box-sizing: border-box;
+  border: 1px solid silver;
+}
+.line22 {
+  width: 15%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+}
+.conf33 {
+  width: 60%;
+  height: 30px;
+  border: 1px solid silver;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+.conf22 {
+  width: 90%;
+  height: 40px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  background-color: #0b314a;
+  color: #fff;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.nnt5 {
+  font-size: 1.2rem;
+}
+.persons-list {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2%;
+  background-color: #ffffff6b;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  border-radius: 10px;
+  justify-content: space-evenly;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  row-gap: 20px;
+  column-gap: 15px;
+}
+.person-card {
+  cursor: pointer;
+  position: relative;
+  width: 360px;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 2%;
+  border-radius: 5px;
+  background-color: #fff;
+  overflow: hidden;
+  transition: 300ms all;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+.person-card:hover {
+  scale: 1.05;
+}
+.corp77 {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  padding: 2%;
+  color: #fff;
+  font-size: 0.9rem;
+  border-bottom-left-radius: 10px;
+}
+.ggv449 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+.full-name {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #195279;
+}
+.cin66 {
+  color: #206492;
+}
+.ppr66 {
+  color: #cc6532;
+}
+.grade33 {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: rgb(87, 87, 87);
+}
+#adm {
+  background-color: #4a249d97;
+}
+#med {
+  background-color: #36ba99d7;
+}
+#par {
+  background-color: #cc6532;
+}
+#nj8 {
+  background-color: #0b314a;
+}
+#adm1 {
+  border: 1px solid #4a249d97;
+}
+#med1 {
+  border: 1px solid #36ba99d7;
+}
+#par1 {
+  border: 1px solid #cc6532;
+}
+#nj81 {
+  border: 1px solid #0b314a;
 }

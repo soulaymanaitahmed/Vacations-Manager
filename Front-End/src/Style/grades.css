@@ -32,10 +32,10 @@
   align-items: center;
 }
 .corp-select {
-  width: 150px;
+  width: 220px;
   height: 35px;
-  font-size: 0.9rem;
-  padding-left: 15px;
+  font-size: 0.8rem;
+  padding-left: 5px;
   box-sizing: border-box;
   border: 1px solid silver;
   border-left: none;
