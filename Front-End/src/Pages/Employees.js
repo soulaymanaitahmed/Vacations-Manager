@@ -8,32 +8,44 @@ import { MdPersonAdd } from "react-icons/md";
 import "../Style/employee.css";
 
 function Employees() {
+  const [filter1, setFilter1] = useState("*");
+
   const [fSanitaireAll, setFSanitaireAll] = useState([]);
   const [GradeAll, setGradeAll] = useState([]);
+  const [types, setTypes] = useState([]);
 
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [cin, setCin] = useState("");
   const [ppr, setPpr] = useState("");
   const [affec, setAffect] = useState("");
+  const [type, setType] = useState("");
   const [grade, setGrade] = useState("");
 
   const [addPerson, setAddPerson] = useState(false);
 
-  const [person, setPerson] = useState("");
+  const [person, setPerson] = useState([]);
+
   const [employeesall, setEmployeesAll] = useState([]);
 
   useEffect(() => {
-    fetchEmployees();
     fetchFSanitaires();
     fetchGrades();
+    fetchTypes();
   }, []);
+  useEffect(() => {
+    fetchEmployees();
+  }, [filter1]);
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/employees");
+      const response = await axios.get("http://localhost:7766/employees", {
+        params: {
+          corp_nbr: filter1 === "*" ? null : filter1,
+        },
+      });
       setEmployeesAll(response.data);
     } catch (error) {
-      console.error("Error fetching persons:", error);
+      console.error("Error fetching employees:", error);
     }
   };
 
@@ -57,6 +69,15 @@ function Employees() {
     }
   };
 
+  const fetchTypes = async () => {
+    try {
+      const response = await axios.get("http://localhost:7766/types");
+      setTypes(response.data);
+    } catch (error) {
+      console.error("Error fetching types:", error);
+    }
+  };
+
   const sendEmployee = async (e) => {
     e.preventDefault();
     try {
@@ -66,6 +87,7 @@ function Employees() {
         cin,
         ppr,
         affec,
+        type,
         grade,
       });
       console.log(response.data);
@@ -86,8 +108,6 @@ function Employees() {
     }
   };
 
-  console.log(affec + " -- " + grade);
-
   return (
     <div className="employees">
       <div className="user-list-header">
@@ -105,14 +125,14 @@ function Employees() {
           <select
             name="type"
             className="filter-priv"
-            // value={filter1}
-            // onChange={(e) => setFilter1(e.target.value)}
+            value={filter1}
+            onChange={(e) => setFilter1(e.target.value)}
             required
           >
             <option value={"*"}>Tous</option>
-            <option value={"rh"}>Admin&Techn</option>
-            <option value={"invité"}>Médical</option>
-            <option value={"admin"}>Paramédical</option>
+            <option value={"1"}>Adm&Tech</option>
+            <option value={"2"}>Médical</option>
+            <option value={"3"}>Paramédical</option>
           </select>
         </div>
         <button
@@ -169,6 +189,7 @@ function Employees() {
                   name="aff"
                   className="person-input"
                   value={affec}
+                  id="lnmo3"
                   onChange={(e) => {
                     setAffect(e.target.value);
                   }}
@@ -178,7 +199,26 @@ function Employees() {
                   {fSanitaireAll.map((cr) => {
                     return (
                       <option key={cr.id} value={cr.id}>
-                        {cr.formation_sanitaire + "  -  " + cr.type}
+                        {cr.formation_sanitaire}
+                      </option>
+                    );
+                  })}
+                </select>
+                <select
+                  name="aff"
+                  className="person-input"
+                  value={type}
+                  id="lnmo3"
+                  onChange={(e) => {
+                    setType(e.target.value);
+                  }}
+                  required
+                >
+                  <option>Select Type</option>
+                  {types.map((cr) => {
+                    return (
+                      <option key={cr.id} value={cr.id}>
+                        {cr.type}
                       </option>
                     );
                   })}
@@ -269,6 +309,9 @@ function Employees() {
               return (
                 <div
                   key={peron.id}
+                  onDoubleClick={() => {
+                    setPerson(peron);
+                  }}
                   className="person-card"
                   id={
                     peron.corp_nbr === 1
@@ -306,7 +349,7 @@ function Employees() {
                   </h4>
                   <p className="grade33">{peron.grade}</p>
                   <p className="grade33">
-                    {peron.formation_sanitaire + " - " + peron.type}
+                    {peron.type + " - " + peron.formation_sanitaire}
                   </p>
                   <div className="ggv449">
                     <h5 className="cin66">CIN: {peron.cin}</h5>

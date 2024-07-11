@@ -77,9 +77,6 @@ function Grades() {
     try {
       const response = await axios.get("http://localhost:7766/corps");
       setCorps(response.data);
-      if (response.data.length > 0) {
-        setCorpSelect(response.data[0].id);
-      }
     } catch (error) {
       console.error("Error fetching corps:", error);
     }
@@ -173,6 +170,7 @@ function Grades() {
               onChange={(e) => setCorpSelect(e.target.value)}
               required
             >
+              <option>Select Corp</option>
               {corps.map((cr) => {
                 return (
                   <option key={cr.id} value={cr.id}>
@@ -325,6 +323,18 @@ function Grades() {
                         setCorpEdited(item.corp);
                         setGradeEdit(false);
                       }}
+                      disabled={
+                        item.corp_nbr === 1 ||
+                        item.corp_nbr === 2 ||
+                        item.corp_nbr === 3
+                      }
+                      style={
+                        item.corp_nbr === 1 ||
+                        item.corp_nbr === 2 ||
+                        item.corp_nbr === 3
+                          ? { backgroundColor: "silver" }
+                          : null
+                      }
                     >
                       <FiEdit className="ft1" />
                       Edit
@@ -359,6 +369,18 @@ function Grades() {
                       onDoubleClick={() => {
                         deleteCorp(item.id);
                       }}
+                      disabled={
+                        item.corp_nbr === 1 ||
+                        item.corp_nbr === 2 ||
+                        item.corp_nbr === 3
+                      }
+                      style={
+                        item.corp_nbr === 1 ||
+                        item.corp_nbr === 2 ||
+                        item.corp_nbr === 3
+                          ? { backgroundColor: "#f6727fb3" }
+                          : null
+                      }
                     >
                       <MdDeleteOutline className="ft1" />
                       Supprimer

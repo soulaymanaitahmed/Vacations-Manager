@@ -59,7 +59,7 @@ app.post("/users/login", (req, res) => {
 
 // ------------------------------------------ Employees ----------------------------------
 app.post("/employees", (req, res) => {
-  const { nom, prenom, cin, ppr, affec, grade } = req.body;
+  const { nom, prenom, cin, ppr, affec, type, grade } = req.body;
 
   const checkIfExistsQuery = `
     SELECT * FROM personnels 
@@ -77,12 +77,12 @@ app.post("/employees", (req, res) => {
     }
 
     const createEmployeeQuery = `
-      INSERT INTO personnels (nom, prenom, cin, ppr, affectation, grade) 
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO personnels (nom, prenom, cin, ppr, affectation, type, grade) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     db.query(
       createEmployeeQuery,
-      [nom, prenom, cin, ppr, affec, grade],
+      [nom, prenom, cin, ppr, affec, type, grade],
       (err, result) => {
         if (err) {
           console.error("Error creating employee:", err);
@@ -96,7 +96,9 @@ app.post("/employees", (req, res) => {
   });
 });
 app.get("/employees", (req, res) => {
-  const query = `
+  const { corp_nbr } = req.query;
+
+  let query = `
     SELECT 
       personnels.nom,
       personnels.prenom,
@@ -111,9 +113,17 @@ app.get("/employees", (req, res) => {
     INNER JOIN grades ON personnels.grade = grades.id
     INNER JOIN corps ON grades.corp_id = corps.id
     LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
-    LEFT JOIN types ON formation_sanitaires.type_id = types.id
+    LEFT JOIN types ON personnels.type = types.id
   `;
-  db.query(query, (err, results) => {
+
+  const queryParams = [];
+
+  if (corp_nbr && corp_nbr !== "*") {
+    query += ` WHERE corps.corp_nbr = ?`;
+    queryParams.push(corp_nbr);
+  }
+
+  db.query(query, queryParams, (err, results) => {
     if (err) {
       console.error("Error fetching employees:", err);
       res.status(500).json({ error: "Internal server error" });
@@ -200,9 +210,9 @@ app.delete("/types/:id", (req, res) => {
 
 // ------------------------------------------ Formation Sanitaire ----------------------------------
 app.post("/formation_sanitaires", (req, res) => {
-  const { fSanitaire, type } = req.body;
-  const checkIfExistsQuery = `SELECT * FROM formation_sanitaires WHERE formation_sanitaire = ? AND type_id = ?`;
-  db.query(checkIfExistsQuery, [fSanitaire, type], (err, results) => {
+  const { fSanitaire } = req.body;
+  const checkIfExistsQuery = `SELECT * FROM formation_sanitaires WHERE formation_sanitaire = ?`;
+  db.query(checkIfExistsQuery, [fSanitaire], (err, results) => {
     if (err) {
       console.error("Error checking if formation_sanitaire exists:", err);
       res.status(500).json({ error: "Internal server error" });
@@ -212,8 +222,8 @@ app.post("/formation_sanitaires", (req, res) => {
       res.status(400).json({ error: "Formation_sanitaire already exists" });
       return;
     }
-    const createFSanitaireQuery = `INSERT INTO formation_sanitaires (formation_sanitaire, type_id) VALUES (?, ?)`;
-    db.query(createFSanitaireQuery, [fSanitaire, type], (err, result) => {
+    const createFSanitaireQuery = `INSERT INTO formation_sanitaires (formation_sanitaire) VALUES (?)`;
+    db.query(createFSanitaireQuery, [fSanitaire], (err, result) => {
       if (err) {
         console.error("Error creating formation_sanitaire:", err);
         res.status(500).json({ error: "Internal server error" });
@@ -227,14 +237,10 @@ app.post("/formation_sanitaires", (req, res) => {
   });
 });
 app.get("/formation_sanitaires", (req, res) => {
-  const getAllFSanitairesQuery = `
-    SELECT formation_sanitaires.*, types.type
-    FROM formation_sanitaires
-    JOIN types ON formation_sanitaires.type_id = types.id
-  `;
-  db.query(getAllFSanitairesQuery, (err, results) => {
+  const getAllTypesQuery = `SELECT * FROM  formation_sanitaires`;
+  db.query(getAllTypesQuery, (err, results) => {
     if (err) {
-      console.error("Error fetching formation_sanitaires:", err);
+      console.error("Error fetching formation sanitaire:", err);
       res.status(500).json({ error: "Internal server error" });
       return;
     }
@@ -243,10 +249,10 @@ app.get("/formation_sanitaires", (req, res) => {
 });
 app.put("/formation_sanitaires/:id", (req, res) => {
   const { id } = req.params;
-  const { fs, type_id } = req.body;
+  const { fs } = req.body;
 
-  const updateGradeQuery = `UPDATE formation_sanitaires SET formation_sanitaire = ?, type_id = ? WHERE id = ?`;
-  db.query(updateGradeQuery, [fs, type_id, id], (err, result) => {
+  const updateGradeQuery = `UPDATE formation_sanitaires SET formation_sanitaire = ? WHERE id = ?`;
+  db.query(updateGradeQuery, [fs, id], (err, result) => {
     if (err) {
       console.error("Error updating formation sanitaires:", err);
       res.status(500).json({ error: "Internal server error" });

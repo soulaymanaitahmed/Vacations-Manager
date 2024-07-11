@@ -16,9 +16,6 @@ function Fsanitaire() {
   const [typeEdit, setTypeEdit] = useState(false);
   const [typeDelete, setTypeDelete] = useState(false);
 
-  const [typeSelect, setTypeSelect] = useState("");
-  const [typeSelectEdit, setTypeSelectEdit] = useState("");
-
   const [fSanitaireAll, setFSanitaireAll] = useState([]);
   const [fSanitaire, setFSanitaire] = useState("");
   const [fSanitaireExist, setFSanitaireExist] = useState(false);
@@ -59,12 +56,10 @@ function Fsanitaire() {
         "http://localhost:7766/formation_sanitaires",
         {
           fSanitaire: fSanitaire,
-          type: typeSelect,
         }
       );
       console.log(response.data);
       setFSanitaireExist(false);
-      setTypeSelect("");
       setFSanitaire("");
       fetchFSanitaires();
     } catch (error) {
@@ -80,9 +75,6 @@ function Fsanitaire() {
     try {
       const response = await axios.get("http://localhost:7766/types");
       setTypes(response.data);
-      if (response.data.length > 0) {
-        setTypeSelect(response.data[0].id);
-      }
     } catch (error) {
       console.error("Error fetching types:", error);
     }
@@ -129,7 +121,6 @@ function Fsanitaire() {
         `http://localhost:7766/formation_sanitaires/${id}`,
         {
           fs: fSanitaireEdited,
-          type_id: typeSelectEdit,
         }
       );
       console.log(response.data);
@@ -174,21 +165,6 @@ function Fsanitaire() {
               }}
               required
             />
-            <select
-              name="type-select"
-              className="corp-select"
-              value={typeSelect}
-              onChange={(e) => setTypeSelect(e.target.value)}
-              required
-            >
-              {types.map((cr) => {
-                return (
-                  <option key={cr.id} value={cr.id}>
-                    {cr.type}
-                  </option>
-                );
-              })}
-            </select>
             <button type="submit" className="btn-grade">
               Ajouter
             </button>
@@ -202,31 +178,17 @@ function Fsanitaire() {
                     type="text"
                     className="corp-dd"
                     id="ggll1"
-                    value={item.formation_sanitaire + " - " + item.type}
+                    value={item.formation_sanitaire}
                     disabled
                   />
                 ) : (
-                  <>
-                    <input
-                      type="text"
-                      className="corp-dd"
-                      id="edd5"
-                      value={fSanitaireEdited}
-                      onChange={(e) => setFSanitaireEdited(e.target.value)}
-                    />
-                    <select
-                      name="type-selectedit1"
-                      className="corp-dd1"
-                      value={typeSelectEdit}
-                      onChange={(e) => setTypeSelectEdit(e.target.value)}
-                    >
-                      {types.map((cr) => (
-                        <option key={cr.id} value={cr.id}>
-                          {cr.type}
-                        </option>
-                      ))}
-                    </select>
-                  </>
+                  <input
+                    type="text"
+                    className="corp-dd"
+                    id="ggll1"
+                    value={fSanitaireEdited}
+                    onChange={(e) => setFSanitaireEdited(e.target.value)}
+                  />
                 )}
                 {item.id !== fSanitaireEdit ? (
                   <button
@@ -235,7 +197,6 @@ function Fsanitaire() {
                     onClick={() => {
                       setFSanitaireEdit(item.id);
                       setFSanitaireEdited(item.formation_sanitaire);
-                      setTypeSelectEdit(item.type_id);
                       setTypeEdit(false);
                     }}
                   >
@@ -258,7 +219,6 @@ function Fsanitaire() {
                     onClick={() => {
                       setFSanitaireEdit(false);
                       setFSanitaireEdited("");
-                      setTypeSelectEdit("");
                     }}
                   >
                     <MdOutlineCancel className="ft1" />
