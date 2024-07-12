@@ -13,6 +13,7 @@ function Employees() {
   const [fSanitaireAll, setFSanitaireAll] = useState([]);
   const [GradeAll, setGradeAll] = useState([]);
   const [types, setTypes] = useState([]);
+  const [corps, setCorps] = useState([]);
 
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
@@ -21,6 +22,9 @@ function Employees() {
   const [affec, setAffect] = useState("");
   const [type, setType] = useState("");
   const [grade, setGrade] = useState("");
+
+  const [corpSel, setCorpSel] = useState("");
+  const [gradeSel, setGradeSel] = useState("");
 
   const [addPerson, setAddPerson] = useState(false);
 
@@ -32,6 +36,7 @@ function Employees() {
     fetchFSanitaires();
     fetchGrades();
     fetchTypes();
+    fetchCorps();
   }, []);
   useEffect(() => {
     fetchEmployees();
@@ -62,7 +67,7 @@ function Employees() {
 
   const fetchGrades = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/grades");
+      const response = await axios.get("http://localhost:7766/gradesun");
       setGradeAll(response.data);
     } catch (error) {
       console.error("Error fetching Grades:", error);
@@ -75,6 +80,15 @@ function Employees() {
       setTypes(response.data);
     } catch (error) {
       console.error("Error fetching types:", error);
+    }
+  };
+
+  const fetchCorps = async () => {
+    try {
+      const response = await axios.get("http://localhost:7766/corps");
+      setCorps(response.data);
+    } catch (error) {
+      console.error("Error fetching corps:", error);
     }
   };
 
@@ -107,6 +121,8 @@ function Employees() {
       }
     }
   };
+
+  console.log(GradeAll);
 
   return (
     <div className="employees">
@@ -189,7 +205,6 @@ function Employees() {
                   name="aff"
                   className="person-input"
                   value={affec}
-                  id="lnmo3"
                   onChange={(e) => {
                     setAffect(e.target.value);
                   }}
@@ -204,11 +219,15 @@ function Employees() {
                     );
                   })}
                 </select>
+              </div>
+              <div className="input-lab1">
+                <label className="ggv1" for="aff">
+                  Type
+                </label>
                 <select
                   name="aff"
                   className="person-input"
                   value={type}
-                  id="lnmo3"
                   onChange={(e) => {
                     setType(e.target.value);
                   }}
@@ -257,23 +276,49 @@ function Employees() {
                 />
               </div>
               <div className="input-lab1">
+                <label className="ggv1" for="corp">
+                  Corp
+                </label>
+                <select
+                  name="corp"
+                  className="person-input"
+                  value={corpSel}
+                  onChange={(e) => {
+                    setCorpSel(e.target.value);
+                  }}
+                  required
+                >
+                  <option value={""}>Select corp</option>
+                  {corps.map((cr) => {
+                    return (
+                      <option key={cr.id} value={cr.id}>
+                        {cr.corp}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <div className="input-lab1">
                 <label className="ggv1" for="grade">
                   Grade
                 </label>
                 <select
                   name="grade"
                   className="person-input"
-                  value={grade}
+                  value={gradeSel}
                   onChange={(e) => {
-                    setGrade(e.target.value);
+                    setGradeSel(e.target.value);
                   }}
                   required
+                  disabled={corpSel ? false : true}
                 >
                   <option>Select grade</option>
-                  {GradeAll.map((cr) => {
+                  {GradeAll.filter(
+                    (cr) => cr.corp_id.toString() === corpSel.toString()
+                  ).map((cr) => {
                     return (
                       <option key={cr.id} value={cr.id}>
-                        {cr.grade + "  -  " + cr.corp}
+                        {cr.grade}
                       </option>
                     );
                   })}
@@ -304,60 +349,127 @@ function Employees() {
           </form>
         ) : null}
         {employeesall.length > 0 ? (
-          <div className="persons-list">
-            {employeesall.map((peron) => {
-              return (
-                <div
-                  key={peron.id}
-                  onDoubleClick={() => {
-                    setPerson(peron);
-                  }}
-                  className="person-card"
-                  id={
-                    peron.corp_nbr === 1
-                      ? "adm1"
-                      : peron.corp_nbr === 2
-                      ? "med1"
-                      : peron.corp_nbr === 3
-                      ? "par1"
-                      : "nj81"
-                  }
-                >
+          <div className="cont-persons">
+            <div className="persons-list">
+              {employeesall.map((peron) => {
+                return (
                   <div
-                    className="corp77"
+                    key={peron.id}
+                    onDoubleClick={() => {
+                      setPerson(peron);
+                    }}
+                    className="person-card"
                     id={
                       peron.corp_nbr === 1
-                        ? "adm"
+                        ? "adm1"
                         : peron.corp_nbr === 2
-                        ? "med"
+                        ? "med1"
                         : peron.corp_nbr === 3
-                        ? "par"
-                        : "nj8"
+                        ? "par1"
+                        : "nj81"
                     }
                   >
-                    {peron.corp_nbr === 1
-                      ? "Adm&Tech"
-                      : peron.corp_nbr === 2
-                      ? "Méd"
-                      : peron.corp_nbr === 3
-                      ? "Para"
-                      : "Unknown"}
-                  </div>
+                    <div
+                      className="corp77"
+                      id={
+                        peron.corp_nbr === 1
+                          ? "adm"
+                          : peron.corp_nbr === 2
+                          ? "med"
+                          : peron.corp_nbr === 3
+                          ? "par"
+                          : "nj8"
+                      }
+                    >
+                      {peron.corp_nbr === 1
+                        ? "Adm&Tech"
+                        : peron.corp_nbr === 2
+                        ? "Méd"
+                        : peron.corp_nbr === 3
+                        ? "Para"
+                        : "Unknown"}
+                    </div>
 
-                  <h4 className="full-name">
-                    {peron.prenom + " " + peron.nom}
-                  </h4>
-                  <p className="grade33">{peron.grade}</p>
-                  <p className="grade33">
-                    {peron.type + " - " + peron.formation_sanitaire}
-                  </p>
-                  <div className="ggv449">
-                    <h5 className="cin66">CIN: {peron.cin}</h5>
-                    <h5 className="ppr66">PPR: {peron.ppr}</h5>
+                    <h4 className="full-name">
+                      {peron.prenom + " " + peron.nom}
+                    </h4>
+                    <p className="grade33">{peron.grade}</p>
+                    <p className="grade33">
+                      {peron.type + " - " + peron.formation_sanitaire}
+                    </p>
+                    <div className="ggv449">
+                      <h5 className="cin66">CIN: {peron.cin}</h5>
+                      <h5 className="ppr66">PPR: {peron.ppr}</h5>
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+            {person ? (
+              <form
+                className="person22"
+                onDoubleClick={() => {
+                  setPerson(false);
+                }}
+              >
+                <div className="kklm6">
+                  <label for="prenom">Prenom</label>
+                  <input
+                    className="hhtb6"
+                    type="text"
+                    maxLength={50}
+                    minLength={2}
+                    required
+                    name="prenom"
+                  />
                 </div>
-              );
-            })}
+                <div className="kklm6">
+                  <label for="nom">Nom</label>
+                  <input
+                    className="hhtb6"
+                    type="text"
+                    maxLength={50}
+                    minLength={2}
+                    required
+                    name="nom"
+                  />
+                </div>
+                <div className="kklm6">
+                  <label for="cin">CIN</label>
+                  <input
+                    className="hhtb6"
+                    type="text"
+                    maxLength={15}
+                    minLength={6}
+                    required
+                    name="cin"
+                  />
+                </div>
+                <div className="kklm6">
+                  <label for="ppr">PPR</label>
+                  <input
+                    className="hhtb6"
+                    type="text"
+                    maxLength={12}
+                    minLength={6}
+                    required
+                    name="ppr"
+                  />
+                </div>
+                <div className="kklm6">
+                  <label for="grade">Grade</label>
+                  <select className="hhtb6" type="text" required name="grade">
+                    {GradeAll.map((gr) => {
+                      return (
+                        <option value={gr.id}>
+                          {gr.grade + " - " + gr.corp}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              </form>
+            ) : null}
           </div>
         ) : null}
       </div>

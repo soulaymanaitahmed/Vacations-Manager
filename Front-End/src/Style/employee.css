@@ -85,10 +85,6 @@
 .persons-list {
   width: 100%;
   box-sizing: border-box;
-  padding: 2%;
-  background-color: #ffffff6b;
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  border-radius: 10px;
   justify-content: space-evenly;
   display: flex;
   flex-wrap: wrap;
@@ -114,6 +110,15 @@
 }
 .person-card:hover {
   scale: 1.05;
+}
+.person22 {
+  width: 450px;
+  height: 400px;
+  background-color: #fff;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 2%;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 .corp77 {
   position: absolute;
@@ -175,7 +180,13 @@
 #nj81 {
   border: 1px solid #0b314a;
 }
-#lnmo3 {
-  width: 150px;
-  padding-left: 3px;
+.cont-persons {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 2%;
+  box-sizing: border-box;
+  background-color: #ffffff6b;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  border-radius: 10px;
 }

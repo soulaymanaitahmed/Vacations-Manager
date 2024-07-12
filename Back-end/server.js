@@ -331,6 +331,17 @@ app.get("/grades", (req, res) => {
     res.status(200).json(results);
   });
 });
+app.get("/gradesun", (req, res) => {
+  const getAllGradesQuery = `SELECT * FROM grades`;
+  db.query(getAllGradesQuery, (err, results) => {
+    if (err) {
+      console.error("Error fetching grades:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
 app.put("/grades/:id", (req, res) => {
   const { id } = req.params;
   const { grade, corp_id } = req.body;
