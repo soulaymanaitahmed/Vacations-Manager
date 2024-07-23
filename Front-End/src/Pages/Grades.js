@@ -51,7 +51,6 @@ function Grades() {
       }
     }
   };
-
   const sendGrade = async (e) => {
     e.preventDefault();
     try {
@@ -72,7 +71,6 @@ function Grades() {
       }
     }
   };
-
   const fetchCorps = async () => {
     try {
       const response = await axios.get("http://localhost:7766/corps");
@@ -81,7 +79,6 @@ function Grades() {
       console.error("Error fetching corps:", error);
     }
   };
-
   const fetchGrades = async () => {
     try {
       const response = await axios.get("http://localhost:7766/grades");
@@ -90,7 +87,6 @@ function Grades() {
       console.error("Error fetching Grades:", error);
     }
   };
-
   const updateCorp = async (id) => {
     try {
       const response = await axios.put(`http://localhost:7766/corps/${id}`, {
@@ -113,7 +109,6 @@ function Grades() {
       setCorpDelete(true);
     }
   };
-
   const updateGrade = async (id) => {
     try {
       const response = await axios.put(`http://localhost:7766/grades/${id}`, {
@@ -127,7 +122,6 @@ function Grades() {
       console.error("Error updating grade:", error);
     }
   };
-
   const deleteGrade = async (id) => {
     try {
       const response = await axios.delete(`http://localhost:7766/grades/${id}`);
@@ -137,8 +131,6 @@ function Grades() {
       console.error("Error deleting grade:", error);
     }
   };
-
-  console.log(corpSelectEdit + " - " + gradeEdited);
 
   return (
     <>

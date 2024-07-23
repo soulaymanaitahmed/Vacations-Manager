@@ -3,13 +3,14 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
 import { HiMiniBuildingOffice2 } from "react-icons/hi2";
-import { MdSpaceDashboard } from "react-icons/md";
-import { FaUsersGear } from "react-icons/fa6";
-import { FaUserDoctor } from "react-icons/fa6";
-import { FaCircleUser } from "react-icons/fa6";
-import { HiOutlineLogout } from "react-icons/hi";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaGraduationCap } from "react-icons/fa6";
+import { MdSpaceDashboard } from "react-icons/md";
+import { FaRegCalendarAlt } from "react-icons/fa";
+import { HiOutlineLogout } from "react-icons/hi";
+import { FaUserDoctor } from "react-icons/fa6";
+import { FaCircleUser } from "react-icons/fa6";
+import { FaUsersGear } from "react-icons/fa6";
 
 import logo from "./Images/bg1.png";
 import "./Style/app.css";
@@ -18,11 +19,12 @@ const Users = lazy(() => import("./Pages/Users"));
 const Grades = lazy(() => import("./Pages/Grades"));
 const Employees = lazy(() => import("./Pages/Employees"));
 const Fsanitaire = lazy(() => import("./Pages/Fsanitaire"));
+const Vacations = lazy(() => import("./Pages/Vacations"));
 
 function App() {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState(2);
+  const [view, setView] = useState(6);
 
   useEffect(() => {
     const token = Cookies.get("gestion-des-conges");
@@ -70,6 +72,16 @@ function App() {
             >
               <MdSpaceDashboard className="nav_icon" />
               <p className="nav-link">Dashboard</p>
+            </div>
+            <div
+              onClick={() => {
+                setView(6);
+              }}
+              className="links1"
+              id={view === 6 ? "selected" : null}
+            >
+              <FaRegCalendarAlt className="nav_icon" />
+              <p className="nav-link">Vacances</p>
             </div>
             <div
               onClick={() => {
@@ -149,6 +161,9 @@ function App() {
           </Suspense>
           <Suspense fallback={<div>Loading...</div>}>
             {view === 5 && <Fsanitaire />}
+          </Suspense>
+          <Suspense fallback={<div>Loading...</div>}>
+            {view === 6 && <Vacations />}
           </Suspense>
         </div>
       </div>

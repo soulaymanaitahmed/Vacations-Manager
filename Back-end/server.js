@@ -57,6 +57,43 @@ app.post("/users/login", (req, res) => {
   });
 });
 
+app.get("/vac", (req, res) => {
+  const year = req.query.year;
+  const getHolidaysByYearQuery = `SELECT * FROM holidays WHERE year = ?`;
+
+  db.query(getHolidaysByYearQuery, [year], (err, results) => {
+    if (err) {
+      console.error("Error fetching holidays:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+
+app.post("/vac", (req, res) => {
+  const { year, start_date, duration, end_date, hname } = req.body;
+
+  const createHolidayQuery = `
+    INSERT INTO holidays (year, start_date, duration, end_date, hname) 
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.query(
+    createHolidayQuery,
+    [year, start_date, duration, end_date, hname],
+    (err, result) => {
+      if (err) {
+        console.error("Error creating holiday:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+      console.log("Holiday created successfully");
+      res.status(201).json({ message: "Holiday created successfully" });
+    }
+  );
+});
+
 // ------------------------------------------ Employees ----------------------------------
 app.post("/employees", (req, res) => {
   const { nom, prenom, cin, ppr, affec, type, gradeSel } = req.body;

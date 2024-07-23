@@ -1,0 +1,187 @@
+.vacations {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.react-calendar__navigation {
+  display: none;
+}
+.react-calendar__month-view__days {
+  display: none;
+}
+abbr {
+  text-decoration: none;
+  border-bottom: none;
+}
+.react-calendar__month-view__weekdays__weekday {
+  color: #074976;
+}
+.calendar-month {
+  width: 300px;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.month-name {
+  width: 100%;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 15px;
+  color: #042a43;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+.react-calendar {
+  border: none;
+}
+.react-calendar__tile--weekend {
+  background-color: #dfd3c3;
+  z-index: 99;
+}
+.react-calendar__tile.react-calendar__tile--weekend {
+  color: #042a4394;
+  z-index: 0;
+}
+.react-calendar__tile--now {
+  background-color: #b65310;
+  color: #fff;
+}
+.react-calendar__tile--now:hover {
+  background-color: #532100 !;
+}
+.vacations-show {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 1%;
+  box-sizing: border-box;
+}
+.vac-list {
+  width: 15%;
+  background-color: #fff;
+  border-radius: 5px;
+  box-sizing: border-box;
+  padding: 1%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.calendar-grid {
+  width: 84%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+}
+.kklr5 {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.react-calendar__tile--holiday {
+  background-color: #495464;
+  color: white;
+}
+.bnk123 {
+  width: 100%;
+  height: 80px;
+  background-color: #495464;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 5%;
+  color: #fff;
+  transition: all 300ms;
+  cursor: pointer;
+}
+.bnk123:hover {
+  scale: 1.05;
+}
+.hklh12 {
+  width: 100%;
+  margin-bottom: 5px;
+}
+.vc1234 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.star-vc {
+  font-size: 0.9rem;
+  margin-left: 5px;
+}
+.dure11 {
+  background-color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  color: black;
+}
+#servh1255 {
+  background-color: #f3f3f3;
+  text-align: center;
+  padding: 0;
+}
+.add-vac {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  padding: 2%;
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  flex-direction: row;
+  row-gap: 20px;
+  column-gap: 15px;
+}
+.add-vc33 {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.add-vc333 {
+  width: 30%;
+  display: flex;
+  justify-content: flex-start;
+  gap: 60px;
+  align-items: flex-end;
+}
+.vc-lb {
+  font-size: 1rem;
+  color: #042a43;
+}
+.vc-inp {
+  box-sizing: border-box;
+  max-width: 400px;
+  height: 35px;
+  border: 1px solid #042a43;
+  border-radius: 5px;
+  padding-left: 15px;
+}
+.add-vc {
+  box-sizing: border-box;
+  width: 150px;
+  height: 35px;
+  border-radius: 5px;
+  letter-spacing: 1px;
+  border: none;
+}
+#add-vc {
+  background-color: #042a43;
+  color: #fff;
+}
+#can-vc {
+  border: 1px solid gray;
+}
+.bdkhu5 {
+  width: 100%;
+  font-size: 0.8rem;
+  color: #b65310;
+}
