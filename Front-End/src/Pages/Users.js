@@ -45,10 +45,12 @@ function Users() {
     );
   }, [searchTerm, users]);
 
+  const API_BASE_URL = "http://localhost:7766";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:7766/users", {
+      const response = await axios.post(`${API_BASE_URL}/users`, {
         nom,
         prenom,
         username,
@@ -61,7 +63,7 @@ function Users() {
       fetchUsers();
       setUsernameExists(false);
     } catch (error) {
-      if (error.response && error.response.status === 409) {
+      if (error.response && error.response.status === 400) {
         setUsernameExists(true);
       } else {
         console.error("There was an error adding the user:", error);
@@ -72,19 +74,11 @@ function Users() {
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     try {
-      const checkResponse = await axios.get(
-        `http://localhost:7766/users/${user.username}`
-      );
-      if (checkResponse.data.length > 0) {
-        setUsernameExists(true);
-        return;
-      }
       const response = await axios.put(
-        `http://localhost:7766/users/${user.username}`,
+        `${API_BASE_URL}/users/${user.username}`,
         {
           nom,
           prenom,
-          username,
           password,
           type,
         }
@@ -95,27 +89,35 @@ function Users() {
       setUser(null);
       setUsernameExists(false);
     } catch (error) {
-      console.error("There was an error updating the user:", error);
+      if (error.response && error.response.status === 404) {
+        console.error("User not found");
+      } else {
+        console.error("There was an error updating the user:", error);
+      }
     }
   };
 
   const handleDeleteUser = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:7766/users/${id}`);
+      const response = await axios.delete(`${API_BASE_URL}/users/${id}`);
       console.log("User deleted successfully:", response.data);
       setAddUser(false);
       setUser(null);
       fetchUsers();
     } catch (error) {
-      console.error("There was an error deleting the user:", error);
+      if (error.response && error.response.status === 404) {
+        console.error("User not found");
+      } else {
+        console.error("There was an error deleting the user:", error);
+      }
     }
   };
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/users", {
+      const response = await axios.get(`${API_BASE_URL}/users`, {
         params: {
-          type: filter1 === "*" ? null : filter1,
+          type: filter1 === "*" ? undefined : filter1,
         },
       });
       setUsers(response.data);

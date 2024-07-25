@@ -204,3 +204,65 @@
 .add-icon {
   font-size: 1.2rem;
 }
+.conf12345 {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #00000086;
+  top: 0;
+  right: 0;
+  z-index: 99;
+}
+.conf-card12345 {
+  width: 40%;
+  height: fit-content;
+  min-height: 140px;
+  min-width: 400px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-sizing: border-box;
+  padding: 2%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+.text1234567 {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.text12345 {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+.ccclm5 {
+  font-size: 2rem;
+  color: #d14d72;
+}
+.llmo4 {
+  font-size: 1rem;
+}
+.jjkl4 {
+  width: 130px;
+  height: 35px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  border: none;
+  letter-spacing: 1px;
+}
+#confirm12345 {
+  background-color: #d14d72;
+  color: #fff;
+}
+#cancel12345 {
+  background-color: #62d2a2;
+  color: #fff;
+}

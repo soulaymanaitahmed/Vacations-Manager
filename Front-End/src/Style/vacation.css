@@ -1,7 +1,6 @@
 .vacations {
   width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
 }
 .react-calendar__navigation {
   display: none;
@@ -25,6 +24,7 @@ abbr {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 .month-name {
   width: 100%;
@@ -71,6 +71,9 @@ abbr {
   align-items: center;
   gap: 10px;
 }
+.vac-list > div {
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
 .calendar-grid {
   width: 84%;
   display: grid;
@@ -112,12 +115,13 @@ abbr {
   align-items: center;
 }
 .star-vc {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   margin-left: 5px;
 }
 .dure11 {
   background-color: #fff;
   padding: 5px;
+  font-size: 1rem;
   border-radius: 5px;
   color: black;
 }
@@ -127,6 +131,7 @@ abbr {
   padding: 0;
 }
 .add-vac {
+  position: relative;
   width: 100%;
   box-sizing: border-box;
   background-color: #fff;
@@ -139,6 +144,25 @@ abbr {
   flex-direction: row;
   row-gap: 20px;
   column-gap: 15px;
+  border: 1px solid silver;
+  margin-top: 40px;
+}
+.fgigtg5 {
+  width: 300px;
+  left: 45px;
+  position: absolute;
+  top: -42px;
+  font-size: 1.1rem;
+  color: #042a43;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid silver;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom: 1px solid rgba(192, 192, 192, 0.336);
+  text-align: center;
+  letter-spacing: 1px;
+  text-decoration: underline;
 }
 .add-vc33 {
   width: 30%;
@@ -184,4 +208,32 @@ abbr {
   width: 100%;
   font-size: 0.8rem;
   color: #b65310;
+}
+.exit66 {
+  box-sizing: border-box;
+  position: absolute;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  right: 10px;
+  top: 10px;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+#add-vc1233 {
+  background-color: #016a70;
+  color: #fff;
+}
+#add-vc654 {
+  background-color: #3c5b6f;
+  color: #fff;
+}
+#can-vc4sdds876 {
+  background-color: #c63d2f;
+  color: #fff;
 }

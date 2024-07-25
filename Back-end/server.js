@@ -56,10 +56,19 @@ app.post("/users/login", (req, res) => {
       .json({ message: "Login successful", "gestion-des-conges": token });
   });
 });
-
 app.get("/vac", (req, res) => {
   const year = req.query.year;
-  const getHolidaysByYearQuery = `SELECT * FROM holidays WHERE year = ?`;
+  const getHolidaysByYearQuery = `
+    SELECT
+      id, 
+      year, 
+      DATE_FORMAT(start_date, '%Y-%m-%d') as start_date, 
+      duration, 
+      DATE_FORMAT(end_date, '%Y-%m-%d') as end_date, 
+      hname 
+    FROM holidays 
+    WHERE year = ?
+    ORDER BY start_date ASC`;
 
   db.query(getHolidaysByYearQuery, [year], (err, results) => {
     if (err) {
@@ -70,7 +79,6 @@ app.get("/vac", (req, res) => {
     res.status(200).json(results);
   });
 });
-
 app.post("/vac", (req, res) => {
   const { year, start_date, duration, end_date, hname } = req.body;
 
@@ -93,7 +101,52 @@ app.post("/vac", (req, res) => {
     }
   );
 });
-
+app.put("/vac/:id", (req, res) => {
+  const holidayId = req.params.id;
+  const { year, start_date, duration, end_date, hname } = req.body;
+  const updateHolidayQuery = `
+    UPDATE holidays 
+    SET year = ?, start_date = ?, duration = ?, end_date = ?, hname = ?
+    WHERE id = ?
+  `;
+  db.query(
+    updateHolidayQuery,
+    [year, start_date, duration, end_date, hname, holidayId],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating holiday:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+      if (result.affectedRows === 0) {
+        res.status(404).json({ error: "Holiday not found" });
+        return;
+      }
+      console.log("Holiday updated successfully");
+      res.status(200).json({ message: "Holiday updated successfully" });
+    }
+  );
+});
+app.delete("/vac/:id", (req, res) => {
+  const holidayId = req.params.id;
+  const deleteHolidayQuery = `
+    DELETE FROM holidays 
+    WHERE id = ?
+  `;
+  db.query(deleteHolidayQuery, [holidayId], (err, result) => {
+    if (err) {
+      console.error("Error deleting holiday:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Holiday not found" });
+      return;
+    }
+    console.log("Holiday deleted successfully");
+    res.status(200).json({ message: "Holiday deleted successfully" });
+  });
+});
 // ------------------------------------------ Employees ----------------------------------
 app.post("/employees", (req, res) => {
   const { nom, prenom, cin, ppr, affec, type, gradeSel } = req.body;
@@ -585,90 +638,92 @@ app.delete("/corps/:id", (req, res) => {
 });
 
 // ------------------------------------------ Users ----------------------------------
-app.post("/users", (req, res) => {
-  const { username, password, type, nom, prenom } = req.body;
-  const checkIfExistsQuery = `SELECT * FROM users WHERE username = ?`;
-  db.query(checkIfExistsQuery, [username], (err, results) => {
-    if (err) {
-      console.error("Error checking if user exists:", err);
-      res.status(500).json({ error: "Internal server error" });
-      return;
-    }
-    if (results.length > 0) {
-      res.status(400).json({ error: "User already exists" });
-      return;
-    }
-    const createUserQuery = `INSERT INTO users (username, password, type, nom, prenom) VALUES (?, ?, ?, ?, ?)`;
-    db.query(
-      createUserQuery,
-      [username, password, type, nom, prenom],
-      (err, result) => {
-        if (err) {
-          console.error("Error creating user:", err);
-          res.status(500).json({ error: "Internal server error" });
-          return;
-        }
-        console.log("User created successfully");
-        res.status(201).json({ message: "User created successfully" });
-      }
-    );
-  });
-});
-app.put("/users/:username", (req, res) => {
-  const { password, type, nom, prenom } = req.body;
-  const { username } = req.params;
-  const checkIfExistsQuery = `SELECT * FROM users WHERE username = ?`;
-  db.query(checkIfExistsQuery, [username], (err, results) => {
-    if (err) {
-      console.error("Error checking if user exists:", err);
-      res.status(500).json({ error: "Internal server error" });
-      return;
-    }
-    if (results.length === 0) {
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
-    const updateUserQuery = `UPDATE users SET password = ?, type = ?, nom = ?, prenom = ? WHERE username = ?`;
-    db.query(
-      updateUserQuery,
-      [password, type, nom, prenom, username],
-      (err, result) => {
-        if (err) {
-          console.error("Error updating user:", err);
-          res.status(500).json({ error: "Internal server error" });
-          return;
-        }
-        console.log("User updated successfully");
-        res.status(200).json({ message: "User updated successfully" });
-      }
-    );
-  });
-});
 app.get("/users", (req, res) => {
   const { type } = req.query;
-  let sql = "SELECT * FROM users";
+  let getUsersQuery = `
+    SELECT id, username, type, nom, prenom, password
+    FROM users
+  `;
 
   if (type) {
-    sql += " WHERE type = ?";
+    getUsersQuery += " WHERE type = ?";
   }
 
-  db.query(sql, [type], (err, results) => {
+  getUsersQuery += " ORDER BY username ASC";
+
+  db.query(getUsersQuery, type ? [type] : [], (err, results) => {
     if (err) {
-      console.error("Error getting users:", err);
+      console.error("Error fetching users:", err);
       res.status(500).json({ error: "Internal server error" });
       return;
     }
-    console.log("Users retrieved successfully");
     res.status(200).json(results);
   });
 });
+app.post("/users", (req, res) => {
+  const { username, password, type, nom, prenom } = req.body;
+  const createUserQuery = `
+    INSERT INTO users (username, password, type, nom, prenom)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  db.query(
+    createUserQuery,
+    [username, password, type, nom, prenom],
+    (err, result) => {
+      if (err) {
+        if (err.code === "ER_DUP_ENTRY") {
+          res.status(400).json({ error: "User already exists" });
+        } else {
+          console.error("Error creating user:", err);
+          res.status(500).json({ error: "Internal server error" });
+        }
+        return;
+      }
+      console.log("User created successfully");
+      res.status(201).json({ message: "User created successfully" });
+    }
+  );
+});
+app.put("/users/:username", (req, res) => {
+  const { username } = req.params;
+  const { password, type, nom, prenom } = req.body;
+  const updateUserQuery = `
+    UPDATE users
+    SET password = ?, type = ?, nom = ?, prenom = ?
+    WHERE username = ?
+  `;
+  db.query(
+    updateUserQuery,
+    [password, type, nom, prenom, username],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating user:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+      if (result.affectedRows === 0) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      console.log("User updated successfully");
+      res.status(200).json({ message: "User updated successfully" });
+    }
+  );
+});
 app.delete("/users/:id", (req, res) => {
   const { id } = req.params;
-  const sql = `DELETE FROM users WHERE id = ?`;
-  db.query(sql, [id], (err, result) => {
+  const deleteUserQuery = `
+    DELETE FROM users
+    WHERE id = ?
+  `;
+  db.query(deleteUserQuery, [id], (err, result) => {
     if (err) {
       console.error("Error deleting user:", err);
       res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "User not found" });
       return;
     }
     console.log("User deleted successfully");

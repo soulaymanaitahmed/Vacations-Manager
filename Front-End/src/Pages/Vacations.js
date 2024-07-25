@@ -4,6 +4,7 @@ import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import "../Style/vacation.css";
 
+import { FiAlertOctagon } from "react-icons/fi";
 import { VscDiffAdded } from "react-icons/vsc";
 
 const Vacations = () => {
@@ -16,26 +17,82 @@ const Vacations = () => {
 
   const [year, setYear] = useState("");
   const [dur, setDur] = useState("");
+  const [dur1, setDur1] = useState("");
   const [nom, setNom] = useState("");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
 
+  const [year1, setYear1] = useState("");
+  const [dur2, setDur2] = useState("");
+  const [nom1, setNom1] = useState("");
+  const [start1, setStart1] = useState("");
+  const [end1, setEnd1] = useState("");
+
   const [addvc, setAddvc] = useState(false);
+  const [editorvc, setEditorvc] = useState(false);
+  const [confvc, setConf] = useState(false);
+  const [editvc, setEditvc] = useState();
 
   useEffect(() => {
-    if (addvc == false) {
-      setDur(1);
-      setEnd("");
-      setStart("");
-      setNom("");
-      setYear(filter1);
+    fetchHolids();
+    setYear(filter1);
+  }, [filter1]);
+
+  useEffect(() => {
+    if (start && end) {
+      const sDate = new Date(start);
+      const eDate = new Date(end);
+      const tt = eDate - sDate;
+      setDur(tt / 86400000 + 1);
+      setDur1(tt / 86400000 + 1);
     }
-  }, [addvc]);
+  }, [start, end]);
+
+  useEffect(() => {
+    if (start1 && end1) {
+      const sDate = new Date(start1);
+      const eDate = new Date(end1);
+      const tt = eDate - sDate;
+      setDur2(tt / 86400000 + 1);
+    }
+  }, [start1, end1]);
 
   for (let i = currentYear - 3; i <= currentYear; i++) {
     years.push(i);
   }
   const months = Array.from({ length: 12 }, (_, i) => new Date(filter1, i, 1));
+
+  const generateHolidayStyles = () => {
+    const colors = [
+      "#ff7e7e",
+      "#5ee55e",
+      "#9f9fff",
+      "#d5d51b",
+      "#de44ec",
+      "#18bbbb",
+      "#de7427",
+      "#BEC6A0",
+      "#DEAC80",
+      "#73BBA3",
+      "#8785A2",
+      "#00ADB5",
+      "#AAAAAA",
+      "#EAE7B1",
+      "#00A8CC",
+      "#62D2A2",
+      "#9BA4B4",
+      "#EA907A",
+    ];
+    let styles = {};
+    ho.forEach((holiday) => {
+      const className = `holiday-${holiday.id}`;
+      const color = colors[holiday.id % colors.length];
+      styles[className] = { backgroundColor: color, color: "black" };
+    });
+    return styles;
+  };
+
+  const holidayStyles = generateHolidayStyles();
 
   const tileClassName = ({ date, view }) => {
     if (view === "month") {
@@ -49,24 +106,11 @@ const Vacations = () => {
           date <= new Date(holiday.end_date)
       );
       if (holiday) {
-        return "react-calendar__tile--holiday";
+        return `react-calendar__tile--holiday holiday-${holiday.id}`;
       }
     }
     return null;
   };
-
-  useEffect(() => {
-    fetchHolids();
-    setAddvc(false);
-    setYear(filter1);
-  }, [filter1]);
-
-  useEffect(() => {
-    const sDate = new Date(start);
-    const eDate = new Date(end);
-    const tt = eDate - sDate;
-    setDur(tt / 86400000 + 1);
-  }, [start, end]);
 
   const fetchHolids = async () => {
     try {
@@ -78,8 +122,19 @@ const Vacations = () => {
       console.error("Error fetching holidays:", error);
     }
   };
+
   const addVc = async (e) => {
     e.preventDefault();
+    const sDate = new Date(start);
+    const eDate = new Date(end);
+    const tt = eDate - sDate;
+    const dd = tt / 86400000 + 1;
+    if (dd !== dur) {
+      alert(
+        "La durée que vous entrez n'est pas correcte, elle devrait être " + dur1
+      );
+      return;
+    }
     try {
       const response = await axios.post("http://localhost:7766/vac", {
         year,
@@ -96,6 +151,51 @@ const Vacations = () => {
       console.error("Error posting data:", error);
     }
   };
+
+  const updateHoliday = async (e) => {
+    e.preventDefault();
+    const gg = editvc.id;
+    try {
+      const response = await axios.put(`http://localhost:7766/vac/${gg}`, {
+        year: year1,
+        start_date: start1,
+        duration: dur2,
+        end_date: end1,
+        hname: nom1,
+      });
+      console.log(response.data.message);
+      fetchHolids();
+      setEditvc();
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        console.error("Holiday not found:", error.response.data.error);
+      } else {
+        console.error("Error updating holiday:", error);
+      }
+    }
+  };
+
+  const deleteHoliday = async () => {
+    const gg = editvc.id;
+    try {
+      const response = await axios.delete(`http://localhost:7766/vac/${gg}`);
+      console.log(response.data.message);
+      fetchHolids();
+      setEditvc();
+      setDur(1);
+      setEnd("");
+      setStart("");
+      setNom("");
+      setYear(filter1);
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        console.error("Holiday not found:", error.response.data.error);
+      } else {
+        console.error("Error deleting holiday:", error);
+      }
+    }
+  };
+
   function formatDateToFrench(dateString) {
     const date = new Date(dateString);
     const day = date.getDate();
@@ -119,6 +219,14 @@ const Vacations = () => {
 
   return (
     <div className="vacations">
+      <style>
+        {Object.entries(holidayStyles)
+          .map(
+            ([className, style]) =>
+              `.react-calendar__tile--holiday.${className} { background-color: ${style.backgroundColor}; color: ${style.color}; }`
+          )
+          .join("\n")}
+      </style>
       <div className="user-list-header">
         <h3 className="user-header">Vacances</h3>
         <div className="searcher">
@@ -147,7 +255,13 @@ const Vacations = () => {
         <button
           className="add-user-btn"
           onClick={() => {
-            setAddvc(!addvc);
+            setAddvc(true);
+            setEditvc();
+            setDur(1);
+            setEnd("");
+            setStart("");
+            setNom("");
+            setYear(filter1);
           }}
         >
           Ajouter une Vacance <VscDiffAdded className="add-icon" />
@@ -159,6 +273,7 @@ const Vacations = () => {
       <div className="kklr5">
         {addvc ? (
           <form className="add-vac" onSubmit={addVc}>
+            <div className="fgigtg5">Ajouter une vacance</div>
             <div className="add-vc33">
               <label className="vc-lb">Année</label>
               <select
@@ -189,7 +304,7 @@ const Vacations = () => {
               />
             </div>
             <div className="add-vc33">
-              <label className="vc-lb">Duré</label>
+              <label className="vc-lb">Durée</label>
               <input
                 className="vc-inp"
                 type="number"
@@ -224,12 +339,14 @@ const Vacations = () => {
               <input
                 className="vc-inp"
                 type="date"
+                value={end}
                 onChange={(e) => {
                   setEnd(e.target.value);
                 }}
                 min={start}
                 max={`${filter1}-12-31`}
                 required
+                disabled={start ? false : true}
               />
             </div>
             <div className="add-vc333">
@@ -249,12 +366,198 @@ const Vacations = () => {
             </div>
           </form>
         ) : null}
+        {editvc ? (
+          <form className="add-vac" onSubmit={updateHoliday}>
+            {confvc ? (
+              <div className="conf12345">
+                <div className="conf-card12345">
+                  <div className="text1234567">
+                    <FiAlertOctagon className="ccclm5" />
+                    <p className="llmo4">Confirmation de la suppression</p>
+                  </div>
+                  <div className="text12345">
+                    <button
+                      className="jjkl4"
+                      id="confirm12345"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        deleteHoliday();
+                      }}
+                    >
+                      Confirmer
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setConf(false);
+                      }}
+                      className="jjkl4"
+                      id="cancel12345"
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+            <div className="fgigtg5">Examiner les vacances</div>
+            <button
+              className="exit66"
+              onClick={(e) => {
+                e.preventDefault();
+                setEditvc();
+              }}
+            >
+              ×
+            </button>
+            <div className="add-vc33">
+              <label className="vc-lb">Année</label>
+              <select
+                disabled={editorvc ? false : true}
+                className="vc-inp"
+                value={year1}
+                onChange={(e) => {
+                  setYear1(e.target.value);
+                }}
+                required
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="add-vc33">
+              <label className="vc-lb">Nom</label>
+              <input
+                disabled={editorvc ? false : true}
+                className="vc-inp"
+                type="text"
+                value={nom1}
+                onChange={(e) => {
+                  setNom1(e.target.value);
+                }}
+                required
+              />
+            </div>
+            <div className="add-vc33">
+              <label className="vc-lb">Durée</label>
+              <input
+                disabled={editorvc ? false : true}
+                className="vc-inp"
+                type="number"
+                value={dur2}
+                onChange={(e) => {
+                  setDur2(e.target.value);
+                }}
+                min={1}
+                max={999}
+                required
+              />
+            </div>
+            <div className="add-vc33">
+              <label className="vc-lb">Date début</label>
+              <input
+                disabled={editorvc ? false : true}
+                className="vc-inp"
+                type="date"
+                value={start1}
+                onChange={(e) => {
+                  setStart1(e.target.value);
+                }}
+                min={`${filter1}-01-01`}
+                max={`${filter1}-12-31`}
+                required
+              />
+            </div>
+            <div className="add-vc33">
+              <label className="vc-lb">Date fin</label>
+              <input
+                className="vc-inp"
+                type="date"
+                value={end1}
+                onChange={(e) => {
+                  setEnd1(e.target.value);
+                }}
+                min={start1}
+                max={`${filter1}-12-31`}
+                required
+                disabled={start1 && editorvc ? false : true}
+              />
+            </div>
+            <div className="add-vc333">
+              {editorvc ? (
+                <>
+                  <button className="add-vc" id="add-vc1233" type="submit">
+                    Confirmer
+                  </button>
+                  <button
+                    className="add-vc"
+                    id="can-vc"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setDur2(editvc.duration);
+                      setEnd1(editvc.end_date);
+                      setStart1(editvc.start_date);
+                      setNom1(editvc.hname);
+                      setYear1(editvc.year);
+                      setEditorvc(false);
+                    }}
+                  >
+                    Annuler
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setEditorvc(true);
+                    }}
+                    className="add-vc"
+                    id="add-vc654"
+                  >
+                    Modifier
+                  </button>
+                  <button
+                    className="add-vc"
+                    id="can-vc4sdds876"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setConf(true);
+                    }}
+                  >
+                    Supprimer
+                  </button>
+                </>
+              )}
+            </div>
+          </form>
+        ) : null}
         <div className="vacations-show">
           <div className="vac-list">
             {ho.length > 0 ? (
               ho.map((vc) => {
+                // const holidayClass = `holiday-${vc.hname
+                //   .replace(/\s+/g, "-")
+                //   .toLowerCase()}`;
                 return (
-                  <div className="bnk123">
+                  <div
+                    className={`bnk123 holiday-${vc.id}`}
+                    style={holidayStyles[`holiday-${vc.id}`]}
+                    onDoubleClick={() => {
+                      setEditvc(vc);
+                      setAddvc(false);
+                      setDur2(vc.duration);
+                      setEnd1(vc.end_date);
+                      setStart1(vc.start_date);
+                      setNom1(vc.hname);
+                      setYear1(vc.year);
+                      setEditorvc(false);
+                      setConf(false);
+                    }}
+                  >
                     <h4 className="hklh12">{vc.hname}</h4>
                     <div className="vc1234">
                       <div key={vc.id} className="vc-card11">
