@@ -102,8 +102,10 @@ const Vacations = () => {
       }
       const holiday = ho.find(
         (holiday) =>
-          new Date(holiday.start_date) <= date &&
-          date <= new Date(holiday.end_date)
+          new Date(holiday.start_date).setHours(0, 0, 0, 0) <=
+            date.setHours(0, 0, 0, 0) &&
+          date.setHours(0, 0, 0, 0) <=
+            new Date(holiday.end_date).setHours(0, 0, 0, 0)
       );
       if (holiday) {
         return `react-calendar__tile--holiday holiday-${holiday.id}`;

@@ -24,7 +24,7 @@ const Vacations = lazy(() => import("./Pages/Vacations"));
 function App() {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState(6);
+  const [view, setView] = useState(2);
 
   useEffect(() => {
     const token = Cookies.get("gestion-des-conges");
@@ -75,16 +75,6 @@ function App() {
             </div>
             <div
               onClick={() => {
-                setView(6);
-              }}
-              className="links1"
-              id={view === 6 ? "selected" : null}
-            >
-              <FaRegCalendarAlt className="nav_icon" />
-              <p className="nav-link">Vacances</p>
-            </div>
-            <div
-              onClick={() => {
                 setView(2);
               }}
               className="links1"
@@ -92,6 +82,16 @@ function App() {
             >
               <FaUserDoctor className="nav_icon" />
               <p className="nav-link">Employees</p>
+            </div>
+            <div
+              onClick={() => {
+                setView(6);
+              }}
+              className="links1"
+              id={view === 6 ? "selected" : null}
+            >
+              <FaRegCalendarAlt className="nav_icon" />
+              <p className="nav-link">Vacances</p>
             </div>
             <div
               onClick={() => {

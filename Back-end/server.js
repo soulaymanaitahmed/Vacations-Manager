@@ -56,6 +56,8 @@ app.post("/users/login", (req, res) => {
       .json({ message: "Login successful", "gestion-des-conges": token });
   });
 });
+
+// ------------------------------------------ Holidays ----------------------------------
 app.get("/vac", (req, res) => {
   const year = req.query.year;
   const getHolidaysByYearQuery = `
@@ -233,6 +235,40 @@ app.get("/employees", (req, res) => {
       return;
     }
     res.status(200).json(results);
+  });
+});
+app.get("/employee/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+  SELECT 
+    personnels.*,
+    grades.grade AS grade_name,
+    corps.corp AS corp_name,
+    corps.corp_nbr,
+    formation_sanitaires.formation_sanitaire,
+    types.type AS type_name
+  FROM personnels
+  INNER JOIN grades ON personnels.grade = grades.id
+  INNER JOIN corps ON grades.corp_id = corps.id
+  LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
+  LEFT JOIN types ON personnels.type = types.id
+  WHERE personnels.id = ?
+  `;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.error("Error fetching employee:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ error: "Employee not found" });
+      return;
+    }
+
+    res.status(200).json(results[0]);
   });
 });
 app.put("/employees/:id", (req, res) => {
