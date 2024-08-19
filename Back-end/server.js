@@ -57,6 +57,51 @@ app.post("/users/login", (req, res) => {
   });
 });
 
+// ------------------------------------------ Vacations ----------------------------------
+app.post("/add-conge", (req, res) => {
+  const {
+    dd,
+    type,
+    total,
+    year_1,
+    duration_1,
+    year_2,
+    duration_2,
+    startDate,
+    endDate,
+    requestDate,
+    justification,
+  } = req.body;
+
+  const sql = `
+      INSERT INTO conges (
+          personnel_id, type, total_duration, year_1, duration_1, 
+          year_2, duration_2, start_at, end_at, demand_date, justification
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [
+    dd,
+    type,
+    total,
+    year_1,
+    duration_1,
+    year_2,
+    duration_2,
+    startDate,
+    endDate,
+    requestDate,
+    justification,
+  ];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      return res.status(500).send("Database error");
+    }
+    res.send("Conge record inserted successfully");
+  });
+});
+
 // ------------------------------------------ Holidays ----------------------------------
 app.get("/vac", (req, res) => {
   const year = req.query.year;

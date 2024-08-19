@@ -1,17 +1,29 @@
 @font-face {
-  font-family: 'Varela';
-  src: url('./Fonts/VarelaRound-Regular.ttf') format('truetype');
+  font-family: "Varela";
+  src: url("./Fonts/VarelaRound-Regular.ttf") format("truetype");
 }
 * {
   margin: 0;
 }
 body {
   margin: 0;
-  font-family: 'Varela', sans-serif;
+  font-family: "Varela", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #C9D6DF;
+  background-color: #c9d6df;
 }
 button {
   cursor: pointer;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+*::-webkit-scrollbar-thumb {
+  background: #164863;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #0b314a;
 }

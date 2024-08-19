@@ -285,33 +285,3 @@
 .llpmo34 {
   color: #c57600;
 }
-.dashy44 {
-  width: fit-content;
-  display: flex;
-  gap: 15px;
-  height: 100%;
-  box-sizing: border-box;
-}
-.minidash {
-  width: 100px;
-  height: 50px;
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center;
-  border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-}
-.ds {
-  font-size: 0.9rem;
-  color: #0b314a;
-}
-.ds44 {
-  font-size: 0.9rem;
-  color: #fff;
-  width: 40px;
-  border-radius: 5px;
-  background-color: rgba(123, 0, 255, 0.632);
-  text-align: center;
-}

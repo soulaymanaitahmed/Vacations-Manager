@@ -47,7 +47,7 @@ abbr {
   z-index: 0;
 }
 .react-calendar__tile--now {
-  background-color: #b65310;
+  background-color: #252a34;
   color: #fff;
 }
 .react-calendar__tile--now:hover {
