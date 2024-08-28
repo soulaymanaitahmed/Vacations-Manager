@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import {
   parseISO,
   addDays,
@@ -14,6 +14,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { IoAlertCircleOutline } from "react-icons/io5";
 import { BiMessageSquareAdd } from "react-icons/bi";
 import { FaRegAddressCard } from "react-icons/fa6";
+import { MdOutlineCancel } from "react-icons/md";
 import { IoSearchCircle } from "react-icons/io5";
 import { MdPersonAdd } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
@@ -871,6 +872,9 @@ function Employees() {
     const currentYear = new Date().getFullYear();
 
     const [addVc, setAddVc] = useState(false);
+    const [addVc2, setAddVc2] = useState(false);
+
+    const [congExist, setCongExist] = useState(false);
 
     const [radio1, setRadio1] = useState("");
     const [check1, setCheck1] = useState(false);
@@ -896,59 +900,47 @@ function Employees() {
 
     const [person, setPerson] = useState([]);
     const [holids, setHolids] = useState([]);
+    const [congsAll, setCongsAll] = useState([]);
+    const [sold, setSold] = useState([]);
+
+    const [singleConj, setSingleConj] = useState(null);
+
+    const [year3, setYear3] = useState(currentYear - 1);
+    const [duration3, setDuration3] = useState(1);
+
+    const [exep, setExep] = useState(0);
+
+    const memoizedResult = useMemo(() => {
+      const yearTotals = {};
+
+      congsAll.forEach((c) => {
+        if (c.type === 1) {
+          if (c.year_1) {
+            if (!yearTotals[c.year_1]) {
+              yearTotals[c.year_1] = 0;
+            }
+            yearTotals[c.year_1] += c.duration_1 || 0;
+          }
+          if (c.year_2) {
+            if (!yearTotals[c.year_2]) {
+              yearTotals[c.year_2] = 0;
+            }
+            yearTotals[c.year_2] += c.duration_2 || 0;
+          }
+        }
+      });
+
+      return Object.keys(yearTotals).map((year) => ({
+        year: parseInt(year),
+        sold: yearTotals[year],
+      }));
+    }, [congsAll]);
 
     useEffect(() => {
       fetchEmployee();
       fetchHolids();
+      fetchCongeData();
     }, []);
-
-    useEffect(() => {
-      if (startDate && duration && !check2) {
-        if (subRadio1 === "1") {
-          const result = calculateEndDate(startDate, duration, holids);
-          setEndDate(result);
-        } else {
-          const start = new Date(startDate);
-          start.setDate(start.getDate() + duration - 1);
-          setEndDate(start.toISOString().split("T")[0]);
-        }
-      }
-    }, [startDate, duration, holids, subRadio1, check2]);
-
-    useEffect(() => {
-      if (radio1 === "1") {
-        if (subRadio1 === "1") {
-          setMaxi(22);
-        }
-        if (subRadio1 === "2") {
-          setMaxi(10);
-        }
-        if (subRadio1 === "3") {
-          setMaxi(2);
-        }
-      } else {
-        setMaxi(90);
-      }
-    }, [subRadio1, radio1]);
-
-    useEffect(() => {
-      if (check1) {
-        setTotal(duration + secondDuration);
-      }
-      if (check1 === false) {
-        setTotal(duration);
-      }
-    }, [duration, secondDuration, check1]);
-
-    useEffect(() => {
-      setDuration(1);
-      setStartDate("");
-      setRequestDate("");
-      setEndDate("");
-      setCheck1(false);
-      setCheck2(false);
-      setSecondDuration(1);
-    }, [subRadio1, subRadio2, radio1]);
 
     const fetchHolids = async () => {
       try {
@@ -978,6 +970,10 @@ function Employees() {
       if (!isValid(currentDate)) {
         return "Invalid start date";
       }
+      if (check1 && secondYear && secondDuration) {
+        duration += secondDuration;
+      }
+
       let daysAdded = 0;
 
       while (daysAdded < duration) {
@@ -1010,10 +1006,6 @@ function Employees() {
         : "Invalid date calculated";
     };
 
-    for (let i = currentYear - 3; i <= currentYear; i++) {
-      years.push(i);
-    }
-
     const addConge = async (e) => {
       e.preventDefault();
       const type = radio1 === "1" ? subRadio1 : subRadio2;
@@ -1042,10 +1034,197 @@ function Employees() {
           data
         );
         console.log("Conge record inserted successfully:", response.data);
+        setCongExist(false);
+        fetchCongeData();
       } catch (error) {
+        if (error.response && error.response.status === 400) {
+          setCongExist(true);
+        }
         console.error("Error inserting conge record:", error);
       }
     };
+
+    const addConge2 = async (e) => {
+      e.preventDefault();
+
+      const data = {
+        dd,
+        year3,
+        duration3,
+      };
+
+      try {
+        const response = await axios.post(
+          "http://localhost:7766/add-sold",
+          data
+        );
+        console.log("Sold record inserted successfully:", response.data);
+        fetchCongeData();
+      } catch (error) {
+        console.error("Error inserting sold record:", error);
+      }
+    };
+
+    const fetchCongeData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:7766/conge/${dd}`);
+        setCongsAll(response.data);
+      } catch (error) {
+        console.error("Error fetching conge data:", error);
+      }
+    };
+
+    const formatDate = (isoDate) => {
+      const date = new Date(isoDate);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    };
+
+    const formatDateTime = (isoDate) => {
+      const date = new Date(isoDate);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+
+      return `${day}-${month}-${year} ${hours}:${minutes}`;
+    };
+
+    const calculateTotalDurationForType2 = (congsAll) => {
+      const currentYear = new Date().getFullYear();
+      let totalDuration = 0;
+
+      congsAll.forEach((c) => {
+        if (c.type === 2) {
+          const itemYear = new Date(c.start_at).getFullYear();
+          if (itemYear === currentYear) {
+            const duration =
+              c.cancel === 1 ? c.duration_after || 0 : c.total_duration || 0;
+            totalDuration += duration;
+          }
+        }
+      });
+
+      return totalDuration;
+    };
+
+    for (let i = currentYear - 3; i <= currentYear; i++) {
+      years.push(i);
+    }
+
+    useEffect(() => {
+      setAddVc2(false);
+      setDuration(1);
+      setStartDate("");
+      setRequestDate("");
+      setEndDate("");
+      setCheck1(false);
+      setCheck2(false);
+      setRadio1("");
+      setSubRadio1("");
+      setSubRadio2("");
+      setSecondDuration(1);
+    }, [addVc]);
+
+    useEffect(() => {
+      setAddVc(false);
+      setYear3(currentYear);
+      setDuration3(1);
+    }, [addVc2]);
+
+    useEffect(() => {
+      if (startDate && duration && !check2) {
+        const start = new Date(startDate);
+        let end;
+
+        if (subRadio1 === "1") {
+          end = calculateEndDate(startDate, duration, holids);
+          setEndDate(end);
+        } else if (subRadio1 === "2") {
+          const maxEndDate = new Date(currentYear, 11, 32);
+          const adjustedDuration = Math.max(
+            0,
+            Math.floor((maxEndDate - start) / (1000 * 60 * 60 * 24)) + 1
+          );
+
+          end = new Date(start);
+          end.setDate(
+            start.getDate() + Math.min(duration, adjustedDuration) - 1
+          );
+
+          setEndDate(end.toISOString().split("T")[0]);
+          setDuration(Math.min(duration, adjustedDuration));
+        } else {
+          end = new Date(start);
+          end.setDate(start.getDate() + duration - 1);
+          setEndDate(end.toISOString().split("T")[0]);
+        }
+      }
+    }, [
+      startDate,
+      duration,
+      holids,
+      subRadio1,
+      check2,
+      secondDuration,
+      secondYear,
+      check1,
+    ]);
+
+    useEffect(() => {
+      if (radio1 === "1") {
+        if (subRadio1 === "1") {
+          setMaxi(22);
+        }
+        if (subRadio1 === "2") {
+          setMaxi(10);
+        }
+        if (subRadio1 === "3") {
+          setMaxi(2);
+        }
+      }
+      if (radio1 === "2") {
+        if (subRadio2 === "11") {
+          setMaxi(120);
+        }
+        if (subRadio2 === "12") {
+          setMaxi(1095);
+        }
+        if (subRadio2 === "13") {
+          setMaxi(1825);
+        }
+      }
+    }, [subRadio1, radio1]);
+
+    useEffect(() => {
+      if (check1) {
+        setTotal(duration + secondDuration);
+      }
+      if (check1 === false) {
+        setTotal(duration);
+      }
+    }, [duration, secondDuration, check1]);
+
+    useEffect(() => {
+      setDuration(1);
+      setStartDate("");
+      setRequestDate("");
+      setEndDate("");
+      setCheck1(false);
+      setCheck2(false);
+      setSecondDuration(1);
+    }, [subRadio1, subRadio2, radio1]);
+
+    useEffect(() => {
+      setSold(memoizedResult);
+    }, [memoizedResult]);
+
+    useEffect(() => {
+      setExep(calculateTotalDurationForType2(congsAll));
+    }, [congsAll]);
 
     return (
       <div className="personel">
@@ -1092,6 +1271,14 @@ function Employees() {
           <button
             className="minidash33"
             onClick={() => {
+              setAddVc2(true);
+            }}
+          >
+            Ajouter sold Annuel
+          </button>
+          <button
+            className="minidash33"
+            onClick={() => {
               setAddVc(true);
             }}
           >
@@ -1102,6 +1289,20 @@ function Employees() {
         <hr />
         <br />
         <div className="person77">
+          <div className="stats44">
+            <div className="stats-card" id="llkiu44">
+              <div className="card-nbr44" id="kkbyr44">
+                {exep}
+              </div>
+              <p className="stat-year">Exceptionnel</p>
+            </div>
+            {sold.map((y) => (
+              <div className="stats-card" key={y.year}>
+                <div className="card-nbr44">{y.sold}</div>
+                <p className="stat-year">{y.year}</p>
+              </div>
+            ))}
+          </div>
           {addVc ? (
             <form className="add-vac-form" onSubmit={addConge}>
               <div
@@ -1200,7 +1401,7 @@ function Employees() {
                           checked={subRadio2 === "11"}
                         />
                         <div className="radio-design"></div>
-                        <div className="label-text">Court durée</div>
+                        <div className="label-text">Court durée (120 max)</div>
                       </label>
                       <label className="label">
                         <input
@@ -1213,7 +1414,7 @@ function Employees() {
                           checked={subRadio2 === "12"}
                         />
                         <div className="radio-design"></div>
-                        <div className="label-text">Moyen durée</div>
+                        <div className="label-text">Moyen durée (3An max)</div>
                       </label>
                       <label className="label">
                         <input
@@ -1226,7 +1427,7 @@ function Employees() {
                           checked={subRadio2 === "13"}
                         />
                         <div className="radio-design"></div>
-                        <div className="label-text">Long durée</div>
+                        <div className="label-text">Long durée (5An max)</div>
                       </label>
                     </div>
                   ) : null}
@@ -1235,22 +1436,6 @@ function Employees() {
                 {(radio1 === "1" && subRadio1) ||
                 (radio1 === "2" && subRadio2) ? (
                   <div className="insert-cong-new">
-                    {subRadio1 === "1" ? (
-                      <div className="llkio55">
-                        <div className="llmo595">
-                          2024 <span className="llpn33">20</span>
-                        </div>
-                        <div className="llmo595">
-                          2023 <span className="llpn33">12</span>
-                        </div>
-                        <div className="llmo595">
-                          2022 <span className="llpn33">0</span>
-                        </div>
-                        <div className="llmo595">
-                          2021 <span className="llpn33">10</span>
-                        </div>
-                      </div>
-                    ) : null}
                     <div className="group44">
                       <div className="dfgkjkfdgdkf4">
                         {subRadio1 === "1" ? (
@@ -1314,8 +1499,11 @@ function Employees() {
                     <div className="group44">
                       <label className="lb-hh4">Du</label>
                       <input
+                        required
                         type="date"
                         className="input-vc44"
+                        min={subRadio1 === "2" ? `${currentYear}-01-01` : ""}
+                        max={subRadio1 === "2" ? `${currentYear}-12-31` : ""}
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
                       />
@@ -1323,7 +1511,10 @@ function Employees() {
                     <div className="group44">
                       <label className="lb-hh4">Date de demande</label>
                       <input
+                        required
                         type="date"
+                        min={subRadio1 === "2" ? `${currentYear}-01-01` : ""}
+                        max={subRadio1 === "2" ? `${currentYear}-12-31` : ""}
                         className="input-vc44"
                         value={requestDate}
                         onChange={(e) => setRequestDate(e.target.value)}
@@ -1346,15 +1537,19 @@ function Employees() {
                               checked={check2}
                               onChange={(e) => setCheck2(e.target.checked)}
                             />
-                            <span
-                              className="custom-checkbox"
-                              id="jjk488"
-                            ></span>
+                            <span className="custom-checkbox" id="jjk4"></span>
                           </label>
                         ) : null}
                         <input
-                          disabled={subRadio1 === "1" && !check2 ? true : false}
+                          disabled={
+                            (subRadio1 === "1" && !check2) || subRadio1 !== "1"
+                              ? true
+                              : false
+                          }
                           type="date"
+                          required
+                          min={subRadio1 === "2" ? `${currentYear}-01-01` : ""}
+                          max={subRadio1 === "2" ? `${currentYear}-12-31` : ""}
                           className="input-vc44"
                           value={endDate}
                           onChange={(e) => setEndDate(e.target.value)}
@@ -1462,26 +1657,387 @@ function Employees() {
                       <div className="group44"></div>
                     )}
                     <div className="group445" id="hhkl44">
-                      <button className="sub44" id="annlll44" type="button">
+                      <button
+                        className="sub44"
+                        id="annlll44"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setAddVc(false);
+                        }}
+                      >
                         Annuler
                       </button>
                       <button
                         className="sub44"
                         type="submit"
-                        disabled={total < 1 || total > 22}
+                        disabled={total < 1 || total > maxi}
                       >
                         Submit
                       </button>
                     </div>
-                    <div className="group44588" id="hh2">
-                      Danger! Indicates a dangerous or potentially negative
-                      action.
-                    </div>
+                    {congExist ? (
+                      <div className="group44588" id="hh3">
+                        Une période existe déjà pour cet employé. Veuillez
+                        choisir une autre date.
+                      </div>
+                    ) : null}
                   </div>
                 ) : null}
               </div>
             </form>
           ) : null}
+          {addVc2 ? (
+            <form className="add-vac-form" onSubmit={addConge2}>
+              <div
+                className="vac-exit55"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setAddVc2(false);
+                }}
+              >
+                ×
+              </div>
+              <div className="khgjkfg4">
+                <p className="jkezjf77">Ajouter sold</p>
+              </div>
+              <div className="insert-cong-new" id="kkurv44">
+                <div className="group44">
+                  <label className="lb-hh4">Année</label>
+                  <input
+                    type="number"
+                    className="input-vc44"
+                    min={2020}
+                    max={currentYear - 1}
+                    value={year3}
+                    onChange={(e) => setYear3(e.target.valueAsNumber)}
+                  />
+                </div>
+                <div className="group44">
+                  <button
+                    className="add-55"
+                    id="kkli55"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (duration3 > 1) {
+                        setDuration3(duration3 - 1);
+                      }
+                    }}
+                  >
+                    -
+                  </button>
+                  <label className="lb-hh4">Durée</label>
+                  <input
+                    type="number"
+                    className="input-vc44"
+                    id="kklo44"
+                    value={duration3}
+                    onChange={(e) => setDuration3(e.target.valueAsNumber)}
+                  />
+                  <button
+                    className="add-55"
+                    id="kkli66"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (duration3 < 22) {
+                        setDuration3(duration3 + 1);
+                      }
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="group445" id="hhkl44">
+                  <button
+                    className="sub44"
+                    id="annlll44"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setAddVc2(false);
+                    }}
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    className="sub44"
+                    type="submit"
+                    disabled={duration3 < 1 || duration3 > 22 - year3}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </form>
+          ) : null}
+          <div className="list-cong44">
+            {singleConj ? (
+              <div className="singleConj">
+                <div className="cong-card44">
+                  <button
+                    className="lopph4"
+                    onClick={() => {
+                      setSingleConj(null);
+                    }}
+                  >
+                    ⨉
+                  </button>
+                  <div className="wwv44">
+                    {singleConj.cancel === 1 ? (
+                      <div className="bbk44">
+                        <p className="kjyh5">
+                          <MdOutlineCancel className="cllb44" />
+                          &nbsp; Annuler !
+                        </p>
+                      </div>
+                    ) : null}
+                    <button
+                      disabled={singleConj.decision !== 5}
+                      className="sv1"
+                    >
+                      Valider
+                    </button>
+                    <button
+                      disabled={singleConj.decision !== 4}
+                      className="sv1"
+                    >
+                      Ressources humaines
+                    </button>
+                    <button
+                      disabled={singleConj.decision !== 3}
+                      className="sv1"
+                    >
+                      Le délégué
+                    </button>
+                    <button
+                      disabled={singleConj.decision !== 2}
+                      className="sv1"
+                    >
+                      Chef archaic
+                    </button>
+                    <button
+                      disabled={singleConj.decision !== 1}
+                      className="sv1"
+                    >
+                      Bureau d'ordre
+                    </button>
+                    <hr />
+                    <meter min="0" max="5" value={singleConj.decision}></meter>
+                    <span>
+                      {singleConj.decision === 20
+                        ? "100"
+                        : (singleConj.decision / 5) * 100}
+                      %
+                    </span>
+                    <button
+                      disabled={singleConj.decision !== 20}
+                      className="sv1"
+                    >
+                      Rejeter
+                    </button>
+                  </div>
+                  <div className="wwv55">
+                    <div className="vvbu1">
+                      <span>N° Conngé: {singleConj.id}</span>
+                      <span>Créé: {formatDateTime(singleConj.created_at)}</span>
+                    </div>
+                    <div className="vvbu1">
+                      <span>
+                        <span
+                          className={
+                            singleConj.type === 1
+                              ? "vv1"
+                              : singleConj.type === 2
+                              ? "vv2"
+                              : singleConj.type === 3
+                              ? "vv3"
+                              : singleConj.type === 11
+                              ? "vv4"
+                              : singleConj.type === 12
+                              ? "vv5"
+                              : singleConj.type === 13
+                              ? "vv6"
+                              : "vv10"
+                          }
+                          id="vv10"
+                        >
+                          {singleConj.type === 1
+                            ? "Annuel"
+                            : singleConj.type === 2
+                            ? "Exceptionnel"
+                            : singleConj.type === 3
+                            ? "Autorisation d'absence"
+                            : singleConj.type === 11
+                            ? "Congé de Maladie C"
+                            : singleConj.type === 12
+                            ? "Congé de Maladie M"
+                            : singleConj.type === 13
+                            ? "Congé de Maladie L"
+                            : "Else"}
+                        </span>
+                      </span>
+                      {!singleConj.justification ? (
+                        <span
+                          className="bbklthk7"
+                          id={
+                            singleConj.justification === 1
+                              ? "hhj7"
+                              : singleConj.justification === 0
+                              ? "hhj8"
+                              : null
+                          }
+                        >
+                          {singleConj.justification === 1
+                            ? "Justifier"
+                            : singleConj.justification === 0
+                            ? "Non justifier"
+                            : null}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+            <div className="kknh55" id="booldy">
+              <div className="suv-div44" id="S11">
+                ID
+              </div>
+              <div className="suv-div44" id="S12">
+                Decision
+              </div>
+              <div className="suv-div44" id="S13">
+                Type
+              </div>
+              <div className="suv-div44" id="S14">
+                Durée
+              </div>
+              <div className="suv-div44" id="S15">
+                Date de demande
+              </div>
+              <div className="suv-div44" id="S16">
+                Du
+              </div>
+              <div className="suv-div44" id="S17">
+                Au
+              </div>
+              <div className="suv-div44" id="S18">
+                Année
+              </div>
+            </div>
+            {congsAll.map((c) => {
+              return (
+                <div
+                  onClick={() => {
+                    setSingleConj(c);
+                  }}
+                  className="kknh55"
+                  id="klo4"
+                  style={
+                    c.cancel === 1 ? { border: "2px solid #d35848ca" } : null
+                  }
+                >
+                  <div className="suv-div44" id="S11">
+                    {c.id}
+                    {c.cancel === 1 ? (
+                      <span className="tgu44">&nbsp;&nbsp;Annuler</span>
+                    ) : null}
+                  </div>
+                  <div className="suv-div44" id="S12">
+                    <span
+                      id="vv10"
+                      className={
+                        c.decision === 0
+                          ? "nn1"
+                          : c.decision === 1
+                          ? "nn2"
+                          : c.decision === 2
+                          ? "nn3"
+                          : c.decision === 3
+                          ? "nn4"
+                          : c.decision === 4
+                          ? "nn5"
+                          : c.decision === 5
+                          ? "nn6"
+                          : c.decision === 20
+                          ? "nn20"
+                          : null
+                      }
+                    >
+                      {c.decision === 0
+                        ? "Bureau d'ordre"
+                        : c.decision === 1
+                        ? "Chef archaic"
+                        : c.decision === 2
+                        ? "Le délégué"
+                        : c.decision === 3
+                        ? "Le délégué"
+                        : c.decision === 4
+                        ? "RH"
+                        : c.decision === 5
+                        ? "Valider"
+                        : c.decision === 20
+                        ? "Rejeter"
+                        : c.decision}
+                    </span>
+                  </div>
+                  <div className="suv-div44" id="S13">
+                    <span
+                      className={
+                        c.type === 1
+                          ? "vv1"
+                          : c.type === 2
+                          ? "vv2"
+                          : c.type === 3
+                          ? "vv3"
+                          : c.type === 11
+                          ? "vv4"
+                          : c.type === 12
+                          ? "vv5"
+                          : c.type === 13
+                          ? "vv6"
+                          : "vv10"
+                      }
+                      id="vv10"
+                    >
+                      {c.type === 1
+                        ? "Annuel"
+                        : c.type === 2
+                        ? "Exceptionnel"
+                        : c.type === 3
+                        ? "Autorisation d'absence"
+                        : c.type === 11
+                        ? "Congé de Maladie C"
+                        : c.type === 12
+                        ? "Congé de Maladie M"
+                        : c.type === 13
+                        ? "Congé de Maladie L"
+                        : "Else"}
+                    </span>
+                  </div>
+                  <div className="suv-div44" id="S14">
+                    {c.total_duration}
+                    {c.cancel === 1 ? (
+                      <span className="tgu44">
+                        &nbsp;&nbsp;&nbsp;{"(" + c.duration_after + ")"}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="suv-div44" id="S15">
+                    {formatDate(c.demand_date)}
+                  </div>
+                  <div className="suv-div44" id="S16">
+                    {formatDate(c.start_at)}
+                  </div>
+                  <div className="suv-div44" id="S17">
+                    {formatDate(c.end_at)}
+                  </div>
+                  <div className="suv-div44" id="S18">
+                    {c.year_1}
+                    {c.year_2 ? " " + c.year_2 : null}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     );

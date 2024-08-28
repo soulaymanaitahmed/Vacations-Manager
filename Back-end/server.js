@@ -72,33 +72,87 @@ app.post("/add-conge", (req, res) => {
     requestDate,
     justification,
   } = req.body;
+  const checkOverlapSql = `
+      SELECT * FROM conges
+      WHERE personnel_id = ? AND (
+          (start_at <= ? AND end_at >= ?) OR
+          (start_at <= ? AND end_at >= ?)
+      )
+  `;
+  db.query(
+    checkOverlapSql,
+    [dd, endDate, startDate, startDate, endDate],
+    (err, results) => {
+      if (err) {
+        return res.status(500).send("Database error");
+      }
+
+      if (results.length > 0) {
+        return res
+          .status(400)
+          .send("Overlapping period with an existing conge");
+      }
+      const insertSql = `
+          INSERT INTO conges (
+              personnel_id, type, total_duration, year_1, duration_1, 
+              year_2, duration_2, start_at, end_at, demand_date, justification
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      const values = [
+        dd,
+        type,
+        total,
+        year_1,
+        duration_1,
+        year_2,
+        duration_2,
+        startDate,
+        endDate,
+        requestDate,
+        justification,
+      ];
+      db.query(insertSql, values, (err, result) => {
+        if (err) {
+          return res.status(500).send("Database error");
+        }
+        res.send("Conge record inserted successfully");
+      });
+    }
+  );
+});
+app.post("/add-sold", (req, res) => {
+  const { dd, year3, duration3 } = req.body;
 
   const sql = `
-      INSERT INTO conges (
-          personnel_id, type, total_duration, year_1, duration_1, 
-          year_2, duration_2, start_at, end_at, demand_date, justification
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO sold (per_id, year_3, duration_3)
+    VALUES (?, ?, ?)
   `;
 
-  const values = [
-    dd,
-    type,
-    total,
-    year_1,
-    duration_1,
-    year_2,
-    duration_2,
-    startDate,
-    endDate,
-    requestDate,
-    justification,
-  ];
+  const values = [dd, year3, duration3];
 
   db.query(sql, values, (err, result) => {
     if (err) {
+      console.error("Error executing query:", err);
       return res.status(500).send("Database error");
     }
-    res.send("Conge record inserted successfully");
+    res.send("Sold record inserted successfully");
+  });
+});
+app.get("/conge/:personnel_id", (req, res) => {
+  const { personnel_id } = req.params;
+
+  const sql = `
+      SELECT * FROM conges
+      WHERE personnel_id = ?
+  `;
+
+  const queryParams = [personnel_id];
+
+  db.query(sql, queryParams, (err, results) => {
+    if (err) {
+      return res.status(500).send("Database error");
+    }
+    res.json(results);
   });
 });
 

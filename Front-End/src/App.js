@@ -81,7 +81,7 @@ function App() {
               id={view === 2 ? "selected" : null}
             >
               <FaUserDoctor className="nav_icon" />
-              <p className="nav-link">Employees</p>
+              <p className="nav-link">Personnels</p>
             </div>
             <div
               onClick={() => {
