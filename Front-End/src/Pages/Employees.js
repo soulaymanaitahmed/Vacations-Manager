@@ -1035,6 +1035,7 @@ function Employees() {
         );
         console.log("Conge record inserted successfully:", response.data);
         setCongExist(false);
+        setAddVc(false);
         fetchCongeData();
       } catch (error) {
         if (error.response && error.response.status === 400) {
@@ -1049,8 +1050,9 @@ function Employees() {
 
       const data = {
         dd,
-        year3,
-        duration3,
+        type: "1",
+        year_1: year3,
+        duration_1: duration3,
       };
 
       try {
@@ -1059,9 +1061,13 @@ function Employees() {
           data
         );
         console.log("Sold record inserted successfully:", response.data);
+        setAddVc2(false);
         fetchCongeData();
       } catch (error) {
-        console.error("Error inserting sold record:", error);
+        if (error.response && error.response.status === 400) {
+          setCongExist(true);
+        }
+        console.error("Error inserting conge record:", error);
       }
     };
 
@@ -1225,6 +1231,8 @@ function Employees() {
     useEffect(() => {
       setExep(calculateTotalDurationForType2(congsAll));
     }, [congsAll]);
+
+    console.log(sold);
 
     return (
       <div className="personel">
@@ -1718,7 +1726,7 @@ function Employees() {
                     id="kkli55"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (duration3 > 1) {
+                      if (duration3 >= 2) {
                         setDuration3(duration3 - 1);
                       }
                     }}
@@ -1730,6 +1738,12 @@ function Employees() {
                     type="number"
                     className="input-vc44"
                     id="kklo44"
+                    min={1}
+                    max={
+                      sold.find((y) => y.year === year3)
+                        ? 22 - sold.find((y) => y.year === year3).sold
+                        : 22
+                    }
                     value={duration3}
                     onChange={(e) => setDuration3(e.target.valueAsNumber)}
                   />
@@ -1738,7 +1752,12 @@ function Employees() {
                     id="kkli66"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (duration3 < 22) {
+                      if (
+                        duration3 <
+                        (sold.find((y) => y.year === year3)
+                          ? 22 - sold.find((y) => y.year === year3).sold
+                          : 22)
+                      ) {
                         setDuration3(duration3 + 1);
                       }
                     }}
@@ -1747,6 +1766,14 @@ function Employees() {
                   </button>
                 </div>
                 <div className="group445" id="hhkl44">
+                  <button className="sub44" id="annlll446" disabled>
+                    Sold: {"  "}
+                    {String(
+                      sold.find((y) => y.year === year3)
+                        ? 22 - sold.find((y) => y.year === year3).sold
+                        : 22
+                    ).padStart(2, "0")}
+                  </button>
                   <button
                     className="sub44"
                     id="annlll44"
@@ -1760,7 +1787,13 @@ function Employees() {
                   <button
                     className="sub44"
                     type="submit"
-                    disabled={duration3 < 1 || duration3 > 22 - year3}
+                    disabled={
+                      duration3 < 1 ||
+                      duration3 >
+                        (sold.find((y) => y.year === year3)
+                          ? 22 - sold.find((y) => y.year === year3).sold
+                          : 22)
+                    }
                   >
                     Submit
                   </button>
@@ -1963,11 +1996,11 @@ function Employees() {
                       }
                     >
                       {c.decision === 0
-                        ? "Bureau d'ordre"
+                        ? "En attente"
                         : c.decision === 1
-                        ? "Chef archaic"
+                        ? "Bureau d'ordre"
                         : c.decision === 2
-                        ? "Le délégué"
+                        ? "Chef archaic"
                         : c.decision === 3
                         ? "Le délégué"
                         : c.decision === 4
@@ -2014,22 +2047,36 @@ function Employees() {
                     </span>
                   </div>
                   <div className="suv-div44" id="S14">
-                    {c.total_duration}
-                    {c.cancel === 1 ? (
-                      <span className="tgu44">
-                        &nbsp;&nbsp;&nbsp;{"(" + c.duration_after + ")"}
-                      </span>
-                    ) : null}
+                    {c.demand_date === "0000-00-00" ? (
+                      c.duration_1
+                    ) : (
+                      <>
+                        {c.total_duration}
+                        {c.cancel === 1 && (
+                          <span className="tgu44">
+                            &nbsp;&nbsp;&nbsp;{"(" + c.duration_after + ")"}
+                          </span>
+                        )}
+                      </>
+                    )}
                   </div>
-                  <div className="suv-div44" id="S15">
-                    {formatDate(c.demand_date)}
-                  </div>
-                  <div className="suv-div44" id="S16">
-                    {formatDate(c.start_at)}
-                  </div>
-                  <div className="suv-div44" id="S17">
-                    {formatDate(c.end_at)}
-                  </div>
+                  {c.demand_date === "0000-00-00" ? (
+                    <div className="suv-div44" id="S40">
+                      GG
+                    </div>
+                  ) : (
+                    <>
+                      <div className="suv-div44" id="S15">
+                        {formatDate(c.demand_date)}
+                      </div>
+                      <div className="suv-div44" id="S16">
+                        {formatDate(c.start_at)}
+                      </div>
+                      <div className="suv-div44" id="S17">
+                        {formatDate(c.end_at)}
+                      </div>
+                    </>
+                  )}
                   <div className="suv-div44" id="S18">
                     {c.year_1}
                     {c.year_2 ? " " + c.year_2 : null}

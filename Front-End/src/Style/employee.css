@@ -620,6 +620,13 @@
   color: #4f1787;
   transition: all 300ms;
 }
+#annlll446 {
+  width: 23%;
+  background-color: #f4f4f4;
+  border: 1px solid #371787;
+  color: #371787;
+  cursor: default;
+}
 #annlll44:hover {
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   background-color: #394867;
@@ -840,6 +847,7 @@
 }
 #S14 {
   width: 8%;
+  justify-content: center;
 }
 #S15 {
   width: 15%;
@@ -853,6 +861,10 @@
 #S18 {
   width: 8%;
   border: none;
+}
+#S40 {
+  width: 39%;
+  justify-content: center;
 }
 #vv10 {
   width: 100%;
@@ -1065,19 +1077,15 @@
 #llkiu44 {
   width: 210px;
   background-image: linear-gradient(
-    90deg,
-    hsl(117deg 100% 26%) 0%,
-    hsl(114deg 100% 27%) 11%,
-    hsl(112deg 100% 28%) 22%,
-    hsl(110deg 99% 29%) 33%,
-    hsl(109deg 99% 30%) 44%,
-    hsl(107deg 99% 31%) 56%,
-    hsl(106deg 99% 32%) 67%,
-    hsl(105deg 100% 33%) 78%,
-    hsl(104deg 100% 34%) 89%,
-    hsl(103deg 100% 35%) 100%
+    270deg,
+    hsl(123, 63%, 53%) 0%,
+    hsl(111, 64%, 51%) 50%,
+    hsl(116, 77%, 36%) 100%
   );
 }
 #kkbyr44 {
   color: #0a8700;
+}
+.mmpnjkkfd44 {
+  width: 39%;
 }

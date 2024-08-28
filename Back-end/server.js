@@ -121,21 +121,21 @@ app.post("/add-conge", (req, res) => {
   );
 });
 app.post("/add-sold", (req, res) => {
-  const { dd, year3, duration3 } = req.body;
-
-  const sql = `
-    INSERT INTO sold (per_id, year_3, duration_3)
-    VALUES (?, ?, ?)
+  const { dd, type, year_1, duration_1 } = req.body;
+  const insertSql = `
+    INSERT INTO conges (
+        personnel_id, type, year_1, duration_1, decision
+    ) VALUES (?, ?, ?, ?, '5')
   `;
 
-  const values = [dd, year3, duration3];
+  const values = [dd, type, year_1, duration_1];
 
-  db.query(sql, values, (err, result) => {
+  db.query(insertSql, values, (err, result) => {
     if (err) {
-      console.error("Error executing query:", err);
+      console.error("Error executing insert query:", err);
       return res.status(500).send("Database error");
     }
-    res.send("Sold record inserted successfully");
+    res.send("Conge record inserted successfully");
   });
 });
 app.get("/conge/:personnel_id", (req, res) => {
