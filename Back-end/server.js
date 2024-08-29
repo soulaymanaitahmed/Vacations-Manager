@@ -155,6 +155,28 @@ app.get("/conge/:personnel_id", (req, res) => {
     res.json(results);
   });
 });
+app.put("/update-conge-cancel/:id", (req, res) => {
+  const { id } = req.params;
+
+  const updateSql = `
+      UPDATE conges 
+      SET cancel = 2 
+      WHERE id = ?
+  `;
+
+  db.query(updateSql, [id], (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).send("Database error");
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send("Conge record not found");
+    }
+
+    res.send("Conge record updated successfully");
+  });
+});
 
 // ------------------------------------------ Holidays ----------------------------------
 app.get("/vac", (req, res) => {

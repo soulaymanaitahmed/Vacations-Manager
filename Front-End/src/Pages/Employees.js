@@ -17,7 +17,9 @@ import { FaRegAddressCard } from "react-icons/fa6";
 import { MdOutlineCancel } from "react-icons/md";
 import { IoSearchCircle } from "react-icons/io5";
 import { MdPersonAdd } from "react-icons/md";
+import { IoFilter } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
+import { FaCheck } from "react-icons/fa";
 
 import "../Style/employee.css";
 
@@ -896,11 +898,13 @@ function Employees() {
     const [maxi, setMaxi] = useState();
 
     const [filter1, setFilter1] = useState(currentYear);
+    const [filter2, setFilter2] = useState(20);
     const years = [];
 
     const [person, setPerson] = useState([]);
     const [holids, setHolids] = useState([]);
     const [congsAll, setCongsAll] = useState([]);
+    const [filCongsAll, setFilCongsAll] = useState([]);
     const [sold, setSold] = useState([]);
 
     const [singleConj, setSingleConj] = useState(null);
@@ -914,7 +918,7 @@ function Employees() {
       const yearTotals = {};
 
       congsAll.forEach((c) => {
-        if (c.type === 1) {
+        if (c.type === 1 && c.cancel !== 2) {
           if (c.year_1) {
             if (!yearTotals[c.year_1]) {
               yearTotals[c.year_1] = 0;
@@ -930,10 +934,12 @@ function Employees() {
         }
       });
 
-      return Object.keys(yearTotals).map((year) => ({
-        year: parseInt(year),
-        sold: yearTotals[year],
-      }));
+      return Object.keys(yearTotals)
+        .map((year) => ({
+          year: parseInt(year),
+          sold: yearTotals[year],
+        }))
+        .sort((a, b) => b.year - a.year);
     }, [congsAll]);
 
     useEffect(() => {
@@ -1039,7 +1045,9 @@ function Employees() {
         fetchCongeData();
       } catch (error) {
         if (error.response && error.response.status === 400) {
-          setCongExist(true);
+          setCongExist(
+            "Une période existe déjà pour cet employé. Veuillez choisir une autre date."
+          );
         }
         console.error("Error inserting conge record:", error);
       }
@@ -1080,6 +1088,18 @@ function Employees() {
       }
     };
 
+    const cancel = async (id) => {
+      try {
+        const response = await axios.put(
+          `http://localhost:7766/update-conge-cancel/${id}`
+        );
+        fetchCongeData();
+        setSingleConj(false);
+      } catch (error) {
+        console.error("Error updating conge record:", error);
+      }
+    };
+
     const formatDate = (isoDate) => {
       const date = new Date(isoDate);
       const day = String(date.getDate()).padStart(2, "0");
@@ -1104,7 +1124,7 @@ function Employees() {
       let totalDuration = 0;
 
       congsAll.forEach((c) => {
-        if (c.type === 2) {
+        if (c.type === 2 && c.cancel !== 2) {
           const itemYear = new Date(c.start_at).getFullYear();
           if (itemYear === currentYear) {
             const duration =
@@ -1232,7 +1252,19 @@ function Employees() {
       setExep(calculateTotalDurationForType2(congsAll));
     }, [congsAll]);
 
-    console.log(sold);
+    useEffect(() => {
+      if (congsAll.length > 0 || filter2 !== 20) {
+        const filteredConges = congsAll.filter(
+          (conge) => conge.year_1 === filter2 || conge.year_2 === filter2
+        );
+        setFilCongsAll(filteredConges);
+      }
+      if (filter2 == 20) {
+        setFilCongsAll(congsAll);
+      }
+    }, [congsAll, filter2]);
+
+    console.log(filCongsAll);
 
     return (
       <div className="personel">
@@ -1614,7 +1646,9 @@ function Employees() {
                                 min={2020}
                                 max={2024}
                                 value={secondYear}
-                                onChange={(e) => setSecondYear(e.target.value)}
+                                onChange={(e) =>
+                                  setSecondYear(Number(e.target.value))
+                                }
                                 disabled={!check1}
                               />
                             </div>
@@ -1651,7 +1685,7 @@ function Employees() {
                               disabled={!check1}
                               onClick={(e) => {
                                 e.preventDefault();
-                                if (total < 22) {
+                                if (total < maxi) {
                                   setSecondDuration(secondDuration + 1);
                                 }
                               }}
@@ -1685,8 +1719,7 @@ function Employees() {
                     </div>
                     {congExist ? (
                       <div className="group44588" id="hh3">
-                        Une période existe déjà pour cet employé. Veuillez
-                        choisir une autre date.
+                        {congExist}
                       </div>
                     ) : null}
                   </div>
@@ -1715,7 +1748,6 @@ function Employees() {
                     type="number"
                     className="input-vc44"
                     min={2020}
-                    max={currentYear - 1}
                     value={year3}
                     onChange={(e) => setYear3(e.target.valueAsNumber)}
                   />
@@ -1814,11 +1846,11 @@ function Employees() {
                     ⨉
                   </button>
                   <div className="wwv44">
-                    {singleConj.cancel === 1 ? (
+                    {singleConj.cancel === 2 ? (
                       <div className="bbk44">
                         <p className="kjyh5">
                           <MdOutlineCancel className="cllb44" />
-                          &nbsp; Annuler !
+                          &nbsp; Demande annulée !
                         </p>
                       </div>
                     ) : null}
@@ -1832,25 +1864,37 @@ function Employees() {
                       disabled={singleConj.decision !== 4}
                       className="sv1"
                     >
-                      Ressources humaines
+                      Ressources humaines{" "}
+                      {singleConj.decision > 4 ? (
+                        <FaCheck className="nvbhtu55" />
+                      ) : null}
                     </button>
                     <button
                       disabled={singleConj.decision !== 3}
                       className="sv1"
                     >
-                      Le délégué
+                      Le délégué{" "}
+                      {singleConj.decision > 3 ? (
+                        <FaCheck className="nvbhtu55" />
+                      ) : null}
                     </button>
                     <button
                       disabled={singleConj.decision !== 2}
                       className="sv1"
                     >
-                      Chef archaic
+                      Chef archaic{" "}
+                      {singleConj.decision > 2 ? (
+                        <FaCheck className="nvbhtu55" />
+                      ) : null}
                     </button>
                     <button
                       disabled={singleConj.decision !== 1}
                       className="sv1"
                     >
-                      Bureau d'ordre
+                      Bureau d'ordre{" "}
+                      {singleConj.decision > 1 ? (
+                        <FaCheck className="nvbhtu55" />
+                      ) : null}
                     </button>
                     <hr />
                     <meter min="0" max="5" value={singleConj.decision}></meter>
@@ -1926,6 +1970,38 @@ function Employees() {
                         </span>
                       ) : null}
                     </div>
+                    <div className="vvbu1">
+                      <span>Du: {formatDate(singleConj.start_at)}</span>
+                      <span>Au: {formatDate(singleConj.start_at)}</span>
+                    </div>
+                    <div className="vvbu1">
+                      <span>Année: {singleConj.year_1}</span>
+                      <span>Durée: {singleConj.duration_1}</span>
+                    </div>
+                    {singleConj.year_2 ? (
+                      <div className="vvbu1">
+                        <span>Deuxième année: {singleConj.year_2}</span>
+                        <span>Durée: {singleConj.duration_2}</span>
+                      </div>
+                    ) : null}
+                    {singleConj.cancel === 1 ? (
+                      <div className="vvbu1">
+                        <span className="llpmln55">Congé annuler</span>
+                        <span>
+                          Total après l'annulation: {singleConj.duration_after}
+                        </span>
+                      </div>
+                    ) : null}
+                    {singleConj.cancel === 0 && singleConj.decision < 5 ? (
+                      <div className="vvbu1" id="llpng55">
+                        <button
+                          onClick={() => cancel(singleConj.id)}
+                          className="cncl55"
+                        >
+                          Annuler cette demande
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -1938,13 +2014,13 @@ function Employees() {
                 Decision
               </div>
               <div className="suv-div44" id="S13">
-                Type
+                Type <IoFilter className="gnjdtr55" />
               </div>
               <div className="suv-div44" id="S14">
                 Durée
               </div>
               <div className="suv-div44" id="S15">
-                Date de demande
+                Date de demande <IoFilter className="gnjdtr55" />
               </div>
               <div className="suv-div44" id="S16">
                 Du
@@ -1953,10 +2029,23 @@ function Employees() {
                 Au
               </div>
               <div className="suv-div44" id="S18">
-                Année
+                <select
+                  className="fil2"
+                  value={filter2}
+                  onChange={(e) => {
+                    setFilter2(Number(e.target.value));
+                  }}
+                >
+                  <option value={20}>Toutes</option>
+                  {sold.map((yr) => (
+                    <option key={yr.year} value={yr.year}>
+                      {yr.year}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-            {congsAll.map((c) => {
+            {filCongsAll.map((c) => {
               return (
                 <div
                   onClick={() => {
@@ -1965,13 +2054,16 @@ function Employees() {
                   className="kknh55"
                   id="klo4"
                   style={
-                    c.cancel === 1 ? { border: "2px solid #d35848ca" } : null
+                    c.cancel === 2 ? { border: "2px solid #d35848ca" } : null
                   }
                 >
                   <div className="suv-div44" id="S11">
                     {c.id}
-                    {c.cancel === 1 ? (
-                      <span className="tgu44">&nbsp;&nbsp;Annuler</span>
+                    {c.cancel === 2 ? (
+                      <span className="tgu44">
+                        &nbsp;&nbsp;
+                        <MdOutlineCancel className="cllb44" />
+                      </span>
                     ) : null}
                   </div>
                   <div className="suv-div44" id="S12">
@@ -1979,17 +2071,17 @@ function Employees() {
                       id="vv10"
                       className={
                         c.decision === 0
-                          ? "nn1"
+                          ? "nn11"
                           : c.decision === 1
-                          ? "nn2"
+                          ? "nn22"
                           : c.decision === 2
-                          ? "nn3"
+                          ? "nn33"
                           : c.decision === 3
-                          ? "nn4"
+                          ? "nn44"
                           : c.decision === 4
-                          ? "nn5"
+                          ? "nn55"
                           : c.decision === 5
-                          ? "nn6"
+                          ? "nn66"
                           : c.decision === 20
                           ? "nn20"
                           : null
