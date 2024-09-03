@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import "./Style/index.css";
 
@@ -12,8 +12,9 @@ const root = document.getElementById("root");
 ReactDOM.render(
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<App />} />
       <Route path="/login" element={<LogIn />} />
+      <Route path="/" element={<Navigate to="/personnels" replace />} />
+      <Route path="/*" element={<App />} />
     </Routes>
   </BrowserRouter>,
   root

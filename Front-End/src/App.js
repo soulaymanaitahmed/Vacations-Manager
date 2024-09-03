@@ -1,4 +1,11 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
+import {
+  useNavigate,
+  useLocation,
+  useMatch,
+  Routes,
+  Route,
+} from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
@@ -18,13 +25,16 @@ import "./Style/app.css";
 const Users = lazy(() => import("./Pages/Users"));
 const Grades = lazy(() => import("./Pages/Grades"));
 const Employees = lazy(() => import("./Pages/Employees"));
+const SingleEmployee = lazy(() => import("./Pages/SingleEmployee"));
 const Fsanitaire = lazy(() => import("./Pages/Fsanitaire"));
 const Vacations = lazy(() => import("./Pages/Vacations"));
 
 function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState(2);
+  const matchPersonnel = useMatch("/personnels/:id");
 
   useEffect(() => {
     const token = Cookies.get("gestion-des-conges");
@@ -41,14 +51,18 @@ function App() {
 
   const Logout = () => {
     Cookies.remove("gestion-des-conges");
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   useEffect(() => {
     if (!loading && !userInfo) {
-      window.location.href = "/login";
+      navigate("/login");
     }
-  }, [loading, userInfo]);
+  }, [loading, userInfo, navigate]);
+
+  const isActive = (path) => {
+    return location.pathname.startsWith(path) ? "selected" : null;
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -64,61 +78,49 @@ function App() {
           </div>
           <div className="navs">
             <div
-              onClick={() => {
-                setView(1);
-              }}
+              onClick={() => navigate("/dashboard")}
               className="links1"
-              id={view === 1 ? "selected" : null}
+              id={isActive("/dashboard")}
             >
               <MdSpaceDashboard className="nav_icon" />
               <p className="nav-link">Dashboard</p>
             </div>
             <div
-              onClick={() => {
-                setView(2);
-              }}
+              onClick={() => navigate("/personnels")}
               className="links1"
-              id={view === 2 ? "selected" : null}
+              id={isActive("/personnels")}
             >
               <FaUserDoctor className="nav_icon" />
               <p className="nav-link">Personnels</p>
             </div>
             <div
-              onClick={() => {
-                setView(6);
-              }}
+              onClick={() => navigate("/vacances")}
               className="links1"
-              id={view === 6 ? "selected" : null}
+              id={isActive("/vacances")}
             >
               <FaRegCalendarAlt className="nav_icon" />
               <p className="nav-link">Vacances</p>
             </div>
             <div
-              onClick={() => {
-                setView(3);
-              }}
+              onClick={() => navigate("/utilisateurs")}
               className="links1"
-              id={view === 3 ? "selected" : null}
+              id={isActive("/utilisateurs")}
             >
               <FaUsersGear className="nav_icon" />
               <p className="nav-link">Utilisateurs</p>
             </div>
             <div
-              onClick={() => {
-                setView(4);
-              }}
+              onClick={() => navigate("/grades")}
               className="links1"
-              id={view === 4 ? "selected" : null}
+              id={isActive("/grades")}
             >
               <FaGraduationCap className="nav_icon" />
               <p className="nav-link">Grades</p>
             </div>
             <div
-              onClick={() => {
-                setView(5);
-              }}
+              onClick={() => navigate("/formation-sanitaire")}
               className="links1"
-              id={view === 5 ? "selected" : null}
+              id={isActive("/formation-sanitaire")}
             >
               <HiMiniBuildingOffice2 className="nav_icon" />
               <p className="nav-link">Formation Sanitaire</p>
@@ -136,11 +138,9 @@ function App() {
                   <p className="nav-link">Se déconnecter</p>
                 </div>
                 <div
-                  onClick={() => {
-                    setView(10);
-                  }}
+                  onClick={() => navigate("/parametres")}
                   className="links1"
-                  id={view === 10 ? "selected" : null}
+                  id={isActive("/parametres")}
                 >
                   <MdOutlineSettings className="nav_icon" />
                   <p className="nav-link">Paramètres</p>
@@ -151,19 +151,16 @@ function App() {
         </div>
         <div className="main-container">
           <Suspense fallback={<div>Loading...</div>}>
-            {view === 2 && <Employees />}
-          </Suspense>
-          <Suspense fallback={<div>Loading...</div>}>
-            {view === 3 && <Users />}
-          </Suspense>
-          <Suspense fallback={<div>Loading...</div>}>
-            {view === 4 && <Grades />}
-          </Suspense>
-          <Suspense fallback={<div>Loading...</div>}>
-            {view === 5 && <Fsanitaire />}
-          </Suspense>
-          <Suspense fallback={<div>Loading...</div>}>
-            {view === 6 && <Vacations />}
+            <Routes>
+              <Route path="/dashboard" element={<div>Dashboard</div>} />
+              <Route path="/personnels" element={<Employees />} />
+              <Route path="/personnels/:id" element={<SingleEmployee />} />
+              <Route path="/utilisateurs" element={<Users />} />
+              <Route path="/grades" element={<Grades />} />
+              <Route path="/formation-sanitaire" element={<Fsanitaire />} />
+              <Route path="/vacances" element={<Vacations />} />
+              <Route path="/parametres" element={<div>Paramètres</div>} />
+            </Routes>
           </Suspense>
         </div>
       </div>
