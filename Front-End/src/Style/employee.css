@@ -884,7 +884,7 @@
   background-color: #8d493aac;
 }
 .vv3 {
-  background-color: #e68269c5;
+  background-color: #0d7d8d;
 }
 .vv4 {
   background-color: #088295c7;
@@ -896,6 +896,9 @@
   background-color: #009dbdc9;
 }
 
+.nn100 {
+  background-color: #c7253e;
+}
 .nn11 {
   background-color: #05668dc0;
 }
@@ -1089,13 +1092,25 @@
   width: 210px;
   background-image: linear-gradient(
     270deg,
-    hsl(123, 63%, 53%) 0%,
-    hsl(111, 64%, 51%) 50%,
+    hsl(123, 61%, 50%) 0%,
+    hsl(111, 59%, 43%) 50%,
     hsl(116, 77%, 36%) 100%
+  );
+}
+#llkiu444 {
+  width: 210px;
+  background-image: linear-gradient(
+    270deg,
+    hsl(189, 62%, 46%) 0%,
+    hsl(183, 64%, 39%) 50%,
+    hsl(188, 84%, 30%) 100%
   );
 }
 #kkbyr44 {
   color: #0a8700;
+}
+#kkbyr444 {
+  color: #0d7d8d;
 }
 .gnjdtr55 {
   font-size: 1.3rem;
@@ -1122,4 +1137,10 @@
 #llpng55 {
   margin-top: 30px;
   justify-content: center;
+}
+.fos44 {
+  padding: 3px;
+  border-radius: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
 }

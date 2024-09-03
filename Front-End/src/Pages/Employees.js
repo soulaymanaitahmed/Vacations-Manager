@@ -38,6 +38,7 @@ function Employees() {
     const [prenom, setPrenom] = useState("");
     const [cin, setCin] = useState("");
     const [ppr, setPpr] = useState("");
+    const [phone, setPhone] = useState("");
     const [affec, setAffect] = useState("");
     const [type, setType] = useState("");
     const [corpSel, setCorpSel] = useState("");
@@ -80,6 +81,7 @@ function Employees() {
           employee.corp_name.toLowerCase().includes(lowerCaseSearchTerm) ||
           employee.grade_name.toLowerCase().includes(lowerCaseSearchTerm) ||
           employee.cin.toLowerCase().includes(lowerCaseSearchTerm) ||
+          employee.phone.toLowerCase().includes(lowerCaseSearchTerm) ||
           employee.ppr.toLowerCase().includes(lowerCaseSearchTerm) ||
           employee.prenom.toLowerCase().includes(lowerCaseSearchTerm) ||
           employee.nom.toLowerCase().includes(lowerCaseSearchTerm)
@@ -151,6 +153,7 @@ function Employees() {
           prenom,
           cin,
           ppr,
+          phone,
           affec,
           type,
           gradeSel,
@@ -160,6 +163,7 @@ function Employees() {
         setNom("");
         setCin("");
         setPpr("");
+        setPhone("");
         setAffect("");
         setType("");
         setCorpSel("");
@@ -193,6 +197,9 @@ function Employees() {
             case 7:
               errorMessage = "Un employé avec ce nom, CIN et PPR existe déjà.";
               break;
+            case 8:
+              errorMessage = "Un employé avec ce N° téléphone existe déjà.";
+              break;
             default:
               errorMessage = "Une erreur inconnue s'est produite.";
           }
@@ -212,6 +219,7 @@ function Employees() {
             prenom,
             cin,
             ppr,
+            phone,
             affec,
             type,
             gradeSel,
@@ -222,6 +230,7 @@ function Employees() {
         setNom("");
         setCin("");
         setPpr("");
+        setPhone("");
         setAffect("");
         setType("");
         setCorpSel("");
@@ -247,6 +256,9 @@ function Employees() {
               break;
             case 7:
               errorMessage = "Un employé avec ce CIN et PPR existe déjà.";
+              break;
+            case 8:
+              errorMessage = "Un employé avec ce N° téléphone existe déjà.";
               break;
             default:
               errorMessage = "Une erreur inconnue s'est produite.";
@@ -350,6 +362,7 @@ function Employees() {
               setNom("");
               setCin("");
               setPpr("");
+              setPhone("");
               setAffect("");
               setType("");
               setCorpSel("");
@@ -477,6 +490,21 @@ function Employees() {
                   />
                 </div>
                 <div className="input-lab1">
+                  <label className="ggv1" for="phone">
+                    Phone
+                  </label>
+                  <input
+                    className="person-input"
+                    name="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                    }}
+                    required
+                  />
+                </div>
+                <div className="input-lab1">
                   <label className="ggv1" for="corp">
                     Corp
                   </label>
@@ -536,6 +564,7 @@ function Employees() {
                     setNom("");
                     setCin("");
                     setPpr("");
+                    setPhone("");
                     setAffect("");
                     setType("");
                     setCorpSel("");
@@ -566,6 +595,7 @@ function Employees() {
                         setNom(peron.nom);
                         setCin(peron.cin);
                         setPpr(peron.ppr);
+                        setPhone(peron.phone);
                         setAffect(peron.affectation);
                         setType(peron.type);
                         setCorpSel(peron.corp_nbr);
@@ -643,6 +673,7 @@ function Employees() {
                       setNom("");
                       setCin("");
                       setPpr("");
+                      setPhone("");
                       setAffect("");
                       setType("");
                       setCorpSel("");
@@ -722,6 +753,24 @@ function Employees() {
                       minLength={6}
                       required
                       name="ppr"
+                      disabled={peronEditor ? false : true}
+                    />
+                  </div>
+                  <div className="kklm6">
+                    <label className="mmpr22" for="phone">
+                      N° téléphone
+                    </label>
+                    <input
+                      className="hhtb6"
+                      type="text"
+                      value={phone}
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                      }}
+                      maxLength={15}
+                      minLength={10}
+                      required
+                      name="phone"
                       disabled={peronEditor ? false : true}
                     />
                   </div>
@@ -913,6 +962,7 @@ function Employees() {
     const [duration3, setDuration3] = useState(1);
 
     const [exep, setExep] = useState(0);
+    const [abs, setAbs] = useState(0);
 
     const memoizedResult = useMemo(() => {
       const yearTotals = {};
@@ -1136,6 +1186,23 @@ function Employees() {
 
       return totalDuration;
     };
+    const calculateTotalDurationForType3 = (congsAll) => {
+      const currentYear = new Date().getFullYear();
+      let totalDuration = 0;
+
+      congsAll.forEach((c) => {
+        if (c.type === 3 && c.cancel !== 2) {
+          const itemYear = new Date(c.start_at).getFullYear();
+          if (itemYear === currentYear) {
+            const duration =
+              c.cancel === 1 ? c.duration_after || 0 : c.total_duration || 0;
+            totalDuration += duration;
+          }
+        }
+      });
+
+      return totalDuration;
+    };
 
     for (let i = currentYear - 3; i <= currentYear; i++) {
       years.push(i);
@@ -1206,10 +1273,10 @@ function Employees() {
           setMaxi(22);
         }
         if (subRadio1 === "2") {
-          setMaxi(10);
+          setMaxi(10 - exep);
         }
         if (subRadio1 === "3") {
-          setMaxi(2);
+          setMaxi(2 - abs);
         }
       }
       if (radio1 === "2") {
@@ -1223,7 +1290,7 @@ function Employees() {
           setMaxi(1825);
         }
       }
-    }, [subRadio1, radio1]);
+    }, [subRadio1, subRadio2, radio1]);
 
     useEffect(() => {
       if (check1) {
@@ -1250,6 +1317,7 @@ function Employees() {
 
     useEffect(() => {
       setExep(calculateTotalDurationForType2(congsAll));
+      setAbs(calculateTotalDurationForType3(congsAll));
     }, [congsAll]);
 
     useEffect(() => {
@@ -1335,6 +1403,12 @@ function Employees() {
                 {exep}
               </div>
               <p className="stat-year">Exceptionnel</p>
+            </div>
+            <div className="stats-card" id="llkiu444">
+              <div className="card-nbr44" id="kkbyr444">
+                {abs}
+              </div>
+              <p className="stat-year">Aut d'absence</p>
             </div>
             {sold.map((y) => (
               <div className="stats-card" key={y.year}>
@@ -1865,7 +1939,7 @@ function Employees() {
                       className="sv1"
                     >
                       Ressources humaines{" "}
-                      {singleConj.decision > 4 ? (
+                      {singleConj.decision > 4 && singleConj.decision !== 20 ? (
                         <FaCheck className="nvbhtu55" />
                       ) : null}
                     </button>
@@ -1874,7 +1948,7 @@ function Employees() {
                       className="sv1"
                     >
                       Le délégué{" "}
-                      {singleConj.decision > 3 ? (
+                      {singleConj.decision > 3 && singleConj.decision !== 20 ? (
                         <FaCheck className="nvbhtu55" />
                       ) : null}
                     </button>
@@ -1883,7 +1957,7 @@ function Employees() {
                       className="sv1"
                     >
                       Chef archaic{" "}
-                      {singleConj.decision > 2 ? (
+                      {singleConj.decision > 2 && singleConj.decision !== 20 ? (
                         <FaCheck className="nvbhtu55" />
                       ) : null}
                     </button>
@@ -1892,7 +1966,7 @@ function Employees() {
                       className="sv1"
                     >
                       Bureau d'ordre{" "}
-                      {singleConj.decision > 1 ? (
+                      {singleConj.decision > 1 && singleConj.decision !== 20 ? (
                         <FaCheck className="nvbhtu55" />
                       ) : null}
                     </button>
@@ -1907,14 +1981,23 @@ function Employees() {
                     <button
                       disabled={singleConj.decision !== 20}
                       className="sv1"
+                      id="kklop55"
                     >
                       Rejeter
                     </button>
                   </div>
                   <div className="wwv55">
                     <div className="vvbu1">
-                      <span>N° Conngé: {singleConj.id}</span>
-                      <span>Créé: {formatDateTime(singleConj.created_at)}</span>
+                      <span>
+                        N° Conngé:{" "}
+                        <span className="fos44">{singleConj.id}</span>
+                      </span>
+                      <span>
+                        Créé:{" "}
+                        <span className="fos44">
+                          {formatDateTime(singleConj.created_at)}
+                        </span>
+                      </span>
                     </div>
                     <div className="vvbu1">
                       <span>
@@ -1971,17 +2054,39 @@ function Employees() {
                       ) : null}
                     </div>
                     <div className="vvbu1">
-                      <span>Du: {formatDate(singleConj.start_at)}</span>
-                      <span>Au: {formatDate(singleConj.start_at)}</span>
+                      <span>
+                        Du:{" "}
+                        <span className="fos44">
+                          {formatDate(singleConj.start_at)}
+                        </span>
+                      </span>
+                      <span>
+                        Au:{" "}
+                        <span className="fos44">
+                          {formatDate(singleConj.start_at)}
+                        </span>
+                      </span>
                     </div>
                     <div className="vvbu1">
-                      <span>Année: {singleConj.year_1}</span>
-                      <span>Durée: {singleConj.duration_1}</span>
+                      <span>
+                        Année:{" "}
+                        <span className="fos44">{singleConj.year_1}</span>
+                      </span>
+                      <span>
+                        Durée:{" "}
+                        <span className="fos44">{singleConj.duration_1}</span>
+                      </span>
                     </div>
                     {singleConj.year_2 ? (
                       <div className="vvbu1">
-                        <span>Deuxième année: {singleConj.year_2}</span>
-                        <span>Durée: {singleConj.duration_2}</span>
+                        <span>
+                          Deuxième année:{" "}
+                          <span className="fos44">{singleConj.year_2}</span>
+                        </span>
+                        <span>
+                          Durée:{" "}
+                          <span className="fos44">{singleConj.duration_2}</span>
+                        </span>
                       </div>
                     ) : null}
                     {singleConj.cancel === 1 ? (
@@ -2048,8 +2153,10 @@ function Employees() {
             {filCongsAll.map((c) => {
               return (
                 <div
-                  onClick={() => {
-                    setSingleConj(c);
+                  onDoubleClick={() => {
+                    if (c.total_duration !== 0) {
+                      setSingleConj(c);
+                    }
                   }}
                   className="kknh55"
                   id="klo4"
@@ -2070,36 +2177,40 @@ function Employees() {
                     <span
                       id="vv10"
                       className={
-                        c.decision === 0
+                        c.cancel == 2
+                          ? "nn100"
+                          : c.decision === 0 && c.cancel !== 2
                           ? "nn11"
-                          : c.decision === 1
+                          : c.decision === 1 && c.cancel !== 2
                           ? "nn22"
-                          : c.decision === 2
+                          : c.decision === 2 && c.cancel !== 2
                           ? "nn33"
-                          : c.decision === 3
+                          : c.decision === 3 && c.cancel !== 2
                           ? "nn44"
-                          : c.decision === 4
+                          : c.decision === 4 && c.cancel !== 2
                           ? "nn55"
-                          : c.decision === 5
+                          : c.decision === 5 && c.cancel !== 2
                           ? "nn66"
-                          : c.decision === 20
+                          : c.decision === 20 && c.cancel !== 2
                           ? "nn20"
                           : null
                       }
                     >
-                      {c.decision === 0
+                      {c.cancel == 2
+                        ? "Annuler"
+                        : c.decision === 0 && c.cancel !== 2
                         ? "En attente"
-                        : c.decision === 1
+                        : c.decision === 1 && c.cancel !== 2
                         ? "Bureau d'ordre"
-                        : c.decision === 2
+                        : c.decision === 2 && c.cancel !== 2
                         ? "Chef archaic"
-                        : c.decision === 3
+                        : c.decision === 3 && c.cancel !== 2
                         ? "Le délégué"
-                        : c.decision === 4
+                        : c.decision === 4 && c.cancel !== 2
                         ? "RH"
-                        : c.decision === 5
+                        : c.decision === 5 && c.cancel !== 2
                         ? "Valider"
-                        : c.decision === 20
+                        : c.decision === 20 && c.cancel !== 2
                         ? "Rejeter"
                         : c.decision}
                     </span>

@@ -272,61 +272,77 @@ app.delete("/vac/:id", (req, res) => {
 });
 // ------------------------------------------ Employees ----------------------------------
 app.post("/employees", (req, res) => {
-  const { nom, prenom, cin, ppr, affec, type, gradeSel } = req.body;
+  const { nom, prenom, cin, ppr, phone, affec, type, gradeSel } = req.body;
+
   const checkIfExistsQuery = `
     SELECT * FROM personnels 
-    WHERE (nom = ? AND prenom = ?) OR cin = ? OR ppr = ?
+    WHERE (nom = ? AND prenom = ?) OR cin = ? OR ppr = ? OR phone = ?
   `;
-  db.query(checkIfExistsQuery, [nom, prenom, cin, ppr], (err, results) => {
-    if (err) {
-      console.error("Error checking if employee exists:", err);
-      res.status(500).json({ error: "Internal server error" });
-      return;
-    }
-    let nameExists = false;
-    let cinExists = false;
-    let pprExists = false;
-    results.forEach((result) => {
-      if (result.nom === nom && result.prenom === prenom) {
-        nameExists = true;
+  db.query(
+    checkIfExistsQuery,
+    [nom, prenom, cin, ppr, phone],
+    (err, results) => {
+      if (err) {
+        console.error("Error checking if employee exists:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
       }
-      if (result.cin === cin) {
-        cinExists = true;
-      }
-      if (result.ppr === ppr) {
-        pprExists = true;
-      }
-    });
-    let errorCode = 0;
-    if (nameExists) errorCode += 1;
-    if (cinExists) errorCode += 2;
-    if (pprExists) errorCode += 4;
 
-    if (errorCode > 0) {
-      res
-        .status(400)
-        .json({ error: `Employee already exists`, code: errorCode });
-      return;
-    }
-    const createEmployeeQuery = `
-      INSERT INTO personnels (nom, prenom, cin, ppr, affectation, type, grade) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-    db.query(
-      createEmployeeQuery,
-      [nom, prenom, cin, ppr, affec, type, gradeSel],
-      (err, result) => {
-        if (err) {
-          console.error("Error creating employee:", err);
-          res.status(500).json({ error: "Internal server error" });
-          return;
+      let nameExists = false;
+      let cinExists = false;
+      let pprExists = false;
+      let phoneExists = false;
+
+      results.forEach((result) => {
+        if (result.nom === nom && result.prenom === prenom) {
+          nameExists = true;
         }
-        console.log("Employee created successfully");
-        res.status(201).json({ message: "Employee created successfully" });
+        if (result.cin === cin) {
+          cinExists = true;
+        }
+        if (result.ppr === ppr) {
+          pprExists = true;
+        }
+        if (result.phone === phone) {
+          phoneExists = true;
+        }
+      });
+
+      let errorCode = 0;
+      if (nameExists) errorCode += 1;
+      if (cinExists) errorCode += 2;
+      if (pprExists) errorCode += 4;
+      if (phoneExists) errorCode += 8;
+
+      if (errorCode > 0) {
+        res
+          .status(400)
+          .json({ error: `Employee already exists`, code: errorCode });
+        return;
       }
-    );
-  });
+
+      const createEmployeeQuery = `
+      INSERT INTO personnels (nom, prenom, cin, ppr, phone, affectation, type, grade) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+      db.query(
+        createEmployeeQuery,
+        [nom, prenom, cin, ppr, phone, affec, type, gradeSel],
+        (err, result) => {
+          if (err) {
+            console.error("Error creating employee:", err);
+            res.status(500).json({ error: "Internal server error" });
+            return;
+          }
+
+          console.log("Employee created successfully");
+          res.status(201).json({ message: "Employee created successfully" });
+        }
+      );
+    }
+  );
 });
+
 app.get("/employees", (req, res) => {
   const { id } = req.query;
 
@@ -394,13 +410,13 @@ app.get("/employee/:id", (req, res) => {
 });
 app.put("/employees/:id", (req, res) => {
   const { id } = req.params;
-  const { nom, prenom, cin, ppr, affec, type, gradeSel } = req.body;
+  const { nom, prenom, cin, ppr, phone, affec, type, gradeSel } = req.body;
 
   const checkIfExistsQuery = `
     SELECT * FROM personnels 
-    WHERE (cin = ? OR ppr = ?) AND id <> ?
+    WHERE (cin = ? OR ppr = ? OR phone = ?) AND id <> ?
   `;
-  db.query(checkIfExistsQuery, [cin, ppr, id], (err, results) => {
+  db.query(checkIfExistsQuery, [cin, ppr, phone, id], (err, results) => {
     if (err) {
       console.error("Error checking if employee exists:", err);
       res.status(500).json({ error: "Internal server error" });
@@ -409,6 +425,7 @@ app.put("/employees/:id", (req, res) => {
 
     let cinExists = false;
     let pprExists = false;
+    let phoneExists = false;
 
     results.forEach((result) => {
       if (result.cin === cin) {
@@ -417,22 +434,37 @@ app.put("/employees/:id", (req, res) => {
       if (result.ppr === ppr) {
         pprExists = true;
       }
+      if (result.phone === phone) {
+        phoneExists = true;
+      }
     });
 
     let errorCode = 0;
     if (cinExists) errorCode += 2;
     if (pprExists) errorCode += 4;
+    if (phoneExists) errorCode += 8;
 
     if (errorCode > 0) {
       res.status(400).json({ error: `Conflicting data`, code: errorCode });
       return;
     }
+
     const updateEmployeeQuery = `
       UPDATE personnels 
-      SET nom = ?, prenom = ?, cin = ?, ppr = ?, affectation = ?, type = ?, grade = ? 
+      SET nom = ?, prenom = ?, cin = ?, ppr = ?, phone = ?, affectation = ?, type = ?, grade = ? 
       WHERE id = ?
     `;
-    const queryParams = [nom, prenom, cin, ppr, affec, type, gradeSel, id];
+    const queryParams = [
+      nom,
+      prenom,
+      cin,
+      ppr,
+      phone,
+      affec,
+      type,
+      gradeSel,
+      id,
+    ];
 
     db.query(updateEmployeeQuery, queryParams, (err, result) => {
       if (err) {
