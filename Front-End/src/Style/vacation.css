@@ -101,6 +101,15 @@ abbr {
   transition: all 300ms;
   cursor: pointer;
 }
+.bnk1234 {
+  width: 100%;
+  height: 80px;
+  background-color: #495464;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 5%;
+  color: #d35848ca;
+}
 .bnk123:hover {
   scale: 1.05;
 }

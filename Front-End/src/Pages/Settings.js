@@ -96,40 +96,6 @@ function Settings(props) {
                 </div>
               </div>
             </div>
-            <div className="line88">
-              <div className="line89">
-                <span className="typecomp88">Usernam</span>
-                <input
-                  type="text"
-                  value={employee.username}
-                  className="input88"
-                  disabled
-                />
-              </div>
-              <div className="line89">
-                <span className="typecomp88">Mot de passe</span>
-                <div className="vis88">
-                  {pass ? (
-                    <MdVisibilityOff
-                      className="visib88"
-                      onClick={() => setPass(!pass)}
-                    />
-                  ) : (
-                    <MdVisibility
-                      className="visib88"
-                      onClick={() => setPass(!pass)}
-                    />
-                  )}
-                  <input
-                    type={pass ? "text" : "password"}
-                    value={employee.password}
-                    className="input88"
-                    id="wi88"
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
           </>
         ) : null}
       </div>

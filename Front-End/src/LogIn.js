@@ -129,12 +129,12 @@ const LoginPage = () => {
               <div className="jjhoue77">
                 {pass ? (
                   <MdVisibilityOff
-                    className="vis88"
+                    className="vis88999"
                     onClick={() => setPass(!pass)}
                   />
                 ) : (
                   <MdVisibility
-                    className="vis88"
+                    className="vis88999"
                     onClick={() => setPass(!pass)}
                   />
                 )}

@@ -157,7 +157,7 @@ function App() {
               <Route path="/vacances" element={<Vacations />} />
               <Route
                 path="/parametres"
-                element={<Settings id={userInfo.id} type={userInfo.type} />}
+                element={<Settings id={userInfo.id} type={userInfo.type_ac} />}
               />
             </Routes>
           </Suspense>

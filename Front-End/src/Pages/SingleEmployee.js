@@ -432,6 +432,8 @@ function SingleEmployee() {
     }
   }, [congsAll, filter2]);
 
+  console.log(congsAll);
+
   return (
     <div className="personel">
       <div className="user-list-header">
@@ -1251,7 +1253,7 @@ function SingleEmployee() {
           {filCongsAll.map((c) => {
             return (
               <div
-                onDoubleClick={() => {
+                onClick={() => {
                   if (c.total_duration !== 0) {
                     setSingleConj(c);
                   }
@@ -1259,7 +1261,11 @@ function SingleEmployee() {
                 className="kknh55"
                 id="klo4"
                 style={
-                  c.cancel === 2 ? { border: "2px solid #d35848ca" } : null
+                  c.cancel === 2
+                    ? { borderBottom: "2px solid #d35848ca" }
+                    : new Date(c.end_at) >= new Date() && c.decision === 5
+                    ? { border: "2px solid #2ac225ca" }
+                    : null
                 }
               >
                 <div className="suv-div44" id="S11">
@@ -1363,7 +1369,7 @@ function SingleEmployee() {
                 </div>
                 {c.demand_date === "0000-00-00" ? (
                   <div className="suv-div44" id="S40">
-                    GG
+                    - - -
                   </div>
                 ) : (
                   <>

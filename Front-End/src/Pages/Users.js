@@ -264,10 +264,8 @@ function Users() {
                       : us.type === 2
                       ? "Chef archaic"
                       : us.type === 3
-                      ? "Bureau d'ordre"
-                      : us.type === 4
                       ? "Le délégué"
-                      : us.type === 5
+                      : us.type === 4
                       ? "RH"
                       : us.type === 20
                       ? "Admin"

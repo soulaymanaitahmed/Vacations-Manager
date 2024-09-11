@@ -58,8 +58,8 @@ app.post("/users/login", (req, res) => {
     const tokenExpiration = rememberMe ? "30d" : "1h";
     const payload =
       choi === 1
-        ? { username: user.username, type: user.type, id: user.id }
-        : { username: `${user.prenom}-${user.nom}`, type: 15, id: user.id };
+        ? { username: user.username, type_ac: user.type, id: user.id }
+        : { username: `${user.prenom}-${user.nom}`, type_ac: 15, id: user.id };
 
     const token = jwt.sign(payload, "your-secret-key", {
       expiresIn: tokenExpiration,
@@ -158,6 +158,7 @@ app.get("/conge/:personnel_id", (req, res) => {
   const sql = `
       SELECT * FROM conges
       WHERE personnel_id = ?
+      ORDER BY id DESC
   `;
 
   const queryParams = [personnel_id];
@@ -169,6 +170,7 @@ app.get("/conge/:personnel_id", (req, res) => {
     res.json(results);
   });
 });
+
 app.put("/update-conge-cancel/:id", (req, res) => {
   const { id } = req.params;
 
@@ -957,6 +959,6 @@ app.delete("/users/:id", (req, res) => {
 });
 
 // ------------------------------------------ API ------------------------------------
-app.listen(7766, "0.0.0.0", () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log("Server running on http://0.0.0.0:7766");
 });

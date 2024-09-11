@@ -136,8 +136,9 @@ const Vacations = () => {
               ho.map((vc) => {
                 return (
                   <div
-                    className={`bnk123 holiday-${vc.id}`}
+                    className={`bnk1234 holiday-${vc.id}`}
                     style={holidayStyles[`holiday-${vc.id}`]}
+                    id="lllnhggh99999"
                   >
                     <h4 className="hklh12">{vc.hname}</h4>
                     <div className="vc1234">
