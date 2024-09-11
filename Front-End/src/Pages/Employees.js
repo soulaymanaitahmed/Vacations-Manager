@@ -13,6 +13,13 @@ import { MdDelete } from "react-icons/md";
 import "../Style/employee.css";
 
 function Employees() {
+  const getBaseURL = () => {
+    const { protocol, hostname } = window.location;
+    const port = 7766;
+    return `${protocol}//${hostname}:${port}`;
+  };
+  const baseURL = getBaseURL();
+
   const [filter1, setFilter1] = useState("*");
 
   const [fSanitaireAll, setFSanitaireAll] = useState([]);
@@ -87,7 +94,7 @@ function Employees() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/employees", {
+      const response = await axios.get(`${baseURL}/employees`, {
         params: {
           id: filter1 === "*" ? null : filter1,
         },
@@ -99,9 +106,7 @@ function Employees() {
   };
   const fetchFSanitaires = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:7766/formation_sanitaires"
-      );
+      const response = await axios.get(`${baseURL}/formation_sanitaires`);
       setFSanitaireAll(response.data);
     } catch (error) {
       console.error("Error fetching fSanitaires:", error);
@@ -109,7 +114,7 @@ function Employees() {
   };
   const fetchGrades = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/gradesun");
+      const response = await axios.get(`${baseURL}/gradesun`);
       setGradeAll(response.data);
     } catch (error) {
       console.error("Error fetching Grades:", error);
@@ -117,7 +122,7 @@ function Employees() {
   };
   const fetchTypes = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/types");
+      const response = await axios.get(`${baseURL}/types`);
       setTypes(response.data);
     } catch (error) {
       console.error("Error fetching types:", error);
@@ -125,7 +130,7 @@ function Employees() {
   };
   const fetchCorps = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/corps");
+      const response = await axios.get(`${baseURL}/corps`);
       setCorps(response.data);
     } catch (error) {
       console.error("Error fetching corps:", error);
@@ -134,7 +139,7 @@ function Employees() {
   const sendEmployee = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:7766/employees", {
+      const response = await axios.post(`${baseURL}/employees`, {
         nom,
         prenom,
         cin,
@@ -198,19 +203,16 @@ function Employees() {
   const updateEmployee = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(
-        `http://localhost:7766/employees/${peronEdit.id}`,
-        {
-          nom,
-          prenom,
-          cin,
-          ppr,
-          phone,
-          affec,
-          type,
-          gradeSel,
-        }
-      );
+      const response = await axios.put(`${baseURL}/employees/${peronEdit.id}`, {
+        nom,
+        prenom,
+        cin,
+        ppr,
+        phone,
+        affec,
+        type,
+        gradeSel,
+      });
       console.log("Employee updated:", response.data);
       setPrenom("");
       setNom("");
@@ -260,7 +262,7 @@ function Employees() {
     e.preventDefault();
     try {
       const response = await axios.delete(
-        `http://localhost:7766/employees/${peronEdit.id}`
+        `${baseURL}/employees/${peronEdit.id}`
       );
       console.log(response.data);
       setPrenom("");

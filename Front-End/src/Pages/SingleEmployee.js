@@ -12,14 +12,25 @@ import {
 
 import { BiMessageSquareAdd } from "react-icons/bi";
 import { MdOutlineCancel } from "react-icons/md";
+import { FaCalendarAlt } from "react-icons/fa";
 import { IoFilter } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa";
 
+import VacationsMini from "./VacationsMini";
 import "../Style/employee.css";
 
 function SingleEmployee() {
+  const getBaseURL = () => {
+    const { protocol, hostname } = window.location;
+    const port = 7766;
+    return `${protocol}//${hostname}:${port}`;
+  };
+  const baseURL = getBaseURL();
+
   const { id } = useParams();
   const dd = id;
+
+  const [cal, setCal] = useState(false);
 
   const currentYear = new Date().getFullYear();
 
@@ -101,7 +112,7 @@ function SingleEmployee() {
 
   const fetchHolids = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/vac", {
+      const response = await axios.get(`${baseURL}/vac`, {
         params: { year: filter1 },
       });
       setHolids(response.data);
@@ -112,7 +123,7 @@ function SingleEmployee() {
 
   const fetchEmployee = async () => {
     try {
-      const response = await axios.get(`http://localhost:7766/employee/${dd}`);
+      const response = await axios.get(`${baseURL}/employee/${dd}`);
       setPerson(response.data);
     } catch (err) {
       console.error("Error fetching employee:", err);
@@ -184,10 +195,7 @@ function SingleEmployee() {
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:7766/add-conge",
-        data
-      );
+      const response = await axios.post(`${baseURL}/add-conge`, data);
       console.log("Conge record inserted successfully:", response.data);
       setCongExist(false);
       setAddVc(false);
@@ -213,7 +221,7 @@ function SingleEmployee() {
     };
 
     try {
-      const response = await axios.post("http://localhost:7766/add-sold", data);
+      const response = await axios.post(`${baseURL}/add-sold`, data);
       console.log("Sold record inserted successfully:", response.data);
       setAddVc2(false);
       fetchCongeData();
@@ -227,7 +235,7 @@ function SingleEmployee() {
 
   const fetchCongeData = async () => {
     try {
-      const response = await axios.get(`http://localhost:7766/conge/${dd}`);
+      const response = await axios.get(`${baseURL}/conge/${dd}`);
       setCongsAll(response.data);
     } catch (error) {
       console.error("Error fetching conge data:", error);
@@ -236,9 +244,7 @@ function SingleEmployee() {
 
   const cancel = async (id) => {
     try {
-      const response = await axios.put(
-        `http://localhost:7766/update-conge-cancel/${id}`
-      );
+      const response = await axios.put(`${baseURL}/update-conge-cancel/${id}`);
       fetchCongeData();
       setSingleConj(false);
     } catch (error) {
@@ -489,6 +495,20 @@ function SingleEmployee() {
       <hr />
       <br />
       <div className="person77">
+        {cal ? (
+          <div className="calendar45">
+            <div
+              className="vac-exit55"
+              onClick={(e) => {
+                e.preventDefault();
+                setCal(false);
+              }}
+            >
+              ×
+            </div>
+            <VacationsMini />
+          </div>
+        ) : null}
         <div className="stats44">
           <div className="stats-card" id="llkiu44">
             <div className="card-nbr44" id="kkbyr44">
@@ -508,6 +528,11 @@ function SingleEmployee() {
               <p className="stat-year">{y.year}</p>
             </div>
           ))}
+          {!cal ? (
+            <button className="showhid55" onClick={() => setCal(true)}>
+              <FaCalendarAlt className="hideshow45" />
+            </button>
+          ) : null}
         </div>
         {addVc ? (
           <form className="add-vac-form" onSubmit={addConge}>

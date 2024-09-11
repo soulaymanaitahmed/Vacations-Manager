@@ -8,6 +8,13 @@ import { FiAlertOctagon } from "react-icons/fi";
 import { VscDiffAdded } from "react-icons/vsc";
 
 const Vacations = () => {
+  const getBaseURL = () => {
+    const { protocol, hostname } = window.location;
+    const port = 7766;
+    return `${protocol}//${hostname}:${port}`;
+  };
+  const baseURL = getBaseURL();
+
   const [ho, setHo] = useState([]);
   const [value1, onChange1] = useState(new Date());
   const currentYear = new Date().getFullYear();
@@ -116,7 +123,7 @@ const Vacations = () => {
 
   const fetchHolids = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/vac", {
+      const response = await axios.get(`${baseURL}/vac`, {
         params: { year: filter1 },
       });
       setHo(response.data);
@@ -138,7 +145,7 @@ const Vacations = () => {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:7766/vac", {
+      const response = await axios.post(`${baseURL}/vac`, {
         year,
         start_date: start,
         duration: dur,
@@ -158,7 +165,7 @@ const Vacations = () => {
     e.preventDefault();
     const gg = editvc.id;
     try {
-      const response = await axios.put(`http://localhost:7766/vac/${gg}`, {
+      const response = await axios.put(`${baseURL}/vac/${gg}`, {
         year: year1,
         start_date: start1,
         duration: dur2,
@@ -180,7 +187,7 @@ const Vacations = () => {
   const deleteHoliday = async () => {
     const gg = editvc.id;
     try {
-      const response = await axios.delete(`http://localhost:7766/vac/${gg}`);
+      const response = await axios.delete(`${baseURL}/vac/${gg}`);
       console.log(response.data.message);
       fetchHolids();
       setEditvc();

@@ -9,6 +9,13 @@ import { FiEdit } from "react-icons/fi";
 import "../Style/grades.css";
 
 function Fsanitaire() {
+  const getBaseURL = () => {
+    const { protocol, hostname } = window.location;
+    const port = 7766;
+    return `${protocol}//${hostname}:${port}`;
+  };
+  const baseURL = getBaseURL();
+
   const [type, setType] = useState("");
   const [typeEdited, setTypeEdited] = useState("");
   const [types, setTypes] = useState([]);
@@ -33,7 +40,7 @@ function Fsanitaire() {
   const sendType = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:7766/types", {
+      const response = await axios.post(`${baseURL}/types`, {
         type,
       });
       console.log(response.data);
@@ -52,12 +59,9 @@ function Fsanitaire() {
   const sendFSanitaire = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:7766/formation_sanitaires",
-        {
-          fSanitaire: fSanitaire,
-        }
-      );
+      const response = await axios.post(`${baseURL}/formation_sanitaires`, {
+        fSanitaire: fSanitaire,
+      });
       console.log(response.data);
       setFSanitaireExist(false);
       setFSanitaire("");
@@ -73,7 +77,7 @@ function Fsanitaire() {
 
   const fetchTypes = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/types");
+      const response = await axios.get(`${baseURL}/types`);
       setTypes(response.data);
     } catch (error) {
       console.error("Error fetching types:", error);
@@ -82,9 +86,7 @@ function Fsanitaire() {
 
   const fetchFSanitaires = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:7766/formation_sanitaires"
-      );
+      const response = await axios.get(`${baseURL}/formation_sanitaires`);
       setFSanitaireAll(response.data);
     } catch (error) {
       console.error("Error fetching fSanitaires:", error);
@@ -93,7 +95,7 @@ function Fsanitaire() {
 
   const updateType = async (id) => {
     try {
-      const response = await axios.put(`http://localhost:7766/types/${id}`, {
+      const response = await axios.put(`${baseURL}/types/${id}`, {
         typeEdited,
       });
       console.log(response.data);
@@ -106,7 +108,7 @@ function Fsanitaire() {
 
   const deleteType = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:7766/types/${id}`);
+      const response = await axios.delete(`${baseURL}/types/${id}`);
       console.log(response.data);
       setTypeDelete(false);
       fetchTypes();
@@ -118,7 +120,7 @@ function Fsanitaire() {
   const updateFSanitaire = async (id) => {
     try {
       const response = await axios.put(
-        `http://localhost:7766/formation_sanitaires/${id}`,
+        `${baseURL}/formation_sanitaires/${id}`,
         {
           fs: fSanitaireEdited,
         }
@@ -130,10 +132,11 @@ function Fsanitaire() {
       console.error("Error updating formation sanitaires:", error);
     }
   };
+
   const deleteFSanitaire = async (id) => {
     try {
       const response = await axios.delete(
-        `http://localhost:7766/formation_sanitaires/${id}`
+        `${baseURL}/formation_sanitaires/${id}`
       );
       console.log(response.data);
       fetchFSanitaires();

@@ -1,20 +1,38 @@
 import React, { useState, useEffect } from "react";
-import { RiLockPasswordFill } from "react-icons/ri";
-import { AiOutlineLogin } from "react-icons/ai";
-import { PiUserBold } from "react-icons/pi";
-import { MdEmail } from "react-icons/md";
+import { SlSettings } from "react-icons/sl";
+import { BsPersonCircle } from "react-icons/bs";
+import { MdVisibility } from "react-icons/md";
+import { MdVisibilityOff } from "react-icons/md";
 
 import Cookies from "js-cookie";
 import axios from "axios";
 
 import "./Style/login.css";
+import logo1 from "./Images/deleg-logo.png";
 
 const LoginPage = () => {
+  const getBaseURL = () => {
+    const { protocol, hostname } = window.location;
+    const port = 7766;
+    return `${protocol}//${hostname}:${port}`;
+  };
+  const baseURL = getBaseURL();
+
+  const [choi, setChoi] = useState(0);
+  const [pass, setPass] = useState(false);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+
   const [alr, setAlr] = useState(false);
 
+  useEffect(() => {
+    setUsername("");
+    setPassword("");
+    setRememberMe(false);
+    setAlr(false);
+  }, [choi]);
   useEffect(() => {
     const token = Cookies.get("gestion-des-conges");
     if (token) {
@@ -25,7 +43,8 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:7766/users/login", {
+      const response = await axios.post(`${baseURL}/users/login`, {
+        choi,
         username,
         password,
         rememberMe,
@@ -49,64 +68,109 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
-      <form onSubmit={handleSubmit} className="login-form">
-        <div className="log1">
-          <h4 className="login-title">Delegation</h4>
-          <p className="login-infos">
-            Lorem when an unknown printer took a galley of type and scrambled it
-            to make a type specimen book. It has survived not only five
-            centuries.
-          </p>
+      <div className="section77">
+        <div className="logo77">
+          <img className="logoimg77" alt="Logo IMG" src={logo1} width="80px" />
+          <span className="bbrjdndt77">Délégation de santé ouarzazate</span>
         </div>
-        <div className="log2">
-          <PiUserBold className="login-user-img" />
-          {alr ? (
-            <span className="alr">
-              Nom d'utilisateur ou mot de passe incorrect
-            </span>
-          ) : null}
-          <div className="rememberMe1">
-            <MdEmail className="login-icon" />
-            <input
-              type="text"
-              id="username"
-              className="login-input"
-              minLength={4}
-              maxLength={16}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Utilisateur"
-              required
-            />
+        {choi == 0 ? (
+          <div className="choi77">
+            <div
+              className="sec11"
+              onClick={() => {
+                setChoi(1);
+              }}
+            >
+              <SlSettings className="llkoi77" id="kknurf77" />
+              <span className="kkopki77" id="kknurf77">
+                Administration
+              </span>
+            </div>
+            <div
+              className="sec11"
+              onClick={() => {
+                setChoi(2);
+              }}
+            >
+              <BsPersonCircle className="llkoi77" id="kknurf78" />
+              <span className="kkopki77" id="kknurf78">
+                Personnels
+              </span>
+            </div>
           </div>
-          <div className="rememberMe1">
-            <RiLockPasswordFill className="login-icon" />
-            <input
-              type="password"
-              id="password"
-              className="login-input"
-              minLength={4}
-              maxLength={16}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Mot de passe"
-              required
-            />
-          </div>
-          <div className="rememberMe2">
-            <input
-              type="checkbox"
-              id="rememberMe"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
-            <label htmlFor="rememberMe">Se souvenir de moi (30 Jours)</label>
-          </div>
-          <button className="login-btn" type="submit">
-            Login <AiOutlineLogin />
-          </button>
-        </div>
-      </form>
+        ) : null}
+        {choi !== 0 ? (
+          <form className="nnjvserg77" onSubmit={handleSubmit}>
+            <h3 className="nndkgdgdi77">
+              <span className="back77" onClick={() => setChoi(0)}>
+                ◀
+              </span>
+              {choi === 1
+                ? "Espace des administrateurs"
+                : choi === 2
+                ? "Espace du personnel"
+                : null}
+            </h3>
+            <div className="inputs77">
+              <label className="lab77">
+                {choi === 1 ? "Username" : choi === 2 ? "PPR" : null}
+              </label>
+              <input
+                className="inp77"
+                type="text"
+                minLength={4}
+                maxLength={16}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div className="inputs77">
+              <label className="lab77">Mot de passe</label>
+              <div className="jjhoue77">
+                {pass ? (
+                  <MdVisibilityOff
+                    className="vis88"
+                    onClick={() => setPass(!pass)}
+                  />
+                ) : (
+                  <MdVisibility
+                    className="vis88"
+                    onClick={() => setPass(!pass)}
+                  />
+                )}
+                <input
+                  className="inp77"
+                  type={pass ? "text" : "password"}
+                  minLength={4}
+                  maxLength={16}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="inputs778">
+              <input
+                type="checkbox"
+                id="rememberMe77"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <label htmlFor="rememberMe77" className="llourbt77">
+                Se souvenir de moi (30 Jours)
+              </label>
+            </div>
+            {alr ? (
+              <span className="alr">
+                {choi === 1 ? "Username" : choi === 2 ? "PPR" : null} ou mot de
+                passe incorrect !
+              </span>
+            ) : null}
+            <div className="log77">
+              <button className="login77">Login</button>
+            </div>
+          </form>
+        ) : null}
+      </div>
     </div>
   );
 };

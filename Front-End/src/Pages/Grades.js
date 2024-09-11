@@ -9,6 +9,13 @@ import { FiEdit } from "react-icons/fi";
 import "../Style/grades.css";
 
 function Grades() {
+  const getBaseURL = () => {
+    const { protocol, hostname } = window.location;
+    const port = 7766;
+    return `${protocol}//${hostname}:${port}`;
+  };
+  const baseURL = getBaseURL();
+
   const [corp, setCorp] = useState("");
   const [corpEdited, setCorpEdited] = useState("");
   const [corps, setCorps] = useState([]);
@@ -36,7 +43,7 @@ function Grades() {
   const sendCorp = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:7766/corps", {
+      const response = await axios.post(`${baseURL}/corps`, {
         corp,
       });
       console.log(response.data);
@@ -54,7 +61,7 @@ function Grades() {
   const sendGrade = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:7766/grades", {
+      const response = await axios.post(`${baseURL}/grades`, {
         grade: grade,
         corp: corpSelect,
       });
@@ -73,7 +80,7 @@ function Grades() {
   };
   const fetchCorps = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/corps");
+      const response = await axios.get(`${baseURL}/corps`);
       setCorps(response.data);
     } catch (error) {
       console.error("Error fetching corps:", error);
@@ -81,7 +88,7 @@ function Grades() {
   };
   const fetchGrades = async () => {
     try {
-      const response = await axios.get("http://localhost:7766/grades");
+      const response = await axios.get(`${baseURL}/grades`);
       setGradeAll(response.data);
     } catch (error) {
       console.error("Error fetching Grades:", error);
@@ -89,7 +96,7 @@ function Grades() {
   };
   const updateCorp = async (id) => {
     try {
-      const response = await axios.put(`http://localhost:7766/corps/${id}`, {
+      const response = await axios.put(`${baseURL}/corps/${id}`, {
         corpEdited,
       });
       console.log(response.data);
@@ -101,7 +108,7 @@ function Grades() {
   };
   const deleteCorp = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:7766/corps/${id}`);
+      const response = await axios.delete(`${baseURL}/corps/${id}`);
       console.log(response.data);
       fetchCorps();
       setCorpDelete(false);
@@ -111,7 +118,7 @@ function Grades() {
   };
   const updateGrade = async (id) => {
     try {
-      const response = await axios.put(`http://localhost:7766/grades/${id}`, {
+      const response = await axios.put(`${baseURL}/grades/${id}`, {
         grade: gradeEdited,
         corp_id: corpSelectEdit,
       });
@@ -124,7 +131,7 @@ function Grades() {
   };
   const deleteGrade = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:7766/grades/${id}`);
+      const response = await axios.delete(`${baseURL}/grades/${id}`);
       console.log(response.data);
       fetchGrades();
     } catch (error) {

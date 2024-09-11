@@ -33,24 +33,38 @@ app.use((req, res, next) => {
 
 // ------------------------------------------ Login ----------------------------------
 app.post("/users/login", (req, res) => {
-  const { username, password, rememberMe } = req.body;
+  const { username, password, rememberMe, choi } = req.body;
 
-  const loginQuery = "SELECT * FROM users WHERE username = ? AND password = ?";
-  db.query(loginQuery, [username, password], (err, results) => {
+  let loginQuery, params;
+  if (choi === 1) {
+    loginQuery = "SELECT * FROM users WHERE username = ? AND password = ?";
+    params = [username, password];
+  } else if (choi === 2) {
+    loginQuery = "SELECT * FROM personnels WHERE ppr = ? AND password = ?";
+    params = [username, password];
+  } else {
+    return res.status(400).json({ error: "Invalid choi value" });
+  }
+
+  db.query(loginQuery, params, (err, results) => {
     if (err) {
-      console.error("Error performing login:", err);
       return res.status(500).json({ error: "Internal server error" });
     }
     if (results.length === 0) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+
     const user = results[0];
     const tokenExpiration = rememberMe ? "30d" : "1h";
-    const token = jwt.sign(
-      { username: user.username, type: user.type },
-      "your-secret-key",
-      { expiresIn: tokenExpiration }
-    );
+    const payload =
+      choi === 1
+        ? { username: user.username, type: user.type, id: user.id }
+        : { username: `${user.prenom}-${user.nom}`, type: 15, id: user.id };
+
+    const token = jwt.sign(payload, "your-secret-key", {
+      expiresIn: tokenExpiration,
+    });
+
     return res
       .status(200)
       .json({ message: "Login successful", "gestion-des-conges": token });
@@ -849,6 +863,28 @@ app.get("/users", (req, res) => {
     res.status(200).json(results);
   });
 });
+app.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+  SELECT * FROM users WHERE id = ?
+  `;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.error("Error fetching user:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.status(200).json(results[0]);
+  });
+});
 app.post("/users", (req, res) => {
   const { username, password, type, nom, prenom } = req.body;
   const createUserQuery = `
@@ -873,17 +909,17 @@ app.post("/users", (req, res) => {
     }
   );
 });
-app.put("/users/:username", (req, res) => {
-  const { username } = req.params;
-  const { password, type, nom, prenom } = req.body;
+app.put("/users/:id", (req, res) => {
+  const { id } = req.params;
+  const { username, password, type, nom, prenom } = req.body;
   const updateUserQuery = `
     UPDATE users
-    SET password = ?, type = ?, nom = ?, prenom = ?
-    WHERE username = ?
+    SET password = ?, type = ?, nom = ?, prenom = ?, username = ?
+    WHERE id = ?
   `;
   db.query(
     updateUserQuery,
-    [password, type, nom, prenom, username],
+    [password, type, nom, prenom, username, id],
     (err, result) => {
       if (err) {
         console.error("Error updating user:", err);
@@ -921,6 +957,6 @@ app.delete("/users/:id", (req, res) => {
 });
 
 // ------------------------------------------ API ------------------------------------
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(7766, "0.0.0.0", () => {
+  console.log("Server running on http://0.0.0.0:7766");
 });

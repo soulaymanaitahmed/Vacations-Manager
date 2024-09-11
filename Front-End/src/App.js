@@ -1,11 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
-import {
-  useNavigate,
-  useLocation,
-  useMatch,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { useNavigate, useLocation, Routes, Route } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
@@ -28,13 +22,13 @@ const Employees = lazy(() => import("./Pages/Employees"));
 const SingleEmployee = lazy(() => import("./Pages/SingleEmployee"));
 const Fsanitaire = lazy(() => import("./Pages/Fsanitaire"));
 const Vacations = lazy(() => import("./Pages/Vacations"));
+const Settings = lazy(() => import("./Pages/Settings"));
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const matchPersonnel = useMatch("/personnels/:id");
 
   useEffect(() => {
     const token = Cookies.get("gestion-des-conges");
@@ -63,6 +57,8 @@ function App() {
   const isActive = (path) => {
     return location.pathname.startsWith(path) ? "selected" : null;
   };
+
+  console.log(userInfo);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -159,7 +155,10 @@ function App() {
               <Route path="/grades" element={<Grades />} />
               <Route path="/formation-sanitaire" element={<Fsanitaire />} />
               <Route path="/vacances" element={<Vacations />} />
-              <Route path="/parametres" element={<div>Paramètres</div>} />
+              <Route
+                path="/parametres"
+                element={<Settings id={userInfo.id} type={userInfo.type} />}
+              />
             </Routes>
           </Suspense>
         </div>

@@ -22,7 +22,7 @@ function Users() {
   const [prenom, setPrenom] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [type, setType] = useState("rh");
+  const [type, setType] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -45,12 +45,17 @@ function Users() {
     );
   }, [searchTerm, users]);
 
-  const API_BASE_URL = "http://localhost:7766";
+  const getBaseURL = () => {
+    const { protocol, hostname } = window.location;
+    const port = 7766;
+    return `${protocol}//${hostname}:${port}`;
+  };
+  const baseURL = getBaseURL();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_BASE_URL}/users`, {
+      const response = await axios.post(`${baseURL}/users`, {
         nom,
         prenom,
         username,
@@ -74,15 +79,13 @@ function Users() {
   const handleUpdateUser = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(
-        `${API_BASE_URL}/users/${user.username}`,
-        {
-          nom,
-          prenom,
-          password,
-          type,
-        }
-      );
+      const response = await axios.put(`${baseURL}/users/${user.id}`, {
+        nom,
+        prenom,
+        username,
+        password,
+        type,
+      });
       console.log("User updated successfully:", response.data);
       fetchUsers();
       setAddUser(false);
@@ -99,7 +102,7 @@ function Users() {
 
   const handleDeleteUser = async (id) => {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/users/${id}`);
+      const response = await axios.delete(`${baseURL}/users/${id}`);
       console.log("User deleted successfully:", response.data);
       setAddUser(false);
       setUser(null);
@@ -115,7 +118,7 @@ function Users() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/users`, {
+      const response = await axios.get(`${baseURL}/users`, {
         params: {
           type: filter1 === "*" ? undefined : filter1,
         },
@@ -166,9 +169,12 @@ function Users() {
             required
           >
             <option value={"*"}>Tous</option>
-            <option value={"rh"}>RH</option>
-            <option value={"invité"}>Invité</option>
-            <option value={"admin"}>Admins</option>
+            <option value={10}>Invité</option>
+            <option value={1}>Bureau d'ordre</option>
+            <option value={2}>Chef archaic</option>
+            <option value={3}>Le délégué</option>
+            <option value={4}>RH</option>
+            <option value={20}>Admin</option>
           </select>
         </div>
         <button
@@ -252,11 +258,22 @@ function Users() {
                   >
                     Privileges :
                   </span>
-                  <span
-                    className="nn3"
-                    id={us.username === user?.username ? "active-card1" : ""}
-                  >
-                    {us.type}
+                  <span className="nn3">
+                    {us.type === 1
+                      ? "Bureau d'ordre"
+                      : us.type === 2
+                      ? "Chef archaic"
+                      : us.type === 3
+                      ? "Bureau d'ordre"
+                      : us.type === 4
+                      ? "Le délégué"
+                      : us.type === 5
+                      ? "RH"
+                      : us.type === 20
+                      ? "Admin"
+                      : us.type === 10
+                      ? "Invité"
+                      : us.type}
                   </span>
                 </div>
               </div>
@@ -356,9 +373,12 @@ function Users() {
                 onChange={(e) => setType(e.target.value)}
                 required
               >
-                <option value={"admin"}>Admin</option>
-                <option value={"invité"}>Invité</option>
-                <option value={"rh"}>RH</option>
+                <option value={10}>Invité</option>
+                <option value={1}>Bureau d'ordre</option>
+                <option value={2}>Chef archaic</option>
+                <option value={3}>Le délégué</option>
+                <option value={4}>RH</option>
+                <option value={20}>Admin</option>
               </select>
             </div>
             <div className="add-actions">
@@ -460,9 +480,12 @@ function Users() {
                 onChange={(e) => setType(e.target.value)}
                 required
               >
-                <option value={"admin"}>Admin</option>
-                <option value={"invité"}>Invité</option>
-                <option value={"rh"}>RH</option>
+                <option value={10}>Invité</option>
+                <option value={1}>Bureau d'ordre</option>
+                <option value={2}>Chef archaic</option>
+                <option value={3}>Le délégué</option>
+                <option value={4}>RH</option>
+                <option value={20}>Admin</option>
               </select>
             </div>
             <div className="add-actions">
