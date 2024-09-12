@@ -1,5 +1,11 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
-import { useNavigate, useLocation, Routes, Route } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
@@ -22,7 +28,17 @@ const Employees = lazy(() => import("./Pages/Employees"));
 const SingleEmployee = lazy(() => import("./Pages/SingleEmployee"));
 const Fsanitaire = lazy(() => import("./Pages/Fsanitaire"));
 const Vacations = lazy(() => import("./Pages/Vacations"));
+const VacationsMini = lazy(() => import("./Pages/VacationsMini"));
 const Settings = lazy(() => import("./Pages/Settings"));
+const NotAuth = lazy(() => import("./Pages/NotAuth"));
+const NotFound = lazy(() => import("./Pages/NotFound"));
+
+const ProtectedRoute = ({ children, allowedTypes, userType }) => {
+  if (!allowedTypes.includes(userType)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+  return children;
+};
 
 function App() {
   const navigate = useNavigate();
@@ -58,8 +74,6 @@ function App() {
     return location.pathname.startsWith(path) ? "selected" : null;
   };
 
-  console.log(userInfo);
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -73,22 +87,35 @@ function App() {
             <h4 className="logo-title">Délégation</h4>
           </div>
           <div className="navs">
-            <div
-              onClick={() => navigate("/dashboard")}
-              className="links1"
-              id={isActive("/dashboard")}
-            >
-              <MdSpaceDashboard className="nav_icon" />
-              <p className="nav-link">Dashboard</p>
-            </div>
-            <div
-              onClick={() => navigate("/personnels")}
-              className="links1"
-              id={isActive("/personnels")}
-            >
-              <FaUserDoctor className="nav_icon" />
-              <p className="nav-link">Personnels</p>
-            </div>
+            {userInfo.type_ac !== 15 && (
+              <div
+                onClick={() => navigate("/dashboard")}
+                className="links1"
+                id={isActive("/dashboard")}
+              >
+                <MdSpaceDashboard className="nav_icon" />
+                <p className="nav-link">Dashboard</p>
+              </div>
+            )}
+            {userInfo.type_ac === 15 ? (
+              <div
+                onClick={() => navigate(`/personnels/${userInfo.id}`)}
+                className="links1"
+                id={isActive("/personnels")}
+              >
+                <FaUserDoctor className="nav_icon" />
+                <p className="nav-link">Mes vacances</p>
+              </div>
+            ) : (
+              <div
+                onClick={() => navigate("/personnels")}
+                className="links1"
+                id={isActive("/personnels")}
+              >
+                <FaUserDoctor className="nav_icon" />
+                <p className="nav-link">Personnels</p>
+              </div>
+            )}
             <div
               onClick={() => navigate("/vacances")}
               className="links1"
@@ -97,36 +124,45 @@ function App() {
               <FaRegCalendarAlt className="nav_icon" />
               <p className="nav-link">Vacances</p>
             </div>
-            <div
-              onClick={() => navigate("/utilisateurs")}
-              className="links1"
-              id={isActive("/utilisateurs")}
-            >
-              <FaUsersGear className="nav_icon" />
-              <p className="nav-link">Utilisateurs</p>
-            </div>
-            <div
-              onClick={() => navigate("/grades")}
-              className="links1"
-              id={isActive("/grades")}
-            >
-              <FaGraduationCap className="nav_icon" />
-              <p className="nav-link">Grades</p>
-            </div>
-            <div
-              onClick={() => navigate("/formation-sanitaire")}
-              className="links1"
-              id={isActive("/formation-sanitaire")}
-            >
-              <HiMiniBuildingOffice2 className="nav_icon" />
-              <p className="nav-link">Formation Sanitaire</p>
-            </div>
+            {userInfo.type_ac === 20 && (
+              <>
+                <div
+                  onClick={() => navigate("/utilisateurs")}
+                  className="links1"
+                  id={isActive("/utilisateurs")}
+                >
+                  <FaUsersGear className="nav_icon" />
+                  <p className="nav-link">Utilisateurs</p>
+                </div>
+                <div
+                  onClick={() => navigate("/formation-sanitaire")}
+                  className="links1"
+                  id={isActive("/formation-sanitaire")}
+                >
+                  <HiMiniBuildingOffice2 className="nav_icon" />
+                  <p className="nav-link">Formation Sanitaire</p>
+                </div>
+                <div
+                  onClick={() => navigate("/grades")}
+                  className="links1"
+                  id={isActive("/grades")}
+                >
+                  <FaGraduationCap className="nav_icon" />
+                  <p className="nav-link">Grades</p>
+                </div>
+              </>
+            )}
           </div>
           {userInfo && (
             <div className="nav-user">
               <div className="nav-user-info">
                 <FaCircleUser className="nav-user-img" />
-                <p className="nav-user-name">{userInfo.username}</p>
+                <div className="kknhftb67">
+                  <p className="nav-user-name">{userInfo.username}</p>
+                  <p className="nav-user-564">
+                    {userInfo.type_ac === 15 ? "Personnel" : "Administratif"}
+                  </p>
+                </div>
               </div>
               <div className="nav-user-actions">
                 <div className="links1" id="selected2" onClick={Logout}>
@@ -148,17 +184,100 @@ function App() {
         <div className="main-container">
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>
-              <Route path="/dashboard" element={<div>Dashboard</div>} />
-              <Route path="/personnels" element={<Employees />} />
-              <Route path="/personnels/:id" element={<SingleEmployee />} />
-              <Route path="/utilisateurs" element={<Users />} />
-              <Route path="/grades" element={<Grades />} />
-              <Route path="/formation-sanitaire" element={<Fsanitaire />} />
-              <Route path="/vacances" element={<Vacations />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute
+                    allowedTypes={[20]}
+                    userType={userInfo.type_ac}
+                  >
+                    <div>Dashboard</div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/personnels"
+                element={
+                  <ProtectedRoute
+                    allowedTypes={[20]}
+                    userType={userInfo.type_ac}
+                  >
+                    <Employees />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/personnels/:id"
+                element={
+                  <ProtectedRoute
+                    allowedTypes={[15, 20]}
+                    userType={userInfo.type_ac}
+                  >
+                    <SingleEmployee type={userInfo.type_ac} />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/utilisateurs"
+                element={
+                  <ProtectedRoute
+                    allowedTypes={[20]}
+                    userType={userInfo.type_ac}
+                  >
+                    <Users />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/grades"
+                element={
+                  <ProtectedRoute
+                    allowedTypes={[20]}
+                    userType={userInfo.type_ac}
+                  >
+                    <Grades />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/formation-sanitaire"
+                element={
+                  <ProtectedRoute
+                    allowedTypes={[20]}
+                    userType={userInfo.type_ac}
+                  >
+                    <Fsanitaire />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/vacances"
+                element={
+                  <ProtectedRoute
+                    allowedTypes={[15, 20]}
+                    userType={userInfo.type_ac}
+                  >
+                    {userInfo.type_ac === 15 ? (
+                      <VacationsMini />
+                    ) : (
+                      <Vacations />
+                    )}
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/parametres"
-                element={<Settings id={userInfo.id} type={userInfo.type_ac} />}
+                element={
+                  <ProtectedRoute
+                    allowedTypes={[15, 20]}
+                    userType={userInfo.type_ac}
+                  >
+                    <Settings id={userInfo.id} type={userInfo.type_ac} />
+                  </ProtectedRoute>
+                }
               />
+              <Route path="/unauthorized" element={<NotAuth />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </div>

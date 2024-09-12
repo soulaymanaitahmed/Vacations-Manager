@@ -59,7 +59,7 @@ app.post("/users/login", (req, res) => {
     const payload =
       choi === 1
         ? { username: user.username, type_ac: user.type, id: user.id }
-        : { username: `${user.prenom}-${user.nom}`, type_ac: 15, id: user.id };
+        : { username: user.prenom, type_ac: 15, id: user.id };
 
     const token = jwt.sign(payload, "your-secret-key", {
       expiresIn: tokenExpiration,

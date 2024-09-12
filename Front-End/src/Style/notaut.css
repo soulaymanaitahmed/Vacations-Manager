@@ -1,0 +1,25 @@
+.not66 {
+  width: 100%;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+.desoalert {
+  font-size: 5rem;
+  color: #6a00bc;
+}
+.deso44 {
+  font-size: 1.1rem;
+  color: #4c0086;
+}
+.desoalert1 {
+  font-size: 8rem;
+  color: #bc004e;
+}
+.deso441 {
+  font-size: 1.1rem;
+  color: #860019;
+}

@@ -91,4 +91,6 @@
   position: absolute;
   color: #16114e;
   right: 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
 }

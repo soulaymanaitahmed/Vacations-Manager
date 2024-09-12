@@ -6,7 +6,6 @@ import "./Style/index.css";
 
 import LogIn from "./LogIn";
 import App from "./App";
-import VacationsMini from "./Pages/VacationsMini";
 
 const root = document.getElementById("root");
 
@@ -15,7 +14,6 @@ ReactDOM.render(
     <Routes>
       <Route path="/login" element={<LogIn />} />
       <Route path="/" element={<Navigate to="/personnels" replace />} />
-      <Route path="/test" element={<VacationsMini />} />
       <Route path="/*" element={<App />} />
     </Routes>
   </BrowserRouter>,

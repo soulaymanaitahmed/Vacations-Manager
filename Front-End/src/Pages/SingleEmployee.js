@@ -19,7 +19,8 @@ import { FaCheck } from "react-icons/fa";
 import VacationsMini from "./VacationsMini";
 import "../Style/employee.css";
 
-function SingleEmployee() {
+function SingleEmployee(props) {
+  const tp = props.type;
   const getBaseURL = () => {
     const { protocol, hostname } = window.location;
     const port = 7766;
@@ -438,14 +439,16 @@ function SingleEmployee() {
     <div className="personel">
       <div className="user-list-header">
         <div className="mokdfn6">
-          <button
-            className="back"
-            onClick={() => {
-              window.location.href = `/personnels`;
-            }}
-          >
-            ◀
-          </button>
+          {tp !== 15 ? (
+            <button
+              className="back"
+              onClick={() => {
+                window.location.href = `/personnels`;
+              }}
+            >
+              ◀
+            </button>
+          ) : null}
           <div className="jvghvj5">
             <h3 className="user-header" id="pers44">
               {person.prenom + " - " + person.nom}
@@ -476,21 +479,23 @@ function SingleEmployee() {
             ))}
           </select>
         </div>
-        <button
-          className="minidash33"
-          onClick={() => {
-            setAddVc2(true);
-          }}
-        >
-          Ajouter sold Annuel
-        </button>
+        {tp !== 15 ? (
+          <button
+            className="minidash33"
+            onClick={() => {
+              setAddVc2(true);
+            }}
+          >
+            Ajouter sold Annuel
+          </button>
+        ) : null}
         <button
           className="minidash33"
           onClick={() => {
             setAddVc(true);
           }}
         >
-          Nouveau congé <BiMessageSquareAdd className="add4564" />
+          Demande de congé <BiMessageSquareAdd className="add4564" />
         </button>
       </div>
       <br />
