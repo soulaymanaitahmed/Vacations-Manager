@@ -298,3 +298,24 @@
 .llpmo34 {
   color: #c57600;
 }
+.welco33 {
+  width: 100%;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.wel44 {
+  font-size: 1.8rem;
+  color: #0b314a;
+  font-weight: bold;
+}
+.wel55 {
+  font-size: 1.1rem;
+  color: #164863;
+}
+.tpact88 {
+  font-weight: bolder;
+  text-transform: uppercase;
+  color: #138076;
+}

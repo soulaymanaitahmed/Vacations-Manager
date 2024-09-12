@@ -32,6 +32,7 @@ const VacationsMini = lazy(() => import("./Pages/VacationsMini"));
 const Settings = lazy(() => import("./Pages/Settings"));
 const NotAuth = lazy(() => import("./Pages/NotAuth"));
 const NotFound = lazy(() => import("./Pages/NotFound"));
+const Dashboardd = lazy(() => import("./Pages/Dashboardd"));
 
 const ProtectedRoute = ({ children, allowedTypes, userType }) => {
   if (!allowedTypes.includes(userType)) {
@@ -77,6 +78,7 @@ function App() {
   if (loading) {
     return <div>Loading...</div>;
   }
+  console.log(userInfo);
 
   if (userInfo) {
     return (
@@ -160,7 +162,21 @@ function App() {
                 <div className="kknhftb67">
                   <p className="nav-user-name">{userInfo.username}</p>
                   <p className="nav-user-564">
-                    {userInfo.type_ac === 15 ? "Personnel" : "Administratif"}
+                    {userInfo.type_ac === 15
+                      ? "Personnel"
+                      : userInfo.type_ac === 1
+                      ? "Bureau d'ordre"
+                      : userInfo.type_ac === 2
+                      ? "Chef archaique"
+                      : userInfo.type_ac === 3
+                      ? "Délégué"
+                      : userInfo.type_ac === 4
+                      ? "RH"
+                      : userInfo.type_ac === 20
+                      ? "Administrateur"
+                      : userInfo.type_ac === 10
+                      ? "Invité"
+                      : "Inconnu"}
                   </p>
                 </div>
               </div>
@@ -188,10 +204,10 @@ function App() {
                 path="/dashboard"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[20]}
+                    allowedTypes={[20, 10, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
-                    <div>Dashboard</div>
+                    <Dashboardd type={userInfo.type_ac} />
                   </ProtectedRoute>
                 }
               />
@@ -199,7 +215,7 @@ function App() {
                 path="/personnels"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[20]}
+                    allowedTypes={[20, 10, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
                     <Employees />
@@ -210,7 +226,7 @@ function App() {
                 path="/personnels/:id"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[15, 20]}
+                    allowedTypes={[15, 20, 10, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
                     <SingleEmployee type={userInfo.type_ac} />
@@ -232,7 +248,7 @@ function App() {
                 path="/grades"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[20]}
+                    allowedTypes={[20, 4]}
                     userType={userInfo.type_ac}
                   >
                     <Grades />
@@ -243,7 +259,7 @@ function App() {
                 path="/formation-sanitaire"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[20]}
+                    allowedTypes={[20, 4]}
                     userType={userInfo.type_ac}
                   >
                     <Fsanitaire />
@@ -254,7 +270,7 @@ function App() {
                 path="/vacances"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[15, 20]}
+                    allowedTypes={[15, 20, 10, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
                     {userInfo.type_ac === 15 ? (
@@ -269,7 +285,7 @@ function App() {
                 path="/parametres"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[15, 20]}
+                    allowedTypes={[15, 20, 10, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
                     <Settings id={userInfo.id} type={userInfo.type_ac} />
@@ -277,6 +293,46 @@ function App() {
                 }
               />
               <Route path="/unauthorized" element={<NotAuth />} />
+              <Route
+                path="/"
+                element={
+                  <div className="welco33">
+                    <div className="welco-card">
+                      <h2 className="wel44">Bonjour {userInfo.username} !</h2>
+                      <br />
+                      {userInfo.type_ac === 15 ? (
+                        <p className="wel55">
+                          Ce compte est{" "}
+                          <span className="tpact88">Personnel</span>, vous
+                          pouvez demander des congés et vérifier vos demandes.
+                        </p>
+                      ) : (
+                        <p className="wel55">
+                          Ce compte est destiné aux
+                          <span className="tpact88"> administrateurs</span>,
+                          vous avez les privilèges de{" "}
+                          <span className="tpact88">
+                            {userInfo.type_ac === 1
+                              ? "Bureau d'ordre"
+                              : userInfo.type_ac === 2
+                              ? "Chef archaique"
+                              : userInfo.type_ac === 3
+                              ? "Délégué"
+                              : userInfo.type_ac === 4
+                              ? "RH"
+                              : userInfo.type_ac === 20
+                              ? "Administrateur"
+                              : userInfo.type_ac === 10
+                              ? "Invité"
+                              : "Inconnu"}
+                          </span>
+                          .
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                }
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

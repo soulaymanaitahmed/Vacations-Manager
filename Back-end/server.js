@@ -70,6 +70,58 @@ app.post("/users/login", (req, res) => {
       .json({ message: "Login successful", "gestion-des-conges": token });
   });
 });
+// ------------------------------------------ Vacations ----------------------------------
+app.get("/vacationstotal", (req, res) => {
+  const currentYear = parseInt(req.query.year);
+  const getVacationsQuery = `
+    SELECT type, COUNT(*) AS total
+    FROM conges
+    WHERE YEAR(start_at) = ?
+    GROUP BY type
+  `;
+
+  db.query(getVacationsQuery, [currentYear], (err, results) => {
+    if (err) {
+      console.error("Error fetching vacations:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+
+    const formattedResults = results.map((row) => ({ [row.type]: row.total }));
+    res.status(200).json(formattedResults);
+  });
+});
+app.get("/filteredVacations", (req, res) => {
+  const type = req.query.type;
+
+  const query = `
+  SELECT 
+    conges.*,
+    personnels.nom,
+    personnels.prenom,
+    grades.grade AS grade_name,
+    corps.corp AS corp_name,
+    corps.corp_nbr,
+    formation_sanitaires.formation_sanitaire,
+    types.type AS type_name
+  FROM conges
+  JOIN personnels ON conges.personnel_id = personnels.id
+  JOIN grades ON personnels.grade = grades.id
+  JOIN corps ON grades.corp_id = corps.id
+  LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
+  LEFT JOIN types ON conges.type = types.id
+  WHERE conges.decision <= ? AND conges.decision > ? - 2 OR conges.decision = ? + 20
+  `;
+
+  db.query(query, [type, type, type], (err, results) => {
+    if (err) {
+      console.error("Error fetching filtered vacations:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
 
 // ------------------------------------------ Vacations ----------------------------------
 app.post("/add-conge", (req, res) => {
@@ -170,7 +222,6 @@ app.get("/conge/:personnel_id", (req, res) => {
     res.json(results);
   });
 });
-
 app.put("/update-conge-cancel/:id", (req, res) => {
   const { id } = req.params;
 
@@ -358,7 +409,6 @@ app.post("/employees", (req, res) => {
     }
   );
 });
-
 app.get("/employees", (req, res) => {
   const { id } = req.query;
 

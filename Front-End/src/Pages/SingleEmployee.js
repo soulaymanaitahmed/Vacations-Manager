@@ -81,7 +81,7 @@ function SingleEmployee(props) {
     const yearTotals = {};
 
     congsAll.forEach((c) => {
-      if (c.type === 1 && c.cancel !== 2) {
+      if (c.type === 1 && c.cancel !== 2 && c.decision === 5) {
         if (c.year_1) {
           if (!yearTotals[c.year_1]) {
             yearTotals[c.year_1] = 0;
@@ -277,7 +277,7 @@ function SingleEmployee(props) {
     let totalDuration = 0;
 
     congsAll.forEach((c) => {
-      if (c.type === 2 && c.cancel !== 2) {
+      if (c.type === 2 && c.cancel !== 2 && c.decision === 5) {
         const itemYear = new Date(c.start_at).getFullYear();
         if (itemYear === currentYear) {
           const duration =
@@ -294,7 +294,7 @@ function SingleEmployee(props) {
     let totalDuration = 0;
 
     congsAll.forEach((c) => {
-      if (c.type === 3 && c.cancel !== 2) {
+      if (c.type === 3 && c.cancel !== 2 && c.decision === 5) {
         const itemYear = new Date(c.start_at).getFullYear();
         if (itemYear === currentYear) {
           const duration =
@@ -433,7 +433,7 @@ function SingleEmployee(props) {
     }
   }, [congsAll, filter2]);
 
-  console.log(congsAll);
+  console.log(sold);
 
   return (
     <div className="personel">
@@ -1055,38 +1055,38 @@ function SingleEmployee(props) {
                   </button>
                   <button disabled={singleConj.decision !== 4} className="sv1">
                     Ressources humaines{" "}
-                    {singleConj.decision > 4 && singleConj.decision !== 20 ? (
+                    {singleConj.decision > 4 && singleConj.decision < 20 ? (
                       <FaCheck className="nvbhtu55" />
                     ) : null}
                   </button>
                   <button disabled={singleConj.decision !== 3} className="sv1">
                     Le délégué{" "}
-                    {singleConj.decision > 3 && singleConj.decision !== 20 ? (
+                    {singleConj.decision > 3 && singleConj.decision < 20 ? (
                       <FaCheck className="nvbhtu55" />
                     ) : null}
                   </button>
                   <button disabled={singleConj.decision !== 2} className="sv1">
                     Chef archaic{" "}
-                    {singleConj.decision > 2 && singleConj.decision !== 20 ? (
+                    {singleConj.decision > 2 && singleConj.decision < 20 ? (
                       <FaCheck className="nvbhtu55" />
                     ) : null}
                   </button>
                   <button disabled={singleConj.decision !== 1} className="sv1">
                     Bureau d'ordre{" "}
-                    {singleConj.decision > 1 && singleConj.decision !== 20 ? (
+                    {singleConj.decision > 1 && singleConj.decision < 20 ? (
                       <FaCheck className="nvbhtu55" />
                     ) : null}
                   </button>
                   <hr />
                   <meter min="0" max="5" value={singleConj.decision}></meter>
                   <span>
-                    {singleConj.decision === 20
+                    {singleConj.decision > 20
                       ? "100"
                       : (singleConj.decision / 5) * 100}
                     %
                   </span>
                   <button
-                    disabled={singleConj.decision !== 20}
+                    disabled={singleConj.decision < 20}
                     className="sv1"
                     id="kklop55"
                   >
@@ -1300,7 +1300,7 @@ function SingleEmployee(props) {
                         ? "nn55"
                         : c.decision === 5 && c.cancel !== 2
                         ? "nn66"
-                        : c.decision === 20 && c.cancel !== 2
+                        : c.decision > 20 && c.cancel !== 2
                         ? "nn20"
                         : null
                     }
@@ -1319,7 +1319,7 @@ function SingleEmployee(props) {
                       ? "RH"
                       : c.decision === 5 && c.cancel !== 2
                       ? "Valider"
-                      : c.decision === 20 && c.cancel !== 2
+                      : c.decision > 20 && c.cancel !== 2
                       ? "Rejeter"
                       : c.decision}
                   </span>
