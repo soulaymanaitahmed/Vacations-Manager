@@ -433,7 +433,7 @@ function SingleEmployee(props) {
     }
   }, [congsAll, filter2]);
 
-  console.log(sold);
+  console.log(congsAll);
 
   return (
     <div className="personel">

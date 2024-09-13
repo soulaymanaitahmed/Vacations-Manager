@@ -70,6 +70,7 @@ app.post("/users/login", (req, res) => {
       .json({ message: "Login successful", "gestion-des-conges": token });
   });
 });
+
 // ------------------------------------------ Vacations ----------------------------------
 app.get("/vacationstotal", (req, res) => {
   const currentYear = parseInt(req.query.year);
@@ -94,26 +95,33 @@ app.get("/vacationstotal", (req, res) => {
 app.get("/filteredVacations", (req, res) => {
   const type = req.query.type;
 
-  const query = `
-  SELECT 
-    conges.*,
-    personnels.nom,
-    personnels.prenom,
-    grades.grade AS grade_name,
-    corps.corp AS corp_name,
-    corps.corp_nbr,
-    formation_sanitaires.formation_sanitaire,
-    types.type AS type_name
-  FROM conges
-  JOIN personnels ON conges.personnel_id = personnels.id
-  JOIN grades ON personnels.grade = grades.id
-  JOIN corps ON grades.corp_id = corps.id
-  LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
-  LEFT JOIN types ON conges.type = types.id
-  WHERE conges.decision <= ? AND conges.decision > ? - 2 OR conges.decision = ? + 20
+  let query = `
+    SELECT 
+      conges.*,
+      personnels.nom,
+      personnels.prenom,
+      grades.grade AS grade_name,
+      corps.corp AS corp_name,
+      corps.corp_nbr,
+      formation_sanitaires.formation_sanitaire,
+      types.type AS type_name
+    FROM conges
+    JOIN personnels ON conges.personnel_id = personnels.id
+    JOIN grades ON personnels.grade = grades.id
+    JOIN corps ON grades.corp_id = corps.id
+    LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
+    LEFT JOIN types ON conges.type = types.id
   `;
+  if (type !== "20") {
+    query += `
+      WHERE (conges.decision <= ? AND conges.decision > ? - 2) 
+      OR conges.decision = ? + 20
+    `;
+  }
 
-  db.query(query, [type, type, type], (err, results) => {
+  const queryParams = type !== "20" ? [type, type, type] : []; // Params for query
+
+  db.query(query, queryParams, (err, results) => {
     if (err) {
       console.error("Error fetching filtered vacations:", err);
       res.status(500).json({ error: "Internal server error" });

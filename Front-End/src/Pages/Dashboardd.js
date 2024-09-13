@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+// Dashboardd.js
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
-
+import { useReactToPrint } from "react-to-print";
+import PrintComponent from "./PrintComponent";
 import "../Style/dashboard.css";
 
 function Dashboardd(props) {
@@ -36,6 +38,7 @@ function Dashboardd(props) {
       console.error("Error fetching vacations:", error);
     }
   };
+
   const fetchRequests = async () => {
     try {
       const response = await axios.get(`${baseURL}/filteredVacations`, {
@@ -60,7 +63,19 @@ function Dashboardd(props) {
     return `${day}-${month}-${year}`;
   };
 
-  console.log(tpp);
+  const printRefs = useRef([]);
+
+  const handlePrint = useReactToPrint({
+    content: () => printRefs.current[printRefs.current.index],
+  });
+
+  const onPrintClick = useCallback(
+    (index) => {
+      printRefs.current.index = index;
+      handlePrint();
+    },
+    [handlePrint]
+  );
 
   return (
     <div className="dashboard">
@@ -80,60 +95,52 @@ function Dashboardd(props) {
       </div>
       <br />
       <br />
-      <div className="dash-lists">
-        <div className="dash-actions">
-          <div className="dash-names hd5468">
-            <span className="dsh876 dsh11">
-              <input id="checkbox" type="checkbox" />
-            </span>
-            <span className="dsh876 dsh12">Nom</span>
-            <span className="dsh876 dsh13">Type</span>
-            <span className="dsh876 dsh14">Durée</span>
-            <span className="dsh876 dsh15">Du</span>
-            <span className="dsh876 dsh16">Au</span>
-          </div>
-          {requests.map((r) => {
-            return (
-              <div className="dash-names childs44">
-                <span className="dsh8764 dsh11">
-                  {r.decision === tpp ? (
-                    <span className="val-dsh55">✔</span>
-                  ) : r.decision === 20 + tpp ? (
-                    <span className="val-dsh555">✖</span>
-                  ) : (
-                    <input id="checkbox" type="checkbox" />
-                  )}
-                </span>
-                <span className="dsh8764 dsh12">
-                  {r.prenom + " - " + r.nom}
-                </span>
-                <span className="dsh8764 dsh13">
-                  {r.type === 1
-                    ? "Annuel"
-                    : r.type === 2
-                    ? "Exceptionnel"
-                    : r.type === 3
-                    ? "Aut d'absence"
-                    : r.type === 11
-                    ? "C-Maladie C"
-                    : r.type === 12
-                    ? "C-Maladie M"
-                    : r.type === 13
-                    ? "C-Maladie L"
-                    : "Else"}
-                </span>
-                <span className="dsh8764 dsh14">{r.total_duration}</span>
-                <span className="dsh8764 dsh15">{formatDate(r.start_at)}</span>
-                <span className="dsh8764 dsh16">{formatDate(r.end_at)}</span>
-              </div>
-            );
-          })}
-          <div className="actions-btn">
-            <button className="ddh-btn valdsh2">Rejeter</button>
-            <button className="ddh-btn valdsh1">Valider</button>
-          </div>
+      <div className="dash-actions">
+        <div className="dash-names hd5468">
+          <span className="dsh876 dsh11">
+            <input id="checkbox" type="checkbox" />
+          </span>
+          <span className="dsh876 dsh12">Nom</span>
+          <span className="dsh876 dsh13">Type</span>
+          <span className="dsh876 dsh14">Durée</span>
+          <span className="dsh876 dsh15">Du</span>
+          <span className="dsh876 dsh16">Au</span>
         </div>
-        <div className="dash-aout">Out</div>
+        {requests.map((r, index) => {
+          return (
+            <div key={r.id} className="dash-names childs44">
+              <span className="dsh8764 dsh11">
+                {r.decision === tpp ? (
+                  <span className="val-dsh55">✔</span>
+                ) : r.decision === 20 + tpp ? (
+                  <span className="val-dsh555">✖</span>
+                ) : tpp !== 20 && tpp !== 10 ? (
+                  <input id="checkbox" type="checkbox" />
+                ) : (
+                  "--"
+                )}
+              </span>
+              <span className="dsh8764 dsh12">{r.prenom + " - " + r.nom}</span>
+              <span className="dsh8764 dsh13">
+                {typeLabels[r.type] || "Else"}
+              </span>
+              <span className="dsh8764 dsh14">{r.total_duration}</span>
+              <span className="dsh8764 dsh15">{formatDate(r.start_at)}</span>
+              <span className="dsh8764 dsh16">{formatDate(r.end_at)}</span>
+              <button onClick={() => onPrintClick(index)}>Print</button>
+              <div style={{ display: "none" }}>
+                <PrintComponent
+                  ref={(el) => (printRefs.current[index] = el)}
+                  data={r}
+                />
+              </div>
+            </div>
+          );
+        })}
+        <div className="actions-btn">
+          <button className="ddh-btn valdsh2">Rejeter</button>
+          <button className="ddh-btn valdsh1">Valider</button>
+        </div>
       </div>
     </div>
   );
