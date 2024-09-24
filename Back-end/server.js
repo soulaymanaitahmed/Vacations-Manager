@@ -100,6 +100,8 @@ app.get("/filteredVacations", (req, res) => {
       conges.*,
       personnels.nom,
       personnels.prenom,
+      personnels.ppr,
+      personnels.phone,
       grades.grade AS grade_name,
       corps.corp AS corp_name,
       corps.corp_nbr,
@@ -347,7 +349,8 @@ app.delete("/vac/:id", (req, res) => {
 });
 // ------------------------------------------ Employees ----------------------------------
 app.post("/employees", (req, res) => {
-  const { nom, prenom, cin, ppr, phone, affec, type, gradeSel } = req.body;
+  const { nom, prenom, cin, ppr, phone, affec, type, gradeSel, dtRec, gan } =
+    req.body;
 
   const checkIfExistsQuery = `
     SELECT * FROM personnels 
@@ -397,12 +400,12 @@ app.post("/employees", (req, res) => {
       }
 
       const createEmployeeQuery = `
-      INSERT INTO personnels (nom, prenom, cin, ppr, phone, affectation, type, grade) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO personnels (nom, prenom, cin, ppr, phone, affectation, type, grade, date_affect, gander) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
       db.query(
         createEmployeeQuery,
-        [nom, prenom, cin, ppr, phone, affec, type, gradeSel],
+        [nom, prenom, cin, ppr, phone, affec, type, gradeSel, dtRec, gan],
         (err, result) => {
           if (err) {
             console.error("Error creating employee:", err);
@@ -484,7 +487,8 @@ app.get("/employee/:id", (req, res) => {
 });
 app.put("/employees/:id", (req, res) => {
   const { id } = req.params;
-  const { nom, prenom, cin, ppr, phone, affec, type, gradeSel } = req.body;
+  const { nom, prenom, cin, ppr, phone, affec, type, gradeSel, dtRec, gan } =
+    req.body;
 
   const checkIfExistsQuery = `
     SELECT * FROM personnels 
@@ -525,7 +529,7 @@ app.put("/employees/:id", (req, res) => {
 
     const updateEmployeeQuery = `
       UPDATE personnels 
-      SET nom = ?, prenom = ?, cin = ?, ppr = ?, phone = ?, affectation = ?, type = ?, grade = ? 
+      SET nom = ?, prenom = ?, cin = ?, ppr = ?, phone = ?, affectation = ?, type = ?, grade = ?, date_affect = ?, gander =?
       WHERE id = ?
     `;
     const queryParams = [
@@ -537,6 +541,8 @@ app.put("/employees/:id", (req, res) => {
       affec,
       type,
       gradeSel,
+      dtRec,
+      gan,
       id,
     ];
 

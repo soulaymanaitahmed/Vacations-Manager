@@ -36,6 +36,8 @@ function Employees() {
   const [type, setType] = useState("");
   const [corpSel, setCorpSel] = useState("");
   const [gradeSel, setGradeSel] = useState("");
+  const [dtRec, setDtRec] = useState("");
+  const [gan, setGan] = useState("");
 
   const [addPerson, setAddPerson] = useState(false);
 
@@ -148,6 +150,8 @@ function Employees() {
         affec,
         type,
         gradeSel,
+        dtRec,
+        gan,
       });
       console.log(response.data);
       setPrenom("");
@@ -159,6 +163,8 @@ function Employees() {
       setType("");
       setCorpSel("");
       setGradeSel("");
+      setDtRec("");
+      setGan("");
       setAddPerson(false);
       fetchEmployees();
       alert1("Nouvel employé ajouté avec succès!");
@@ -212,6 +218,8 @@ function Employees() {
         affec,
         type,
         gradeSel,
+        dtRec,
+        gan,
       });
       console.log("Employee updated:", response.data);
       setPrenom("");
@@ -223,6 +231,8 @@ function Employees() {
       setType("");
       setCorpSel("");
       setGradeSel("");
+      setGan("");
+      setDtRec("");
       setAddPerson(false);
       setPeronEditor(false);
       setPeronEdit(false);
@@ -273,6 +283,8 @@ function Employees() {
       setType("");
       setCorpSel("");
       setGradeSel("");
+      setDtRec("");
+      setGan("");
       setPeronEditor(false);
       setPeronEdit(false);
       setConf(false);
@@ -283,6 +295,8 @@ function Employees() {
       alert2("Erreur lors de la suppression de l'employé");
     }
   };
+
+  console.log(dtRec);
 
   return (
     <div className="employees">
@@ -401,6 +415,24 @@ function Employees() {
               </div>
               <div className="input-lab1">
                 <label className="ggv1" for="aff">
+                  Civilité
+                </label>
+                <select
+                  name="aff"
+                  className="person-input"
+                  value={gan}
+                  onChange={(e) => {
+                    setGan(e.target.value);
+                  }}
+                  required
+                >
+                  <option>---Civilité---</option>
+                  <option value={1}>Monsieur</option>
+                  <option value={2}>Mademoiselle & Madame</option>
+                </select>
+              </div>
+              <div className="input-lab1">
+                <label className="ggv1" for="aff">
                   Type
                 </label>
                 <select
@@ -444,6 +476,21 @@ function Employees() {
                     );
                   })}
                 </select>
+              </div>
+              <div className="input-lab1">
+                <label className="ggv1" for="nom">
+                  Date de recrutement
+                </label>
+                <input
+                  className="person-input"
+                  name="nom"
+                  type="date"
+                  value={dtRec}
+                  onChange={(e) => {
+                    setDtRec(e.target.value);
+                  }}
+                  required
+                />
               </div>
             </div>
             <div className="line11">
@@ -557,6 +604,8 @@ function Employees() {
                   setType("");
                   setCorpSel("");
                   setGradeSel("");
+                  setDtRec("");
+                  setGan("");
                 }}
               >
                 Annuler
@@ -588,6 +637,8 @@ function Employees() {
                       setType(peron.type);
                       setCorpSel(peron.corp_nbr);
                       setGradeSel(peron.grade);
+                      setGan(peron.gander);
+                      setDtRec(peron.date_affect.split("T")[0]);
                     }}
                     onDoubleClick={() => {
                       window.location.href = `/personnels/${peron?.id}`;
@@ -666,6 +717,8 @@ function Employees() {
                     setType("");
                     setCorpSel("");
                     setGradeSel("");
+                    setDtRec("");
+                    setGan("");
                     setPeronEditor(false);
                     setPeronEdit(false);
                   }}
@@ -707,6 +760,23 @@ function Employees() {
                     name="nom"
                     disabled={peronEditor ? false : true}
                   />
+                </div>
+                <div className="kklm6">
+                  <label className="mmpr22" htmlFor="civi">
+                    Civilité
+                  </label>
+                  <select
+                    name="civi"
+                    className="hhtb6"
+                    value={gan}
+                    onChange={(e) => {
+                      setGan(e.target.value);
+                    }}
+                    disabled={peronEditor ? false : true}
+                  >
+                    <option value={1}>Monsieur</option>
+                    <option value={2}>Mademoiselle & Madame</option>
+                  </select>
                 </div>
                 <div className="kklm6">
                   <label className="mmpr22" for="cin">
@@ -759,6 +829,22 @@ function Employees() {
                     minLength={10}
                     required
                     name="phone"
+                    disabled={peronEditor ? false : true}
+                  />
+                </div>
+                <div className="kklm6">
+                  <label className="mmpr22" for="dtrec">
+                    Date de recrutement
+                  </label>
+                  <input
+                    className="hhtb6"
+                    type="date"
+                    value={dtRec}
+                    onChange={(e) => {
+                      setDtRec(e.target.value);
+                    }}
+                    required
+                    name="dtrec"
                     disabled={peronEditor ? false : true}
                   />
                 </div>

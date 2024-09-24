@@ -340,15 +340,13 @@ function SingleEmployee(props) {
         end = calculateEndDate(startDate, duration, holids);
         setEndDate(end);
       } else if (subRadio1 === "2") {
-        const maxEndDate = new Date(currentYear, 11, 32);
+        const maxEndDate = new Date(currentYear, 11, 31);
         const adjustedDuration = Math.max(
           0,
           Math.floor((maxEndDate - start) / (1000 * 60 * 60 * 24)) + 1
         );
-
         end = new Date(start);
-        end.setDate(start.getDate() + Math.min(duration, adjustedDuration) - 1);
-
+        end.setDate(start.getDate() + Math.min(duration - 1, adjustedDuration));
         setEndDate(end.toISOString().split("T")[0]);
         setDuration(Math.min(duration, adjustedDuration));
       } else {

@@ -67,8 +67,6 @@ function Grades() {
       });
       console.log(response.data);
       setGradeExist(false);
-      setCorpSelect("");
-      setGrade("");
       fetchGrades();
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -146,6 +144,11 @@ function Grades() {
       </div>
       <br />
       <hr />
+      <br />
+      <p className="allr678">
+        Alerter, supprimer ou modifier l'un de ces éléments affectera
+        directement le profil du membre du personnel.
+      </p>
       <br />
       <div className="user-show1">
         <div className="grade-list">

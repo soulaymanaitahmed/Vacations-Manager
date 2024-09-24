@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 .header-print {
   width: 100%;
@@ -46,7 +46,92 @@
   font-size: 12px;
   font-weight: normal;
 }
+#silvergray {
+  color: #3a3a3a;
+}
 .deleg66 {
-  font-size: 16px;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
   color: #212121;
+}
+.dahir {
+  font-size: 16px;
+  width: 90%;
+}
+.datedem551 {
+  margin-left: 20px;
+}
+.adlgkj6 {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.kjgjskg667 {
+  width: 100%;
+}
+.maininfos78 {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.line56 {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 15px;
+}
+.hbgu7 {
+  width: 150px;
+  font-size: 17px;
+  font-weight: 400;
+  color: #212121;
+}
+.hbgu78 {
+  width: 60px;
+  font-size: 17px;
+  font-weight: 400;
+  color: #212121;
+}
+.hbg8 {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  width: fit-content;
+}
+#kkopu7 {
+  width: 60px;
+}
+.delgsign {
+  font-size: 16px;
+  font-weight: 500;
+  width: fit-content;
+  position: absolute;
+  right: 230px;
+  bottom: 160px;
+}
+.ampttg {
+  width: 90%;
+}
+.list55 {
+  margin-left: 15px;
+  font-size: 15px;
+  color: #0e0e0e;
+}
+.koyfbdg44 {
+  font-size: 16px;
+  text-decoration: underline;
+}
+.ft44 {
+  width: 100%;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #656565;
+}
+.print-logo2 {
+  margin-left: 15px;
 }
