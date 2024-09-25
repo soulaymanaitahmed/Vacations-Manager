@@ -1,4 +1,12 @@
-import { React, useMemo, useEffect, useState } from "react";
+import {
+  React,
+  useMemo,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
+import { useReactToPrint } from "react-to-print";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -11,11 +19,13 @@ import {
 } from "date-fns";
 
 import { BiMessageSquareAdd } from "react-icons/bi";
+import { MdLocalPrintshop } from "react-icons/md";
 import { MdOutlineCancel } from "react-icons/md";
 import { FaCalendarAlt } from "react-icons/fa";
-import { IoFilter } from "react-icons/io5";
+import { HiBellAlert } from "react-icons/hi2";
 import { FaCheck } from "react-icons/fa";
 
+import PrintComponent from "./PrintComponent";
 import VacationsMini from "./VacationsMini";
 import "../Style/employee.css";
 
@@ -253,6 +263,20 @@ function SingleEmployee(props) {
     }
   };
 
+  const updateSelectedRequest = async (des) => {
+    try {
+      await axios.put(`${baseURL}/updateRequest`, {
+        id: singleConj.id,
+        type: tp,
+        acc: des,
+      });
+      fetchCongeData();
+      setSingleConj(null);
+    } catch (error) {
+      console.error("Error updating request:", error);
+    }
+  };
+
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     const day = String(date.getDate()).padStart(2, "0");
@@ -310,6 +334,14 @@ function SingleEmployee(props) {
   for (let i = currentYear - 3; i <= currentYear; i++) {
     years.push(i);
   }
+
+  const printRefs = useRef(null);
+  const handlePrint = useReactToPrint({
+    content: () => printRefs.current,
+  });
+  const onPrintClick = useCallback(() => {
+    handlePrint();
+  }, [handlePrint]);
 
   useEffect(() => {
     setAddVc2(false);
@@ -430,8 +462,6 @@ function SingleEmployee(props) {
       setFilCongsAll(congsAll);
     }
   }, [congsAll, filter2]);
-
-  console.log(congsAll);
 
   return (
     <div className="personel">
@@ -1053,25 +1083,25 @@ function SingleEmployee(props) {
                   </button>
                   <button disabled={singleConj.decision !== 4} className="sv1">
                     Ressources humaines{" "}
-                    {singleConj.decision > 4 && singleConj.decision < 20 ? (
+                    {singleConj.decision >= 4 || singleConj.decision >= 24 ? (
                       <FaCheck className="nvbhtu55" />
                     ) : null}
                   </button>
                   <button disabled={singleConj.decision !== 3} className="sv1">
                     Le délégué{" "}
-                    {singleConj.decision > 3 && singleConj.decision < 20 ? (
+                    {singleConj.decision >= 3 || singleConj.decision >= 23 ? (
                       <FaCheck className="nvbhtu55" />
                     ) : null}
                   </button>
                   <button disabled={singleConj.decision !== 2} className="sv1">
                     Chef archaic{" "}
-                    {singleConj.decision > 2 && singleConj.decision < 20 ? (
+                    {singleConj.decision >= 2 || singleConj.decision >= 22 ? (
                       <FaCheck className="nvbhtu55" />
                     ) : null}
                   </button>
                   <button disabled={singleConj.decision !== 1} className="sv1">
                     Bureau d'ordre{" "}
-                    {singleConj.decision > 1 && singleConj.decision < 20 ? (
+                    {singleConj.decision >= 1 || singleConj.decision >= 21 ? (
                       <FaCheck className="nvbhtu55" />
                     ) : null}
                   </button>
@@ -1200,6 +1230,22 @@ function SingleEmployee(props) {
                       </span>
                     </div>
                   ) : null}
+                  {singleConj.decision === tp && singleConj.cancel !== 2 ? (
+                    <div className="actions-btn99">
+                      <button
+                        className="ddh-btn99 valdsh29"
+                        onClick={() => updateSelectedRequest(0)}
+                      >
+                        Rejeter
+                      </button>
+                      <button
+                        className="ddh-btn99 valdsh19"
+                        onClick={() => updateSelectedRequest(1)}
+                      >
+                        Valider
+                      </button>
+                    </div>
+                  ) : null}
                   {singleConj.cancel === 0 && singleConj.decision < 5 ? (
                     <div className="vvbu1" id="llpng55">
                       <button
@@ -1209,6 +1255,19 @@ function SingleEmployee(props) {
                         Annuler cette demande
                       </button>
                     </div>
+                  ) : null}
+                  {singleConj.decision === 5 ? (
+                    <>
+                      <button onClick={onPrintClick} className="printi678">
+                        <MdLocalPrintshop className="ptrb567" /> Print
+                      </button>
+                      <div style={{ display: "none" }}>
+                        <PrintComponent
+                          ref={(el) => (printRefs.current = el)}
+                          data={singleConj}
+                        />
+                      </div>
+                    </>
                   ) : null}
                 </div>
               </div>
@@ -1222,13 +1281,13 @@ function SingleEmployee(props) {
               Decision
             </div>
             <div className="suv-div44" id="S13">
-              Type <IoFilter className="gnjdtr55" />
+              Type
             </div>
             <div className="suv-div44" id="S14">
               Durée
             </div>
             <div className="suv-div44" id="S15">
-              Date de demande <IoFilter className="gnjdtr55" />
+              Date de demande
             </div>
             <div className="suv-div44" id="S16">
               Du
@@ -1271,13 +1330,13 @@ function SingleEmployee(props) {
                     : null
                 }
               >
-                <div className="suv-div44" id="S11">
+                <div
+                  className={c.cancel === 2 ? "suv-div44 can3425" : "suv-div44"}
+                  id="S11"
+                >
                   {c.id}
-                  {c.cancel === 2 ? (
-                    <span className="tgu44">
-                      &nbsp;&nbsp;
-                      <MdOutlineCancel className="cllb44" />
-                    </span>
+                  {c.cancel !== 2 && c.decision === tp ? (
+                    <HiBellAlert className="alr5467" />
                   ) : null}
                 </div>
                 <div className="suv-div44" id="S12">

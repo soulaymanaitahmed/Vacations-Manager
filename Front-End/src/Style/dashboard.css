@@ -67,18 +67,16 @@
   width: 100%;
   height: 35px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
 }
 .dsh876 {
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   border-right: 1px solid silver;
 }
 .dsh8764 {
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -89,7 +87,7 @@
   gap: 5px;
 }
 .dsh12 {
-  width: 30%;
+  width: 20%;
 }
 .dsh13 {
   width: 18%;
@@ -102,7 +100,10 @@
 }
 .dsh16 {
   width: 15%;
-  border-right: none;
+}
+.dsh17 {
+  width: 7%;
+  border: none;
 }
 .childs44 {
   font-size: 0.95rem;
@@ -132,6 +133,9 @@
   background-color: #399918;
   color: #fff;
 }
+.valdsh1:disabled {
+  background-color: #3899189b;
+}
 .valdsh2 {
   border: 2px solid silver;
 }
@@ -143,5 +147,20 @@
   color: #399918;
 }
 .val-dsh555 {
+  color: #c41e1e;
+  cursor: pointer;
+}
+.nodata {
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+  color: #2f9712;
+}
+.go-to44 {
+  font-size: 1.5rem;
+  color: #510970;
+  cursor: pointer;
+}
+.kkfdyj665 {
   color: #c41e1e;
 }

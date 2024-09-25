@@ -71,7 +71,7 @@ app.post("/users/login", (req, res) => {
   });
 });
 
-// ------------------------------------------ Vacations ----------------------------------
+// ------------------------------------------ Holidays ----------------------------------
 app.get("/vacationstotal", (req, res) => {
   const currentYear = parseInt(req.query.year);
   const getVacationsQuery = `
@@ -94,7 +94,6 @@ app.get("/vacationstotal", (req, res) => {
 });
 app.get("/filteredVacations", (req, res) => {
   const type = req.query.type;
-
   let query = `
     SELECT 
       conges.*,
@@ -102,6 +101,7 @@ app.get("/filteredVacations", (req, res) => {
       personnels.prenom,
       personnels.ppr,
       personnels.phone,
+      personnels.id AS per_id,
       grades.grade AS grade_name,
       corps.corp AS corp_name,
       corps.corp_nbr,
@@ -116,13 +116,11 @@ app.get("/filteredVacations", (req, res) => {
   `;
   if (type !== "20") {
     query += `
-      WHERE (conges.decision <= ? AND conges.decision > ? - 2) 
+      WHERE (conges.decision <= ? AND conges.decision > ? - 1) 
       OR conges.decision = ? + 20
     `;
   }
-
-  const queryParams = type !== "20" ? [type, type, type] : []; // Params for query
-
+  const queryParams = type !== "20" ? [type, type, type] : [];
   db.query(query, queryParams, (err, results) => {
     if (err) {
       console.error("Error fetching filtered vacations:", err);
@@ -130,6 +128,108 @@ app.get("/filteredVacations", (req, res) => {
       return;
     }
     res.status(200).json(results);
+  });
+});
+app.get("/vacation/:id", (req, res) => {
+  const vacationId = req.params.id;
+  let query = `
+    SELECT 
+      conges.*,
+      personnels.nom,
+      personnels.prenom,
+      personnels.ppr,
+      personnels.phone,
+      personnels.id AS per_id,
+      grades.grade AS grade_name,
+      corps.corp AS corp_name,
+      corps.corp_nbr,
+      formation_sanitaires.formation_sanitaire,
+      types.type AS type_name
+    FROM conges
+    JOIN personnels ON conges.personnel_id = personnels.id
+    JOIN grades ON personnels.grade = grades.id
+    JOIN corps ON grades.corp_id = corps.id
+    LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
+    LEFT JOIN types ON conges.type = types.id
+    WHERE conges.id = ?
+  `;
+  db.query(query, [vacationId], (err, result) => {
+    if (err) {
+      console.error("Error fetching vacation:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    if (result.length === 0) {
+      res.status(404).json({ error: "Vacation not found" });
+    } else {
+      res.status(200).json(result[0]); // Return only one result
+    }
+  });
+});
+app.put("/updateRequests", (req, res) => {
+  const { ids, type, acc } = req.body;
+
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: "Invalid ids" });
+  }
+  let query = "";
+  let queryParams = [];
+
+  if (acc === 0) {
+    query = `UPDATE conges SET decision = ? WHERE id IN (?)`;
+    queryParams = [20 + parseInt(type), ids];
+  } else if (acc === 1) {
+    query = `UPDATE conges SET decision = ? WHERE id IN (?)`;
+    queryParams = [parseInt(type) + 1, ids];
+  } else {
+    return res.status(400).json({ error: "Invalid acc value" });
+  }
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error("Error updating requests:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.status(200).json({ message: "Requests updated successfully" });
+  });
+});
+app.put("/updateRequest", (req, res) => {
+  const { id, type, acc } = req.body;
+  if (!id) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
+  let query = "";
+  let queryParams = [];
+  if (acc === 0) {
+    query = `UPDATE conges SET decision = ? WHERE id = ?`;
+    queryParams = [20 + parseInt(type), id];
+  } else if (acc === 1) {
+    query = `UPDATE conges SET decision = ? WHERE id = ?`;
+    queryParams = [parseInt(type) + 1, id];
+  } else {
+    return res.status(400).json({ error: "Invalid acc value" });
+  }
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error("Error updating request:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.status(200).json({ message: "Request updated successfully" });
+  });
+});
+
+app.put("/changeDecision", (req, res) => {
+  const { id, type } = req.body;
+  if (!id) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
+  const query = `UPDATE conges SET decision = ? WHERE id = ?`;
+  const queryParams = [type, id];
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error("Error updating decision:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.status(200).json({ message: "Decision updated successfully" });
   });
 });
 
@@ -148,13 +248,15 @@ app.post("/add-conge", (req, res) => {
     requestDate,
     justification,
   } = req.body;
+
   const checkOverlapSql = `
       SELECT * FROM conges
-      WHERE personnel_id = ? AND (
+      WHERE personnel_id = ? AND decision = 5 AND (
           (start_at <= ? AND end_at >= ?) OR
           (start_at <= ? AND end_at >= ?)
       )
   `;
+
   db.query(
     checkOverlapSql,
     [dd, endDate, startDate, startDate, endDate],
@@ -168,6 +270,7 @@ app.post("/add-conge", (req, res) => {
           .status(400)
           .send("Overlapping period with an existing conge");
       }
+
       const insertSql = `
           INSERT INTO conges (
               personnel_id, type, total_duration, year_1, duration_1, 
@@ -187,6 +290,7 @@ app.post("/add-conge", (req, res) => {
         requestDate,
         justification,
       ];
+
       db.query(insertSql, values, (err, result) => {
         if (err) {
           return res.status(500).send("Database error");
@@ -217,15 +321,32 @@ app.post("/add-sold", (req, res) => {
 app.get("/conge/:personnel_id", (req, res) => {
   const { personnel_id } = req.params;
 
-  const sql = `
-      SELECT * FROM conges
-      WHERE personnel_id = ?
-      ORDER BY id DESC
+  let query = `
+    SELECT 
+      conges.*,
+      personnels.nom,
+      personnels.prenom,
+      personnels.ppr,
+      personnels.phone,
+      personnels.id AS per_id,
+      grades.grade AS grade_name,
+      corps.corp AS corp_name,
+      corps.corp_nbr,
+      formation_sanitaires.formation_sanitaire,
+      types.type AS type_name
+    FROM conges
+    JOIN personnels ON conges.personnel_id = personnels.id
+    JOIN grades ON personnels.grade = grades.id
+    JOIN corps ON grades.corp_id = corps.id
+    LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
+    LEFT JOIN types ON conges.type = types.id
+    WHERE conges.personnel_id = ?
+    ORDER BY conges.demand_date DESC
   `;
 
   const queryParams = [personnel_id];
 
-  db.query(sql, queryParams, (err, results) => {
+  db.query(query, queryParams, (err, results) => {
     if (err) {
       return res.status(500).send("Database error");
     }

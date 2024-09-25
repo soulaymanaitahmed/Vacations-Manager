@@ -325,3 +325,20 @@
   color: #ae3a31;
   text-align: center;
 }
+.printi678 {
+  width: 130px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  border-radius: 5px;
+  border: 1px solid #0b314a;
+  box-sizing: border-box;
+  color: #0b314a;
+}
+.ptrb567 {
+  font-size: 1.2rem;
+}

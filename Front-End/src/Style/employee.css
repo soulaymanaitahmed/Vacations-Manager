@@ -827,6 +827,9 @@
   border-radius: 0;
   cursor: pointer;
 }
+.can3425 {
+  text-decoration: line-through;
+}
 .suv-div44 {
   height: 100%;
   display: flex;
@@ -898,7 +901,7 @@
 }
 
 .nn100 {
-  background-color: #c7253e;
+  background-color: #781766;
 }
 .nn11 {
   background-color: #05668dc0;
@@ -1131,9 +1134,13 @@
   height: 40px;
   font-size: 0.9rem;
   letter-spacing: 0.5px;
-  border: none;
+  border: 1px solid silver;
   border-radius: 5px;
-  background-color: #c63c51;
+  color: rgb(31, 31, 31);
+  transition: all 200ms;
+}
+.cncl55:hover {
+  background-color: #c7253e;
   color: #fff;
 }
 #llpng55 {
@@ -1172,4 +1179,44 @@
   box-sizing: border-box;
   padding: 2%;
   border-radius: 10px;
+}
+.edint-per {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  right: 5px;
+  top: 45px;
+  border-radius: 10px;
+  border: none;
+  cursor: help;
+}
+.inspectr-per {
+  font-size: 1.5rem;
+  color: #fff;
+}
+.actions-btn99 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+.ddh-btn99 {
+  width: 150px;
+  height: 35px;
+  border: none;
+  color: #fff;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+.valdsh29 {
+  background-color: #c7253e;
+}
+.valdsh19 {
+  background-color: #399918;
+  width: 200px;
+}
+.alr5467 {
+  color: #ff0026;
 }

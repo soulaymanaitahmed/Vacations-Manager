@@ -78,7 +78,6 @@ function App() {
   if (loading) {
     return <div>Loading...</div>;
   }
-  console.log(userInfo);
 
   if (userInfo) {
     return (

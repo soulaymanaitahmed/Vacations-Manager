@@ -1,16 +1,17 @@
-// Dashboardd.js
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { useReactToPrint } from "react-to-print";
 import PrintComponent from "./PrintComponent";
 import "../Style/dashboard.css";
 
+import { VscInspect } from "react-icons/vsc";
+
 function Dashboardd(props) {
   const tpp = props.type;
-  const currentYear = new Date().getFullYear();
 
-  const [totalEmployees, setTotalEmployees] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   const typeLabels = {
     1: "Annuel",
@@ -28,17 +29,6 @@ function Dashboardd(props) {
   };
   const baseURL = getBaseURL();
 
-  const fetchVacations = async () => {
-    try {
-      const response = await axios.get(`${baseURL}/vacationstotal`, {
-        params: { year: currentYear },
-      });
-      setTotalEmployees(response.data);
-    } catch (error) {
-      console.error("Error fetching vacations:", error);
-    }
-  };
-
   const fetchRequests = async () => {
     try {
       const response = await axios.get(`${baseURL}/filteredVacations`, {
@@ -51,7 +41,6 @@ function Dashboardd(props) {
   };
 
   useEffect(() => {
-    fetchVacations();
     fetchRequests();
   }, []);
 
@@ -64,11 +53,9 @@ function Dashboardd(props) {
   };
 
   const printRefs = useRef([]);
-
   const handlePrint = useReactToPrint({
     content: () => printRefs.current[printRefs.current.index],
   });
-
   const onPrintClick = useCallback(
     (index) => {
       printRefs.current.index = index;
@@ -77,45 +64,100 @@ function Dashboardd(props) {
     [handlePrint]
   );
 
+  const handleCheckboxChange = (id) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds((prevIds) =>
+        prevIds.filter((selectedId) => selectedId !== id)
+      );
+    } else {
+      setSelectedIds((prevIds) => [...prevIds, id]);
+    }
+  };
+
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+
+    if (!selectAll) {
+      const allIds = requests
+        .filter((r) => r.decision === tpp && r.cancel !== 2)
+        .map((r) => r.id);
+      setSelectedIds(allIds);
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const updateSelectedRequests = async (des) => {
+    try {
+      await axios.put(`${baseURL}/updateRequests`, {
+        ids: selectedIds,
+        type: tpp,
+        acc: des,
+      });
+      fetchRequests();
+      setSelectedIds([]);
+      setSelectAll(false);
+    } catch (error) {
+      console.error("Error updating requests:", error);
+    }
+  };
+
+  const changeDecision = async (idd) => {
+    try {
+      await axios.put(`${baseURL}/changeDecision`, {
+        id: idd,
+        type: tpp,
+      });
+      fetchRequests();
+      setSelectedIds([]);
+      setSelectAll(false);
+    } catch (error) {
+      console.error("Error changing decision:", error);
+    }
+  };
+
   return (
     <div className="dashboard">
-      <div className="dash-stats">
-        {totalEmployees.map((item, index) => {
-          const [type, total] = Object.entries(item)[0];
-          const formattedTotal = total.toString().padStart(2, "0");
-          const label = typeLabels[type] || "Else";
-
-          return (
-            <div key={index} className="dash-card77">
-              <span className="tit-dash1">{label}</span>
-              <span className="tit-dash2">{formattedTotal}</span>
-            </div>
-          );
-        })}
-      </div>
-      <br />
-      <br />
       <div className="dash-actions">
         <div className="dash-names hd5468">
-          <span className="dsh876 dsh11">
-            <input id="checkbox" type="checkbox" />
+          <span className="dsh8764 dsh11">
+            <input
+              id="selectAllCheckbox"
+              type="checkbox"
+              checked={selectAll}
+              onChange={handleSelectAll}
+            />
           </span>
-          <span className="dsh876 dsh12">Nom</span>
-          <span className="dsh876 dsh13">Type</span>
-          <span className="dsh876 dsh14">Durée</span>
-          <span className="dsh876 dsh15">Du</span>
-          <span className="dsh876 dsh16">Au</span>
+          <span className="dsh8764 dsh12">Nom</span>
+          <span className="dsh8764 dsh13">Type</span>
+          <span className="dsh8764 dsh14">Durée</span>
+          <span className="dsh8764 dsh15">Du</span>
+          <span className="dsh8764 dsh16">Au</span>
+          <span className="dsh8764 dsh17">Link</span>
         </div>
         {requests.map((r, index) => {
+          const isChecked = selectedIds.includes(r.id);
           return (
             <div key={r.id} className="dash-names childs44">
               <span className="dsh8764 dsh11">
-                {r.decision === tpp ? (
+                {r.cancel === 2 ? (
+                  <p className="kkfdyj665">Annuler</p>
+                ) : r.decision > tpp && r.decision < 10 ? (
                   <span className="val-dsh55">✔</span>
-                ) : r.decision === 20 + tpp ? (
-                  <span className="val-dsh555">✖</span>
-                ) : tpp !== 20 && tpp !== 10 ? (
-                  <input id="checkbox" type="checkbox" />
+                ) : r.decision >= 20 ? (
+                  <span
+                    className="val-dsh555"
+                    onClick={() => changeDecision(r.id)}
+                  >
+                    ✖
+                  </span>
+                ) : r.decision === tpp ? (
+                  <input
+                    id={`checkbox-${r.id}`}
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => handleCheckboxChange(r.id)}
+                  />
                 ) : (
                   "--"
                 )}
@@ -127,20 +169,50 @@ function Dashboardd(props) {
               <span className="dsh8764 dsh14">{r.total_duration}</span>
               <span className="dsh8764 dsh15">{formatDate(r.start_at)}</span>
               <span className="dsh8764 dsh16">{formatDate(r.end_at)}</span>
-              <button onClick={() => onPrintClick(index)}>Print</button>
-              <div style={{ display: "none" }}>
-                <PrintComponent
-                  ref={(el) => (printRefs.current[index] = el)}
-                  data={r}
+              <span className="dsh8764 dsh17">
+                <VscInspect
+                  className="go-to44"
+                  onClick={() => {
+                    window.location.href = `/personnels/${r.per_id}`;
+                  }}
                 />
-              </div>
+                {/* {r.decision === 5 ? (
+                  <>
+                    <button onClick={() => onPrintClick(index)}>Print</button>
+                    <div style={{ display: "none" }}>
+                      <PrintComponent
+                        ref={(el) => (printRefs.current[index] = el)}
+                        data={r}
+                      />
+                    </div>
+                  </>
+                ) : null} */}
+              </span>
             </div>
           );
         })}
-        <div className="actions-btn">
-          <button className="ddh-btn valdsh2">Rejeter</button>
-          <button className="ddh-btn valdsh1">Valider</button>
-        </div>
+        {requests.length > 0 ? (
+          <div className="actions-btn">
+            <button
+              className="ddh-btn valdsh2"
+              onClick={() => updateSelectedRequests(0)}
+              disabled={selectedIds.length === 0}
+            >
+              Rejeter
+            </button>
+            <button
+              className="ddh-btn valdsh1"
+              onClick={() => updateSelectedRequests(1)}
+              disabled={selectedIds.length === 0}
+            >
+              Valider
+            </button>
+          </div>
+        ) : (
+          <p className="nodata">
+            Il n'y a aucune demande pour vous en ce moment.
+          </p>
+        )}
       </div>
     </div>
   );

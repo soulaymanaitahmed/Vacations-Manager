@@ -8,6 +8,7 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 import { FaRegAddressCard } from "react-icons/fa6";
 import { IoSearchCircle } from "react-icons/io5";
 import { MdPersonAdd } from "react-icons/md";
+import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 import "../Style/employee.css";
@@ -624,22 +625,6 @@ function Employees() {
                 return (
                   <div
                     key={peron.id}
-                    onClick={() => {
-                      setPeronEdit(peron);
-                      setAddPerson(false);
-                      setPeronEditor(false);
-                      setPrenom(peron.prenom);
-                      setNom(peron.nom);
-                      setCin(peron.cin);
-                      setPpr(peron.ppr);
-                      setPhone(peron.phone);
-                      setAffect(peron.affectation);
-                      setType(peron.type);
-                      setCorpSel(peron.corp_nbr);
-                      setGradeSel(peron.grade);
-                      setGan(peron.gander);
-                      setDtRec(peron.date_affect.split("T")[0]);
-                    }}
                     onDoubleClick={() => {
                       window.location.href = `/personnels/${peron?.id}`;
                     }}
@@ -674,7 +659,36 @@ function Employees() {
                         ? "Para"
                         : "Unknown"}
                     </div>
-
+                    <button
+                      className="edint-per"
+                      id={
+                        peron.corp_nbr === 1
+                          ? "adm"
+                          : peron.corp_nbr === 2
+                          ? "med"
+                          : peron.corp_nbr === 3
+                          ? "par"
+                          : "nj8"
+                      }
+                      onClick={() => {
+                        setPeronEdit(peron);
+                        setAddPerson(false);
+                        setPeronEditor(false);
+                        setPrenom(peron.prenom);
+                        setNom(peron.nom);
+                        setCin(peron.cin);
+                        setPpr(peron.ppr);
+                        setPhone(peron.phone);
+                        setAffect(peron.affectation);
+                        setType(peron.type);
+                        setCorpSel(peron.corp_nbr);
+                        setGradeSel(peron.grade);
+                        setGan(peron.gander);
+                        setDtRec(peron.date_affect.split("T")[0]);
+                      }}
+                    >
+                      <FaUserEdit className="inspectr-per" />
+                    </button>
                     <h4 className="full-name">
                       {peron.prenom + " " + peron.nom}
                     </h4>
