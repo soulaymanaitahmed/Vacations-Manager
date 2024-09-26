@@ -216,7 +216,6 @@ app.put("/updateRequest", (req, res) => {
     res.status(200).json({ message: "Request updated successfully" });
   });
 });
-
 app.put("/changeDecision", (req, res) => {
   const { id, type } = req.body;
   if (!id) {

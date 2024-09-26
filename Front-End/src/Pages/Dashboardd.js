@@ -44,6 +44,16 @@ function Dashboardd(props) {
     fetchRequests();
   }, []);
 
+  useEffect(() => {
+    const selectableRequests = requests.filter(
+      (r) => r.decision === tpp && r.cancel !== 2
+    );
+    setSelectAll(
+      selectedIds.length === selectableRequests.length &&
+        selectableRequests.length > 0
+    );
+  }, [selectedIds, requests, tpp]);
+
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     const day = String(date.getDate()).padStart(2, "0");
@@ -65,25 +75,21 @@ function Dashboardd(props) {
   );
 
   const handleCheckboxChange = (id) => {
-    if (selectedIds.includes(id)) {
-      setSelectedIds((prevIds) =>
-        prevIds.filter((selectedId) => selectedId !== id)
-      );
-    } else {
-      setSelectedIds((prevIds) => [...prevIds, id]);
-    }
+    setSelectedIds((prevIds) =>
+      prevIds.includes(id)
+        ? prevIds.filter((selectedId) => selectedId !== id)
+        : [...prevIds, id]
+    );
   };
 
   const handleSelectAll = () => {
-    setSelectAll(!selectAll);
-
-    if (!selectAll) {
-      const allIds = requests
-        .filter((r) => r.decision === tpp && r.cancel !== 2)
-        .map((r) => r.id);
-      setSelectedIds(allIds);
-    } else {
+    const selectableRequests = requests.filter(
+      (r) => r.decision === tpp && r.cancel !== 2
+    );
+    if (selectAll) {
       setSelectedIds([]);
+    } else {
+      setSelectedIds(selectableRequests.map((r) => r.id));
     }
   };
 

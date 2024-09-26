@@ -185,18 +185,25 @@ function SingleEmployee(props) {
 
   const addConge = async (e) => {
     e.preventDefault();
-    const type = radio1 === "1" ? subRadio1 : subRadio2;
+    let type = radio1 === "1" ? subRadio1 : subRadio2;
+    let durationValue = duration;
+    if (radio1 === "3") {
+      durationValue = 98;
+      type = 21;
+    } else if (radio1 === "4") {
+      durationValue = 15;
+      type = 22;
+    }
     const year_1 = subRadio1 === "1" ? year : currentYear;
     const year_2 = check1 ? secondYear : null;
     const duration_2 = check1 ? secondDuration : null;
     const justificationValue = radio1 === "2" ? justification : null;
-
     const data = {
       dd,
       type,
       total,
       year_1,
-      duration_1: duration,
+      duration_1: durationValue,
       year_2,
       duration_2,
       startDate,
@@ -204,7 +211,6 @@ function SingleEmployee(props) {
       requestDate,
       justification: justificationValue,
     };
-
     try {
       const response = await axios.post(`${baseURL}/add-conge`, data);
       console.log("Conge record inserted successfully:", response.data);
@@ -331,7 +337,7 @@ function SingleEmployee(props) {
     return totalDuration;
   };
 
-  for (let i = currentYear - 3; i <= currentYear; i++) {
+  for (let i = currentYear; i >= currentYear - 3; i--) {
     years.push(i);
   }
 
@@ -386,6 +392,15 @@ function SingleEmployee(props) {
         end.setDate(start.getDate() + duration - 1);
         setEndDate(end.toISOString().split("T")[0]);
       }
+      if (radio1 === "3") {
+        end = new Date(start);
+        end.setDate(start.getDate() + 98 - 1);
+        setEndDate(end.toISOString().split("T")[0]);
+      } else if (radio1 === "4") {
+        end = new Date(start);
+        end.setDate(start.getDate() + 15 - 1);
+        setEndDate(end.toISOString().split("T")[0]);
+      }
     }
   }, [
     startDate,
@@ -396,6 +411,7 @@ function SingleEmployee(props) {
     secondDuration,
     secondYear,
     check1,
+    radio1, // Ensure radio1 is in dependency array
   ]);
 
   useEffect(() => {
@@ -453,9 +469,11 @@ function SingleEmployee(props) {
 
   useEffect(() => {
     if (congsAll.length > 0 || filter2 !== 20) {
-      const filteredConges = congsAll.filter(
-        (conge) => conge.year_1 === filter2 || conge.year_2 === filter2
-      );
+      const filteredConges = congsAll.filter((conge) => {
+        const startYear = new Date(conge.start_at).getFullYear();
+        const endYear = new Date(conge.end_at).getFullYear();
+        return startYear === filter2 || endYear === filter2;
+      });
       setFilCongsAll(filteredConges);
     }
     if (filter2 == 20) {
@@ -496,10 +514,12 @@ function SingleEmployee(props) {
           <select
             name="type"
             className="filter-priv"
-            value={filter1}
-            onChange={(e) => setFilter1(e.target.value)}
-            required
+            value={filter2}
+            onChange={(e) => {
+              setFilter2(Number(e.target.value));
+            }}
           >
+            <option value={20}>Toutes</option>
             {years.map((year) => (
               <option key={year} value={year}>
                 {year}
@@ -697,69 +717,106 @@ function SingleEmployee(props) {
                     </label>
                   </div>
                 ) : null}
+                {person.gander === 1 ? (
+                  <label className="label">
+                    <input
+                      value="3"
+                      name="value-radio"
+                      id="value-1"
+                      className="radio-input"
+                      type="radio"
+                      onChange={(e) => setRadio1(e.target.value)}
+                      checked={radio1 === "3"}
+                    />
+                    <div className="radio-design"></div>
+                    <div className="label-text">Congé de Maternité</div>
+                  </label>
+                ) : person.gander === 0 ? (
+                  <label className="label">
+                    <input
+                      value="4"
+                      name="value-radio"
+                      id="value-1"
+                      className="radio-input"
+                      type="radio"
+                      onChange={(e) => setRadio1(e.target.value)}
+                      checked={radio1 === "4"}
+                    />
+                    <div className="radio-design"></div>
+                    <div className="label-text">Congé de Paternité</div>
+                  </label>
+                ) : null}
               </div>
 
               {(radio1 === "1" && subRadio1) ||
-              (radio1 === "2" && subRadio2) ? (
+              (radio1 === "2" && subRadio2) ||
+              radio1 === "3" ||
+              radio1 === "4" ? (
                 <div className="insert-cong-new">
-                  <div className="group44">
-                    <div className="dfgkjkfdgdkf4">
-                      {subRadio1 === "1" ? (
-                        <div className="group44">
-                          <label className="lb-hh4">Année</label>
+                  {radio1 === "3" || radio1 === "4" ? null : (
+                    <div className="group44">
+                      <div className="dfgkjkfdgdkf4">
+                        {subRadio1 === "1" ? (
+                          <div className="group44">
+                            <label className="lb-hh4">Année</label>
+                            <input
+                              type="number"
+                              className="input-vc44"
+                              min={2020}
+                              max={2024}
+                              value={year}
+                              onChange={(e) => setYear(e.target.value)}
+                            />
+                          </div>
+                        ) : null}
+                        <div
+                          className="group44"
+                          id={
+                            subRadio1 === "2" ||
+                            subRadio1 === "3" ||
+                            radio1 === "2"
+                              ? "mmojg55"
+                              : null
+                          }
+                        >
+                          <button
+                            className="add-55"
+                            id="kkli55"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (duration >= 1) {
+                                setDuration(duration - 1);
+                              }
+                            }}
+                          >
+                            -
+                          </button>
+                          <label className="lb-hh4">Durée</label>
                           <input
                             type="number"
                             className="input-vc44"
-                            min={2020}
-                            max={2024}
-                            value={year}
-                            onChange={(e) => setYear(e.target.value)}
+                            id="kklo44"
+                            value={duration}
+                            onChange={(e) =>
+                              setDuration(e.target.valueAsNumber)
+                            }
                           />
+                          <button
+                            className="add-55"
+                            id="kkli66"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (total < maxi) {
+                                setDuration(duration + 1);
+                              }
+                            }}
+                          >
+                            +
+                          </button>
                         </div>
-                      ) : null}
-                      <div
-                        className="group44"
-                        id={
-                          subRadio1 === "2" || subRadio1 === "3"
-                            ? "mmojg55"
-                            : null
-                        }
-                      >
-                        <button
-                          className="add-55"
-                          id="kkli55"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            if (duration >= 1) {
-                              setDuration(duration - 1);
-                            }
-                          }}
-                        >
-                          -
-                        </button>
-                        <label className="lb-hh4">Durée</label>
-                        <input
-                          type="number"
-                          className="input-vc44"
-                          id="kklo44"
-                          value={duration}
-                          onChange={(e) => setDuration(e.target.valueAsNumber)}
-                        />
-                        <button
-                          className="add-55"
-                          id="kkli66"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            if (total < maxi) {
-                              setDuration(duration + 1);
-                            }
-                          }}
-                        >
-                          +
-                        </button>
                       </div>
                     </div>
-                  </div>
+                  )}
                   <div className="group44">
                     <label className="lb-hh4">Du</label>
                     <input
@@ -820,17 +877,21 @@ function SingleEmployee(props) {
                       />
                     </div>
                   </div>
-                  <div className="group44">
-                    <label className="lb-hh4">
-                      <label className="lb-hh4">Total</label>
-                    </label>
-                    <input
-                      id="tot44"
-                      className="input-vc44"
-                      value={total}
-                      disabled
-                    />
-                  </div>
+                  {radio1 === "3" || radio1 === "4" ? (
+                    <div className="group44"></div>
+                  ) : (
+                    <div className="group44">
+                      <label className="lb-hh4">
+                        <label className="lb-hh4">Total</label>
+                      </label>
+                      <input
+                        id="tot44"
+                        className="input-vc44"
+                        value={total}
+                        disabled
+                      />
+                    </div>
+                  )}
                   {radio1 === "2" ? (
                     <div className="group44">
                       <label className="lb-hh4">Justification</label>
@@ -1149,6 +1210,10 @@ function SingleEmployee(props) {
                             ? "vv5"
                             : singleConj.type === 13
                             ? "vv6"
+                            : singleConj.type === 21
+                            ? "vv7"
+                            : singleConj.type === 22
+                            ? "vv8"
                             : "vv10"
                         }
                         id="vv10"
@@ -1165,6 +1230,10 @@ function SingleEmployee(props) {
                           ? "Congé de Maladie M"
                           : singleConj.type === 13
                           ? "Congé de Maladie L"
+                          : singleConj.type === 21
+                          ? "Congé de Maternité"
+                          : singleConj.type === 22
+                          ? "Congé de Paternité"
                           : "Else"}
                       </span>
                     </span>
@@ -1296,20 +1365,7 @@ function SingleEmployee(props) {
               Au
             </div>
             <div className="suv-div44" id="S18">
-              <select
-                className="fil2"
-                value={filter2}
-                onChange={(e) => {
-                  setFilter2(Number(e.target.value));
-                }}
-              >
-                <option value={20}>Toutes</option>
-                {sold.map((yr) => (
-                  <option key={yr.year} value={yr.year}>
-                    {yr.year}
-                  </option>
-                ))}
-              </select>
+              Année
             </div>
           </div>
           {filCongsAll.map((c) => {
@@ -1396,6 +1452,10 @@ function SingleEmployee(props) {
                         ? "vv5"
                         : c.type === 13
                         ? "vv6"
+                        : c.type === 21
+                        ? "vv7"
+                        : c.type === 22
+                        ? "vv8"
                         : "vv10"
                     }
                     id="vv10"
@@ -1412,6 +1472,10 @@ function SingleEmployee(props) {
                       ? "Congé de Maladie M"
                       : c.type === 13
                       ? "Congé de Maladie L"
+                      : c.type === 21
+                      ? "Congé de Maternité"
+                      : c.type === 22
+                      ? "Congé de Paternité"
                       : "Else"}
                   </span>
                 </div>
