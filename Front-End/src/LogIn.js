@@ -73,7 +73,7 @@ const LoginPage = () => {
           <img className="logoimg77" alt="Logo IMG" src={logo1} width="80px" />
           <span className="bbrjdndt77">Délégation de santé ouarzazate</span>
         </div>
-        {choi == 0 ? (
+        {choi === 0 ? (
           <div className="choi77">
             <div
               className="sec11"

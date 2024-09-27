@@ -476,7 +476,7 @@ function SingleEmployee(props) {
       });
       setFilCongsAll(filteredConges);
     }
-    if (filter2 == 20) {
+    if (filter2 === 20) {
       setFilCongsAll(congsAll);
     }
   }, [congsAll, filter2]);
@@ -1399,7 +1399,7 @@ function SingleEmployee(props) {
                   <span
                     id="vv10"
                     className={
-                      c.cancel == 2
+                      c.cancel === 2
                         ? "nn100"
                         : c.decision === 0 && c.cancel !== 2
                         ? "nn11"
@@ -1418,7 +1418,7 @@ function SingleEmployee(props) {
                         : null
                     }
                   >
-                    {c.cancel == 2
+                    {c.cancel === 2
                       ? "Annuler"
                       : c.decision === 0 && c.cancel !== 2
                       ? "En attente"
