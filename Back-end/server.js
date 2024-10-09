@@ -130,6 +130,41 @@ app.get("/filteredVacations", (req, res) => {
     res.status(200).json(results);
   });
 });
+app.get("/filteredVacationsByDecision", (req, res) => {
+  const today = new Date().toISOString().split("T")[0];
+
+  const query = `
+    SELECT 
+      conges.*,
+      personnels.nom,
+      personnels.prenom,
+      personnels.ppr,
+      personnels.phone,
+      personnels.id AS per_id,
+      grades.grade AS grade_name,
+      corps.corp AS corp_name,
+      corps.corp_nbr,
+      formation_sanitaires.formation_sanitaire,
+      types.type AS type_name
+    FROM conges
+    JOIN personnels ON conges.personnel_id = personnels.id
+    JOIN grades ON personnels.grade = grades.id
+    JOIN corps ON grades.corp_id = corps.id
+    LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
+    LEFT JOIN types ON conges.type = types.id
+    WHERE conges.decision = 5
+    AND conges.end_at >= ?
+  `;
+
+  db.query(query, [today], (err, results) => {
+    if (err) {
+      console.error("Error fetching filtered vacations by decision:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
 app.get("/vacation/:id", (req, res) => {
   const vacationId = req.params.id;
   let query = `

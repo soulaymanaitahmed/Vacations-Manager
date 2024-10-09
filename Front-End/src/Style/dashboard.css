@@ -127,6 +127,9 @@
   letter-spacing: 1px;
   border-radius: 3px;
 }
+.ddh-btn:disabled {
+  cursor: default;
+}
 .valdsh1 {
   width: 250px;
   border: none;
@@ -142,6 +145,7 @@
 .hd5468 {
   color: #093450;
   font-weight: bold;
+  border-bottom: 1px solid #093450;
 }
 .val-dsh55 {
   color: #399918;
@@ -163,4 +167,32 @@
 }
 .kkfdyj665 {
   color: #c41e1e;
+}
+.req-list990 {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-height: 190px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 5px;
+}
+.req-list9900 {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.expand44 {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 35px;
+  height: 35px;
+  font-size: 1.3rem;
+  border: none;
+  border-radius: 50%;
+  background-color: #093450;
+  color: #fff;
 }

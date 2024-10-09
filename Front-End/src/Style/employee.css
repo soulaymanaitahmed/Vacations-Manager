@@ -793,6 +793,10 @@
   background-color: #0b314a;
   border: 0.5px solid #27374d76;
 }
+.minidash33:disabled {
+  background-color: #0b314a9b;
+  cursor: no-drop;
+}
 .add4564 {
   font-size: 1.3rem;
 }

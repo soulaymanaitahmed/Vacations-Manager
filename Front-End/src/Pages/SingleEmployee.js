@@ -87,6 +87,8 @@ function SingleEmployee(props) {
   const [exep, setExep] = useState(0);
   const [abs, setAbs] = useState(0);
 
+  const [noMore, setNoMore] = useState(false);
+
   const memoizedResult = useMemo(() => {
     const yearTotals = {};
 
@@ -342,6 +344,7 @@ function SingleEmployee(props) {
   }
 
   const printRefs = useRef(null);
+
   const handlePrint = useReactToPrint({
     content: () => printRefs.current,
   });
@@ -468,6 +471,18 @@ function SingleEmployee(props) {
   }, [congsAll]);
 
   useEffect(() => {
+    const today = new Date().toISOString();
+    const shouldSetNoMore = congsAll.some(
+      (cong) => cong.end_at >= today && cong.cancel !== 2 && cong.decision === 5
+    );
+    if (shouldSetNoMore) {
+      setNoMore(true);
+    } else {
+      setNoMore(false);
+    }
+  }, [congsAll]);
+
+  useEffect(() => {
     if (congsAll.length > 0 || filter2 !== 20) {
       const filteredConges = congsAll.filter((conge) => {
         const startYear = new Date(conge.start_at).getFullYear();
@@ -480,6 +495,8 @@ function SingleEmployee(props) {
       setFilCongsAll(congsAll);
     }
   }, [congsAll, filter2]);
+
+  console.log(congsAll);
 
   return (
     <div className="personel">
@@ -542,6 +559,7 @@ function SingleEmployee(props) {
           onClick={() => {
             setAddVc(true);
           }}
+          disabled={noMore}
         >
           Demande de congé <BiMessageSquareAdd className="add4564" />
         </button>

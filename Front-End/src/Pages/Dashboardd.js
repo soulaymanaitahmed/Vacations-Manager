@@ -10,8 +10,10 @@ function Dashboardd(props) {
   const tpp = props.type;
 
   const [requests, setRequests] = useState([]);
+  const [outEpl, setOutEpl] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [expand, setExpand] = useState(false);
 
   const typeLabels = {
     1: "Annuel",
@@ -39,9 +41,20 @@ function Dashboardd(props) {
       console.error("Error fetching requests:", error);
     }
   };
+  const fetchOutEmployees = async () => {
+    try {
+      const response = await axios.get(
+        `${baseURL}/filteredVacationsByDecision`
+      );
+      setOutEpl(response.data);
+    } catch (error) {
+      console.error("Error fetching Out employees:", error);
+    }
+  };
 
   useEffect(() => {
     fetchRequests();
+    fetchOutEmployees();
   }, []);
 
   useEffect(() => {
@@ -81,7 +94,6 @@ function Dashboardd(props) {
         : [...prevIds, id]
     );
   };
-
   const handleSelectAll = () => {
     const selectableRequests = requests.filter(
       (r) => r.decision === tpp && r.cancel !== 2
@@ -92,7 +104,6 @@ function Dashboardd(props) {
       setSelectedIds(selectableRequests.map((r) => r.id));
     }
   };
-
   const updateSelectedRequests = async (des) => {
     try {
       await axios.put(`${baseURL}/updateRequests`, {
@@ -107,7 +118,6 @@ function Dashboardd(props) {
       console.error("Error updating requests:", error);
     }
   };
-
   const changeDecision = async (idd) => {
     try {
       await axios.put(`${baseURL}/changeDecision`, {
@@ -141,48 +151,51 @@ function Dashboardd(props) {
           <span className="dsh8764 dsh16">Au</span>
           <span className="dsh8764 dsh17">Link</span>
         </div>
-        {requests.map((r, index) => {
-          const isChecked = selectedIds.includes(r.id);
-          return (
-            <div key={r.id} className="dash-names childs44">
-              <span className="dsh8764 dsh11">
-                {r.cancel === 2 ? (
-                  <p className="kkfdyj665">Annuler</p>
-                ) : r.decision > tpp && r.decision < 10 ? (
-                  <span className="val-dsh55">✔</span>
-                ) : r.decision >= 20 ? (
-                  <span
-                    className="val-dsh555"
-                    onClick={() => changeDecision(r.id)}
-                  >
-                    ✖
-                  </span>
-                ) : r.decision === tpp ? (
-                  <input
-                    id={`checkbox-${r.id}`}
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => handleCheckboxChange(r.id)}
+        <div className={expand ? "req-list9900" : "req-list990"}>
+          {requests.map((r, index) => {
+            const isChecked = selectedIds.includes(r.id);
+            return (
+              <div key={r.id} className="dash-names childs44">
+                <span className="dsh8764 dsh11">
+                  {r.cancel === 2 ? (
+                    <p className="kkfdyj665">Annuler</p>
+                  ) : r.decision > tpp && r.decision < 10 ? (
+                    <span className="val-dsh55">✔</span>
+                  ) : r.decision >= 20 ? (
+                    <span
+                      className="val-dsh555"
+                      onClick={() => changeDecision(r.id)}
+                    >
+                      ✖
+                    </span>
+                  ) : r.decision === tpp ? (
+                    <input
+                      id={`checkbox-${r.id}`}
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => handleCheckboxChange(r.id)}
+                    />
+                  ) : (
+                    "--"
+                  )}
+                </span>
+                <span className="dsh8764 dsh12">
+                  {r.prenom + " - " + r.nom}
+                </span>
+                <span className="dsh8764 dsh13">
+                  {typeLabels[r.type] || "Else"}
+                </span>
+                <span className="dsh8764 dsh14">{r.total_duration}</span>
+                <span className="dsh8764 dsh15">{formatDate(r.start_at)}</span>
+                <span className="dsh8764 dsh16">{formatDate(r.end_at)}</span>
+                <span className="dsh8764 dsh17">
+                  <VscInspect
+                    className="go-to44"
+                    onClick={() => {
+                      window.location.href = `/personnels/${r.per_id}`;
+                    }}
                   />
-                ) : (
-                  "--"
-                )}
-              </span>
-              <span className="dsh8764 dsh12">{r.prenom + " - " + r.nom}</span>
-              <span className="dsh8764 dsh13">
-                {typeLabels[r.type] || "Else"}
-              </span>
-              <span className="dsh8764 dsh14">{r.total_duration}</span>
-              <span className="dsh8764 dsh15">{formatDate(r.start_at)}</span>
-              <span className="dsh8764 dsh16">{formatDate(r.end_at)}</span>
-              <span className="dsh8764 dsh17">
-                <VscInspect
-                  className="go-to44"
-                  onClick={() => {
-                    window.location.href = `/personnels/${r.per_id}`;
-                  }}
-                />
-                {/* {r.decision === 5 ? (
+                  {/* {r.decision === 5 ? (
                   <>
                     <button onClick={() => onPrintClick(index)}>Print</button>
                     <div style={{ display: "none" }}>
@@ -193,10 +206,11 @@ function Dashboardd(props) {
                     </div>
                   </>
                 ) : null} */}
-              </span>
-            </div>
-          );
-        })}
+                </span>
+              </div>
+            );
+          })}
+        </div>
         {requests.length > 0 ? (
           <div className="actions-btn">
             <button
@@ -219,6 +233,11 @@ function Dashboardd(props) {
             Il n'y a aucune demande pour vous en ce moment.
           </p>
         )}
+        {requests && requests.length > 5 ? (
+          <button onClick={() => setExpand(!expand)} className="expand44">
+            {expand ? "≙" : "≚"}
+          </button>
+        ) : null}
       </div>
     </div>
   );
