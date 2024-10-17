@@ -26,6 +26,7 @@ import { HiBellAlert } from "react-icons/hi2";
 import { FaCheck } from "react-icons/fa";
 
 import PrintComponent from "./PrintComponent";
+import PrintComponent2 from "./PrintComponent2";
 import VacationsMini from "./VacationsMini";
 import "../Style/employee.css";
 
@@ -53,6 +54,7 @@ function SingleEmployee(props) {
   const [radio1, setRadio1] = useState("");
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(false);
+  const [check8, setCheck8] = useState(false);
 
   const [justification, setJustification] = useState(true);
 
@@ -352,6 +354,15 @@ function SingleEmployee(props) {
     handlePrint();
   }, [handlePrint]);
 
+  const printRefs1 = useRef(null);
+
+  const handlePrint1 = useReactToPrint({
+    content: () => printRefs1.current,
+  });
+  const onPrintClick1 = useCallback(() => {
+    handlePrint1();
+  }, [handlePrint1]);
+
   useEffect(() => {
     setAddVc2(false);
     setDuration(1);
@@ -360,6 +371,7 @@ function SingleEmployee(props) {
     setEndDate("");
     setCheck1(false);
     setCheck2(false);
+    setCheck8(false);
     setRadio1("");
     setSubRadio1("");
     setSubRadio2("");
@@ -458,6 +470,7 @@ function SingleEmployee(props) {
     setEndDate("");
     setCheck1(false);
     setCheck2(false);
+    setCheck8(false);
     setSecondDuration(1);
   }, [subRadio1, subRadio2, radio1]);
 
@@ -495,8 +508,6 @@ function SingleEmployee(props) {
       setFilCongsAll(congsAll);
     }
   }, [congsAll, filter2]);
-
-  console.log(congsAll);
 
   return (
     <div className="personel">
@@ -925,79 +936,103 @@ function SingleEmployee(props) {
                     </div>
                   ) : null}
                   {subRadio1 === "1" ? (
-                    <div className="group44">
-                      <div className="dfgkjkfdgdkf4">
-                        <div className="group44">
-                          <label className="lb-hh4">Deuxième année</label>
-                          <div className="kklfkd5">
+                    <>
+                      <div className="group44">
+                        <div className="dfgkjkfdgdkf4">
+                          <div className="group44">
+                            <label className="lb-hh4">Deuxième année</label>
+                            <div className="kklfkd5">
+                              <label>
+                                <input
+                                  type="checkbox"
+                                  className="input"
+                                  checked={check1}
+                                  onChange={(e) => setCheck1(e.target.checked)}
+                                  disabled={duration >= 22 ? true : false}
+                                />
+                                <span
+                                  className="custom-checkbox"
+                                  id={duration >= 22 ? null : "jjk4"}
+                                ></span>
+                              </label>
+                              <input
+                                type="number"
+                                className="input-vc44"
+                                min={2020}
+                                max={2024}
+                                value={secondYear}
+                                onChange={(e) =>
+                                  setSecondYear(Number(e.target.value))
+                                }
+                                disabled={!check1}
+                              />
+                            </div>
+                          </div>
+                          <div className="group44">
+                            <label className="lb-hh4">Durée</label>
+                            <button
+                              className="add-555"
+                              id={check1 ? "kkli55" : "kkli555"}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                if (secondDuration > 1) {
+                                  setSecondDuration(secondDuration - 1);
+                                }
+                              }}
+                            >
+                              -
+                            </button>
+                            <input
+                              type="number"
+                              className="input-vc44"
+                              id="kklo44"
+                              min={1}
+                              max={22}
+                              value={secondDuration}
+                              onChange={(e) =>
+                                setSecondDuration(e.target.valueAsNumber)
+                              }
+                              disabled={!check1}
+                            />
+                            <button
+                              className="add-555"
+                              id={check1 ? "kkli66" : "kkli666"}
+                              disabled={!check1}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                if (total < maxi) {
+                                  setSecondDuration(secondDuration + 1);
+                                }
+                              }}
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="group44"></div>
+                      <div className="group4444">
+                        <div className="kklfkd5">
+                          {subRadio1 === "1" ? (
                             <label>
                               <input
                                 type="checkbox"
                                 className="input"
-                                checked={check1}
-                                onChange={(e) => setCheck1(e.target.checked)}
-                                disabled={duration >= 22 ? true : false}
+                                checked={check8}
+                                onChange={(e) => setCheck8(e.target.checked)}
                               />
                               <span
                                 className="custom-checkbox"
-                                id={duration >= 22 ? null : "jjk4"}
+                                id="jjk4"
                               ></span>
                             </label>
-                            <input
-                              type="number"
-                              className="input-vc44"
-                              min={2020}
-                              max={2024}
-                              value={secondYear}
-                              onChange={(e) =>
-                                setSecondYear(Number(e.target.value))
-                              }
-                              disabled={!check1}
-                            />
-                          </div>
-                        </div>
-                        <div className="group44">
-                          <label className="lb-hh4">Durée</label>
-                          <button
-                            className="add-555"
-                            id={check1 ? "kkli55" : "kkli555"}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              if (secondDuration > 1) {
-                                setSecondDuration(secondDuration - 1);
-                              }
-                            }}
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            className="input-vc44"
-                            id="kklo44"
-                            min={1}
-                            max={22}
-                            value={secondDuration}
-                            onChange={(e) =>
-                              setSecondDuration(e.target.valueAsNumber)
-                            }
-                            disabled={!check1}
-                          />
-                          <button
-                            className="add-555"
-                            id={check1 ? "kkli66" : "kkli666"}
-                            disabled={!check1}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              if (total < maxi) {
-                                setSecondDuration(secondDuration + 1);
-                              }
-                            }}
-                          >
-                            +
-                          </button>
+                          ) : null}
+                          <label className="ham55">
+                            Avec autorisation de quitter le territoire
+                          </label>
                         </div>
                       </div>
-                    </div>
+                    </>
                   ) : (
                     <div className="group44"></div>
                   )}
@@ -1255,7 +1290,10 @@ function SingleEmployee(props) {
                           : "Else"}
                       </span>
                     </span>
-                    {!singleConj.justification ? (
+                    {!singleConj.justification &&
+                    (singleConj.type === 11 ||
+                      singleConj.type === 12 ||
+                      singleConj.type === 13) ? (
                       <span
                         className="bbklthk7"
                         id={
@@ -1270,6 +1308,24 @@ function SingleEmployee(props) {
                           ? "Justifier"
                           : singleConj.justification === 0
                           ? "Non justifier"
+                          : null}
+                      </span>
+                    ) : null}
+                    {singleConj.type === 1 ? (
+                      <span
+                        className="bbklthk7"
+                        id={
+                          singleConj.quitter === 1
+                            ? "hhj7"
+                            : singleConj.quitter === 0
+                            ? "hhj8"
+                            : null
+                        }
+                      >
+                        {singleConj.quitter === 1
+                          ? "Avec autorisation de quitter le territoire"
+                          : singleConj.quitter === 0
+                          ? "Sans autorisation de quitter le territoire"
                           : null}
                       </span>
                     ) : null}
@@ -1333,6 +1389,36 @@ function SingleEmployee(props) {
                       </button>
                     </div>
                   ) : null}
+                  {singleConj.decision < 5 &&
+                  singleConj.decision >= 0 &&
+                  singleConj.cancel === 0 ? (
+                    <>
+                      <button onClick={onPrintClick1} className="printi678">
+                        <MdLocalPrintshop className="ptrb567" /> Imprimer la
+                        demande
+                      </button>
+                      <div style={{ display: "none" }}>
+                        <PrintComponent2
+                          ref={(el) => (printRefs1.current = el)}
+                          data={singleConj}
+                          dt={person}
+                        />
+                      </div>
+                    </>
+                  ) : singleConj.decision === 5 ? (
+                    <>
+                      <button onClick={onPrintClick} className="printi678">
+                        <MdLocalPrintshop className="ptrb567" /> Imprimer la
+                        décision
+                      </button>
+                      <div style={{ display: "none" }}>
+                        <PrintComponent
+                          ref={(el) => (printRefs.current = el)}
+                          data={singleConj}
+                        />
+                      </div>
+                    </>
+                  ) : null}
                   {singleConj.cancel === 0 && singleConj.decision < 5 ? (
                     <div className="vvbu1" id="llpng55">
                       <button
@@ -1342,19 +1428,6 @@ function SingleEmployee(props) {
                         Annuler cette demande
                       </button>
                     </div>
-                  ) : null}
-                  {singleConj.decision === 5 ? (
-                    <>
-                      <button onClick={onPrintClick} className="printi678">
-                        <MdLocalPrintshop className="ptrb567" /> Print
-                      </button>
-                      <div style={{ display: "none" }}>
-                        <PrintComponent
-                          ref={(el) => (printRefs.current = el)}
-                          data={singleConj}
-                        />
-                      </div>
-                    </>
                   ) : null}
                 </div>
               </div>

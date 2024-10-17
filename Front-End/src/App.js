@@ -21,6 +21,7 @@ import { FaUsersGear } from "react-icons/fa6";
 
 import logo from "./Images/bg1.png";
 import "./Style/app.css";
+import settings from "./Settings.json";
 
 const Users = lazy(() => import("./Pages/Users"));
 const Grades = lazy(() => import("./Pages/Grades"));
@@ -85,7 +86,7 @@ function App() {
         <div className="navigation">
           <div className="logos">
             <img src={logo} alt="App-logo" width="60px" className="img-logo" />
-            <h4 className="logo-title">Délégation</h4>
+            <h4 className="logo-title">{settings.etablissement}</h4>
           </div>
           <div className="navs">
             {userInfo.type_ac !== 15 && (

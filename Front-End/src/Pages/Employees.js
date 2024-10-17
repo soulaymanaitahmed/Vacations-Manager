@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 import axios from "axios";
 
 import toast, { Toaster } from "react-hot-toast";
@@ -11,6 +11,8 @@ import { MdPersonAdd } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
+import PrintComponent3 from "./PrintComponent3";
+
 import "../Style/employee.css";
 
 function Employees() {
@@ -20,6 +22,15 @@ function Employees() {
     return `${protocol}//${hostname}:${port}`;
   };
   const baseURL = getBaseURL();
+
+  const printRefs = useRef(null);
+
+  const handlePrint = useReactToPrint({
+    content: () => printRefs.current,
+  });
+  const onPrintClick = useCallback(() => {
+    handlePrint();
+  }, [handlePrint]);
 
   const [filter1, setFilter1] = useState("*");
 
@@ -296,8 +307,6 @@ function Employees() {
       alert2("Erreur lors de la suppression de l'employé");
     }
   };
-
-  console.log(dtRec);
 
   return (
     <div className="employees">
@@ -693,12 +702,21 @@ function Employees() {
                       {peron.prenom + " " + peron.nom}
                     </h4>
                     <p className="grade33">{peron.grade_name}</p>
-                    <p className="grade33">
+                    <p className="grade33" id="kon77">
                       {peron.type_name + " - " + peron.formation_sanitaire}
                     </p>
                     <div className="ggv449">
                       <h5 className="cin66">CIN: {peron.cin}</h5>
                       <h5 className="ppr66">PPR: {peron.ppr}</h5>
+                    </div>
+                    <button onClick={onPrintClick} className="edint-5">
+                      Attestation de Travail
+                    </button>
+                    <div style={{ display: "none" }}>
+                      <PrintComponent3
+                        ref={(el) => (printRefs.current = el)}
+                        data={peron}
+                      />
                     </div>
                   </div>
                 );

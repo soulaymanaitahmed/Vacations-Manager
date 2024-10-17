@@ -2,6 +2,7 @@ import React from "react";
 import "../Style/print.css";
 import rm from "../Images/rm.png";
 import lg from "../Images/bg1.png";
+import settings from "../Settings.json";
 
 const PrintComponent = React.forwardRef(({ data }, ref) => {
   const typeLabels = {
@@ -17,7 +18,7 @@ const PrintComponent = React.forwardRef(({ data }, ref) => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    return `${day}/${month}/${year}`;
   };
   const formatMonthInFrench = (dateString) => {
     const date = new Date(dateString);
@@ -30,7 +31,7 @@ const PrintComponent = React.forwardRef(({ data }, ref) => {
         <div className="print-h1">
           Royaume du Maroc <br /> Ministère de la Santé <br /> et de la
           Protection sociale <br /> Direction Régionale de la Santé <br /> à la
-          Région Dràa-Tafilalet Délégation d'Ouarzazate
+          Région Dràa-Tafilalet <br /> Délégation d'Ouarzazate
         </div>
         <div className="print-h1">
           <img className="print-logo" src={rm} alt="Logo" width="25mm" />
@@ -48,8 +49,9 @@ const PrintComponent = React.forwardRef(({ data }, ref) => {
       <br />
       <br />
       <h4 className="deleg66">
-        Le Délégué du Ministère de la Santé et de la Protection Sociale <br /> à
-        la Province d'Ouarzazate
+        {settings.delegue_gender === 1 ? "Le Délégué," : "La Déléguée,"} du
+        Ministère de la Santé et de la Protection Sociale <br /> à la Province
+        d'Ouarzazate
       </h4>
       <br />
       <br />
@@ -63,9 +65,9 @@ const PrintComponent = React.forwardRef(({ data }, ref) => {
           ? "Administratif"
           : data.type >= 10 && data.type < 20
           ? "Congé de Maladie"
-          : data.type === 20
-          ? "Congé de Maternité"
           : data.type === 21
+          ? "Congé de Maternité"
+          : data.type === 22
           ? "Congé de Paternité"
           : null}{" "}
         <b> {typeLabels[data.type] || "Else"}</b>
@@ -90,19 +92,19 @@ const PrintComponent = React.forwardRef(({ data }, ref) => {
       <div className="maininfos78">
         <div className="line56">
           <p className="hbgu7">Nom et prénom : </p>
-          <p className="hbg8">{data.nom + " " + data.prenom}</p>
+          <p className="hbg84">{data.nom + " " + data.prenom}</p>
         </div>
         <div className="line56">
           <p className="hbgu7">PPR : </p>
-          <p className="hbg8">{data.ppr}</p>
+          <p className="hbg84">{data.ppr}</p>
         </div>
         <div className="line56">
           <p className="hbgu7">Grade : </p>
-          <p className="hbg8">{data.corp_name}</p>
+          <p className="hbg84">{data.corp_name}</p>
         </div>
         <div className="line56">
           <p className="hbgu7">Affectation : </p>
-          <p className="hbg8">{data.formation_sanitaire}</p>
+          <p className="hbg84">{data.formation_sanitaire}</p>
         </div>
       </div>
       <br />
@@ -125,7 +127,8 @@ const PrintComponent = React.forwardRef(({ data }, ref) => {
       <h4 className="delgsign">
         Ouarzazate le:
         <br />
-        Le Délégué Provincial
+        {settings.delegue_gender === 1 ? "Le Délégué," : "La Déléguée,"}{" "}
+        Provincial
       </h4>
       <br />
       <div className="ampttg">
@@ -134,7 +137,6 @@ const PrintComponent = React.forwardRef(({ data }, ref) => {
         <p className="list55">- L'intéressé;</p>
         <p className="list55">- Dossier;</p>
       </div>
-      <br />
       <br />
       <p className="ft44">
         Cité des Cadres - OUARZAZATE - Tél: 05 24 88 22 00/ 02 - Fax: 05 24 88

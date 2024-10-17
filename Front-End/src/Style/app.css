@@ -120,7 +120,7 @@
 }
 .main-container {
   width: 82%;
-  min-height: 95vh;
+  min-height: 96vh;
   background-color: #eeeeee;
   box-sizing: border-box;
   border-radius: 20px;
@@ -326,7 +326,7 @@
   text-align: center;
 }
 .printi678 {
-  width: 130px;
+  width: fit-content;
   height: 40px;
   display: flex;
   justify-content: center;
@@ -338,6 +338,8 @@
   border: 1px solid #0b314a;
   box-sizing: border-box;
   color: #0b314a;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 .ptrb567 {
   font-size: 1.2rem;

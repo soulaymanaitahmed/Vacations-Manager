@@ -5,6 +5,7 @@ import { MdVisibilityOff } from "react-icons/md";
 import { MdVisibility } from "react-icons/md";
 
 import "../Style/settings.css";
+import settings from "../Settings.json";
 
 function Settings(props) {
   const getBaseURL = () => {
@@ -17,6 +18,9 @@ function Settings(props) {
   const id = props.id;
   const type = props.type;
 
+  const [deleg, setDeleg] = useState("");
+  const [gen, setGen] = useState(1);
+  const [etab, setEtab] = useState("");
   const [employee, setEmployee] = useState([]);
 
   const [pass, setPass] = useState(false);
@@ -46,7 +50,11 @@ function Settings(props) {
     }
   }, []);
 
-  console.log(employee);
+  useEffect(() => {
+    setDeleg(settings.delegue);
+    setGen(settings.delegue_gender);
+    setEtab(settings.etablissement);
+  }, [settings]);
 
   return (
     <div className="settings">
@@ -61,42 +69,68 @@ function Settings(props) {
       </div>
       <div className="info88">
         {type !== 15 ? (
-          <>
-            <div className="line88">
-              <div className="line89">
-                <span className="typecomp88">Usernam</span>
+          <div className="line88">
+            <div className="line89">
+              <span className="typecomp88">Usernam</span>
+              <input
+                type="text"
+                value={employee.username}
+                className="input88"
+                disabled
+              />
+            </div>
+            <div className="line89">
+              <span className="typecomp88">Mot de passe</span>
+              <div className="vis88">
+                {pass ? (
+                  <MdVisibilityOff
+                    className="visib88"
+                    onClick={() => setPass(!pass)}
+                  />
+                ) : (
+                  <MdVisibility
+                    className="visib88"
+                    onClick={() => setPass(!pass)}
+                  />
+                )}
                 <input
-                  type="text"
-                  value={employee.username}
+                  type={pass ? "text" : "password"}
+                  value={employee.password}
                   className="input88"
+                  id="wi88"
                   disabled
                 />
               </div>
+            </div>
+          </div>
+        ) : null}
+        <br />
+        {type === 20 ? (
+          <div id="ghjtn33">
+            <div className="line88">
               <div className="line89">
-                <span className="typecomp88">Mot de passe</span>
+                <span className="typecomp88">Directeur / délégué(e)</span>
+                <input type="text" value={deleg} className="input88" disabled />
+              </div>
+              <div className="line89">
+                <span className="typecomp88">Etablissement</span>
                 <div className="vis88">
-                  {pass ? (
-                    <MdVisibilityOff
-                      className="visib88"
-                      onClick={() => setPass(!pass)}
-                    />
-                  ) : (
-                    <MdVisibility
-                      className="visib88"
-                      onClick={() => setPass(!pass)}
-                    />
-                  )}
                   <input
-                    type={pass ? "text" : "password"}
-                    value={employee.password}
+                    type="text"
+                    value={etab}
                     className="input88"
-                    id="wi88"
                     disabled
                   />
                 </div>
               </div>
             </div>
-          </>
+            <div className="line89">
+              <span className="typecomp88">Etablissement</span>
+              <div className="vis88">
+                <input type="text" value={etab} className="input88" disabled />
+              </div>
+            </div>
+          </div>
         ) : null}
       </div>
     </div>

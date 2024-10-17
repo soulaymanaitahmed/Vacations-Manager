@@ -3,7 +3,7 @@
   height: 297mm;
   box-sizing: border-box;
   overflow: hidden;
-  padding: 5%;
+  padding: 5mm;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -40,9 +40,19 @@
   position: relative;
   padding-bottom: 5px;
 }
+#hhjk88 {
+  font-size: 16px;
+}
 .n-con66 {
   position: absolute;
   left: 0;
+  font-size: 12px;
+  font-weight: normal;
+}
+.n-con661 {
+  position: absolute;
+  right: 25px;
+  bottom: 20px;
   font-size: 12px;
   font-weight: normal;
 }
@@ -70,36 +80,75 @@
   width: 100%;
 }
 .maininfos78 {
-  width: 80%;
+  width: 90%;
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+#kkng55 {
+  width: 90%;
 }
 .line56 {
   width: 100%;
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 15px;
 }
-.hbgu7 {
-  width: 150px;
+#dist55 {
+  justify-content: space-between;
+}
+.hbgu71 {
+  width: 40%;
   font-size: 17px;
   font-weight: 400;
   color: #212121;
 }
+.hbgu7 {
+  width: 25%;
+  font-size: 17px;
+  font-weight: 400;
+  color: #212121;
+}
+.hbgu76 {
+  font-size: 17px;
+  font-weight: 400;
+  color: #212121;
+  direction: rtl;
+  text-align: right;
+  width: 20%;
+}
 .hbgu78 {
-  width: 60px;
+  width: 40px;
   font-size: 17px;
   font-weight: 400;
   color: #212121;
 }
 .hbg8 {
+  width: 60%;
+  text-align: center;
   font-size: 17px;
-  font-weight: 500;
+  font-weight: bold;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  width: fit-content;
+}
+.hbg84 {
+  width: 60%;
+  font-size: 17px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.hhfhggt {
+  width: 60%;
+  font-size: 17px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+.hbg81 {
+  font-size: 17px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 #kkopu7 {
   width: 60px;
@@ -111,6 +160,12 @@
   position: absolute;
   right: 230px;
   bottom: 160px;
+}
+.delgsign44 {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  letter-spacing: 1px;
 }
 .ampttg {
   width: 90%;
@@ -124,20 +179,91 @@
   font-size: 16px;
   text-decoration: underline;
 }
+#ghj6 {
+  width: 90%;
+  justify-content: flex-start;
+}
 .ft44 {
+  position: absolute;
   width: 100%;
   font-size: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
   color: #656565;
+  bottom: 15px;
 }
 .print-logo2 {
   margin-left: 15px;
 }
-@media print {
-  .print55 {
-    page-break-after: avoid;
-    page-break-inside: avoid;
-  }
+.kknyi5 {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.agentsing {
+  width: 50%;
+  height: 20mm;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+}
+.sintitre {
+  width: 100%;
+  border-top: 1px solid rgba(192, 192, 192, 0.581);
+  text-align: center;
+}
+.hhfhggt {
+  width: 50%;
+  text-align: right;
+  font-size: 16px;
+}
+.hhfhggt1 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 25px;
+}
+.table55 {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tbgg {
+  width: 100%;
+  height: 30mm;
+  border: 1px solid silver;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.col1 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.cds {
+  width: 50%;
+  height: 8mm;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ececec;
+}
+#hhgv55 {
+  border-left: 1px solid silver;
+}
+.col2 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.cds1 {
+  width: 50%;
+  height: 22mm;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
