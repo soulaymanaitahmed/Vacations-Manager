@@ -9,9 +9,13 @@ import { VscDiffAdded } from "react-icons/vsc";
 
 const Vacations = () => {
   const getBaseURL = () => {
-    const { protocol, hostname } = window.location;
-    const port = 7766;
-    return `${protocol}//${hostname}:${port}`;
+    if (process.env.NODE_ENV === "development") {
+      const { protocol, hostname } = window.location;
+      const port = 7766;
+      return `${protocol}//${hostname}:${port}`;
+    } else {
+      return "https://your-backend-url.com";
+    }
   };
   const baseURL = getBaseURL();
 

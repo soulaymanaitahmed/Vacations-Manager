@@ -25,9 +25,13 @@ function Dashboardd(props) {
   };
 
   const getBaseURL = () => {
-    const { protocol, hostname } = window.location;
-    const port = 7766;
-    return `${protocol}//${hostname}:${port}`;
+    if (process.env.NODE_ENV === "development") {
+      const { protocol, hostname } = window.location;
+      const port = 7766;
+      return `${protocol}//${hostname}:${port}`;
+    } else {
+      return "https://your-backend-url.com";
+    }
   };
   const baseURL = getBaseURL();
 
@@ -192,7 +196,8 @@ function Dashboardd(props) {
                   <VscInspect
                     className="go-to44"
                     onClick={() => {
-                      window.location.href = `/personnels/${r.per_id}`;
+                      const oo = r.per_id * 45657;
+                      window.location.href = `/personnels/${oo}`;
                     }}
                   />
                   {/* {r.decision === 5 ? (

@@ -101,7 +101,10 @@ function App() {
             )}
             {userInfo.type_ac === 15 ? (
               <div
-                onClick={() => navigate(`/personnels/${userInfo.id}`)}
+                onClick={() => {
+                  const gg = userInfo.id * 45657;
+                  navigate(`/personnels/${gg}`);
+                }}
                 className="links1"
                 id={isActive("/personnels")}
               >

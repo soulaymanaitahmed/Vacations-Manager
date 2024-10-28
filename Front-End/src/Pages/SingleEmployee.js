@@ -32,15 +32,20 @@ import "../Style/employee.css";
 
 function SingleEmployee(props) {
   const tp = props.type;
+
   const getBaseURL = () => {
-    const { protocol, hostname } = window.location;
-    const port = 7766;
-    return `${protocol}//${hostname}:${port}`;
+    if (process.env.NODE_ENV === "development") {
+      const { protocol, hostname } = window.location;
+      const port = 7766;
+      return `${protocol}//${hostname}:${port}`;
+    } else {
+      return "https://your-backend-url.com";
+    }
   };
   const baseURL = getBaseURL();
 
   const { id } = useParams();
-  const dd = id;
+  const dd = id / 45657;
 
   const [cal, setCal] = useState(false);
 
@@ -202,6 +207,7 @@ function SingleEmployee(props) {
     const year_2 = check1 ? secondYear : null;
     const duration_2 = check1 ? secondDuration : null;
     const justificationValue = radio1 === "2" ? justification : null;
+    const quit = type === "1" ? check8 : 0;
     const data = {
       dd,
       type,
@@ -214,6 +220,7 @@ function SingleEmployee(props) {
       endDate,
       requestDate,
       justification: justificationValue,
+      quit,
     };
     try {
       const response = await axios.post(`${baseURL}/add-conge`, data);
@@ -438,18 +445,26 @@ function SingleEmployee(props) {
         setMaxi(10 - exep);
       }
       if (subRadio1 === "3") {
-        setMaxi(2 - abs);
+        setMaxi(3 - abs);
       }
     }
     if (radio1 === "2") {
       if (subRadio2 === "11") {
-        setMaxi(120);
+        setMaxi(90);
       }
       if (subRadio2 === "12") {
         setMaxi(1095);
       }
       if (subRadio2 === "13") {
         setMaxi(1825);
+      }
+      if (radio1 === "3") {
+        if (subRadio2 === "21") {
+          setMaxi(98);
+        }
+        if (subRadio2 === "22") {
+          setMaxi(15);
+        }
       }
     }
   }, [subRadio1, subRadio2, radio1]);
@@ -716,7 +731,7 @@ function SingleEmployee(props) {
                         checked={subRadio2 === "11"}
                       />
                       <div className="radio-design"></div>
-                      <div className="label-text">Court durée (120 max)</div>
+                      <div className="label-text">Court durée (90 max)</div>
                     </label>
                     <label className="label">
                       <input
@@ -1340,7 +1355,7 @@ function SingleEmployee(props) {
                     <span>
                       Au:{" "}
                       <span className="fos44">
-                        {formatDate(singleConj.start_at)}
+                        {formatDate(singleConj.end_at)}
                       </span>
                     </span>
                   </div>

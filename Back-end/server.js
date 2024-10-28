@@ -3,7 +3,6 @@ const express = require("express");
 const mysql = require("mysql");
 
 const app = express();
-const PORT = 7766;
 
 const db = mysql.createConnection({
   host: "localhost",
@@ -281,6 +280,7 @@ app.post("/add-conge", (req, res) => {
     endDate,
     requestDate,
     justification,
+    quit,
   } = req.body;
 
   const checkOverlapSql = `
@@ -308,8 +308,8 @@ app.post("/add-conge", (req, res) => {
       const insertSql = `
           INSERT INTO conges (
               personnel_id, type, total_duration, year_1, duration_1, 
-              year_2, duration_2, start_at, end_at, demand_date, justification
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              year_2, duration_2, start_at, end_at, demand_date, justification, quitter
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       const values = [
         dd,
@@ -323,6 +323,7 @@ app.post("/add-conge", (req, res) => {
         endDate,
         requestDate,
         justification,
+        quit,
       ];
 
       db.query(insertSql, values, (err, result) => {
@@ -1178,6 +1179,8 @@ app.delete("/users/:id", (req, res) => {
 });
 
 // ------------------------------------------ API ------------------------------------
+const PORT = process.env.PORT || 7766;
+
 app.listen(PORT, "0.0.0.0", () => {
-  console.log("Server running on http://0.0.0.0:7766");
+  console.log(`Server running on http://0.0.0.0:${PORT}`);
 });
