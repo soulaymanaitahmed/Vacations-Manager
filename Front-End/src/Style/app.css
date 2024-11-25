@@ -35,6 +35,7 @@
   background-color: #eaeaeacf;
   border-radius: 5px;
   padding: 2%;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 .logo-title {
   font-size: 1.25rem;
@@ -75,6 +76,7 @@
 #selected {
   background-color: #0b314a;
   color: white;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 .nav-user {
   width: 100%;
@@ -102,6 +104,8 @@
 .nav-user-img {
   font-size: 2.5rem;
   width: 20%;
+  border-radius: 50%;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 .kknhftb67 {
   width: 80%;
@@ -154,8 +158,8 @@
 .searcher1 {
   width: 180px;
   height: 35px;
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
   border: 0.5px solid #27374d76;
   font-size: 0.9rem;
   color: #27374d;
@@ -166,13 +170,14 @@
   cursor: pointer;
   width: 120px;
   height: 35px;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
   border: 0.5px solid #27374d76;
   font-size: 0.9rem;
   color: #27374d;
   box-sizing: border-box;
   padding-left: 10px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 .alert1 {
   width: 100%;
