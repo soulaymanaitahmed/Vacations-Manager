@@ -158,8 +158,8 @@ function Fsanitaire() {
       <hr />
       <br />
       <p className="allr678">
-        Alerter, supprimer ou modifier l'un de ces éléments affectera
-        directement le profil du membre du personnel.
+        Alerte! supprimer ou modifier l'un de ces éléments affectera directement
+        le profil du membre du personnel.
       </p>
       <br />
       <div className="user-show1">
