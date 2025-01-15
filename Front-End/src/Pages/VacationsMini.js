@@ -21,17 +21,52 @@ const Vacations = () => {
   const currentYear = new Date().getFullYear();
   const years = [];
 
+  const [filter1, setFilter1] = useState(currentYear);
+
+  const [year, setYear] = useState("");
+  const [dur, setDur] = useState("");
+  const [dur1, setDur1] = useState("");
+  const [nom, setNom] = useState("");
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+
+  const [year1, setYear1] = useState("");
+  const [dur2, setDur2] = useState("");
+  const [nom1, setNom1] = useState("");
+  const [start1, setStart1] = useState("");
+  const [end1, setEnd1] = useState("");
+
+  const [addvc, setAddvc] = useState(false);
+  const [editvc, setEditvc] = useState();
+
   useEffect(() => {
     fetchHolids();
-  }, []);
+    setYear(filter1);
+  }, [filter1]);
 
-  for (let i = currentYear - 3; i <= currentYear; i++) {
+  useEffect(() => {
+    if (start && end) {
+      const sDate = new Date(start);
+      const eDate = new Date(end);
+      const tt = eDate - sDate;
+      setDur(tt / 86400000 + 1);
+      setDur1(tt / 86400000 + 1);
+    }
+  }, [start, end]);
+
+  useEffect(() => {
+    if (start1 && end1) {
+      const sDate = new Date(start1);
+      const eDate = new Date(end1);
+      const tt = eDate - sDate;
+      setDur2(tt / 86400000 + 1);
+    }
+  }, [start1, end1]);
+
+  for (let i = currentYear - 3; i <= currentYear + 1; i++) {
     years.push(i);
   }
-  const months = Array.from(
-    { length: 12 },
-    (_, i) => new Date(currentYear, i, 1)
-  );
+  const months = Array.from({ length: 12 }, (_, i) => new Date(filter1, i, 1));
 
   const generateHolidayStyles = () => {
     const colors = [
@@ -88,7 +123,7 @@ const Vacations = () => {
   const fetchHolids = async () => {
     try {
       const response = await axios.get(`${baseURL}/vac`, {
-        params: { year: currentYear },
+        params: { year: filter1 },
       });
       setHo(response.data);
     } catch (error) {
@@ -127,8 +162,31 @@ const Vacations = () => {
           )
           .join("\n")}
       </style>
-      <div className="user-list-header">
-        <h3 className="user-header">Calendrier {currentYear}</h3>
+      <div className="user-list-header19">
+        <h3 className="user-header">Vacances</h3>
+        <div className="searcher">
+          <input
+            type="text"
+            id="servh1255"
+            placeholder="Search"
+            className="searcher1"
+            value={"Sélectionner l'année"}
+            disabled
+          />
+          <select
+            name="type"
+            className="filter-priv"
+            value={filter1}
+            onChange={(e) => setFilter1(e.target.value)}
+            required
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <br />
       <hr />
@@ -138,11 +196,13 @@ const Vacations = () => {
           <div className="vac-list">
             {ho.length > 0 ? (
               ho.map((vc) => {
+                // const holidayClass = `holiday-${vc.hname
+                //   .replace(/\s+/g, "-")
+                //   .toLowerCase()}`;
                 return (
                   <div
-                    className={`bnk1234 holiday-${vc.id}`}
+                    className={`bnk123 holiday-${vc.id}`}
                     style={holidayStyles[`holiday-${vc.id}`]}
-                    id="lllnhggh99999"
                   >
                     <h4 className="hklh12">{vc.hname}</h4>
                     <div className="vc1234">

@@ -320,17 +320,10 @@ const Vacations = () => {
               <label className="vc-lb">Durée</label>
               <input
                 className="vc-inp"
+                id="jjngh554"
                 type="number"
                 value={dur}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^\d+$/.test(value) || value === "") {
-                    setDur(value);
-                  }
-                }}
-                min={1}
-                max={999}
-                required
+                disabled
               />
             </div>
             <div className="add-vc33">
@@ -457,16 +450,11 @@ const Vacations = () => {
             <div className="add-vc33">
               <label className="vc-lb">Durée</label>
               <input
-                disabled={editorvc ? false : true}
                 className="vc-inp"
+                id="jjngh554"
                 type="number"
                 value={dur2}
-                onChange={(e) => {
-                  setDur2(e.target.value);
-                }}
-                min={1}
-                max={999}
-                required
+                disabled
               />
             </div>
             <div className="add-vc33">

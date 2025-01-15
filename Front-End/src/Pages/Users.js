@@ -129,7 +129,6 @@ function Users() {
       });
       setUsers(response.data);
       setFilteredUsers(response.data);
-      console.log(filter1);
     } catch (error) {
       console.error("Error fetching users:", error);
     }

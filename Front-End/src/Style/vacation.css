@@ -80,6 +80,7 @@ abbr {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(4, 1fr);
   gap: 10px;
+  justify-items: center;
 }
 .kklr5 {
   width: 100%;
@@ -168,7 +169,7 @@ abbr {
   border: 1px solid silver;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  border-bottom: 1px solid rgba(192, 192, 192, 0.336);
+  border-bottom: none;
   text-align: center;
   letter-spacing: 1px;
   text-decoration: underline;
@@ -245,4 +246,12 @@ abbr {
 #can-vc4sdds876 {
   background-color: #c63d2f;
   color: #fff;
+}
+.user-list-header19 {
+  width: 60%;
+  display: flex;
+  justify-content: space-between;
+}
+#jjngh554 {
+  width: 75%;
 }

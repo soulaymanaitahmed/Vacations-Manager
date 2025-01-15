@@ -84,7 +84,7 @@ const PrintComponent2 = React.forwardRef(({ data, dt }, ref) => {
           : "Madame la Déléguée,"}
         <br />
         Par le présente, je vous prie de bien vouloir m'acorder{" "}
-        <b>{data.duration}</b> jours de congé:
+        <b>{data.total_duration} jours </b> de congé:
       </p>
       <p className="dahir">
         <u>
@@ -112,7 +112,12 @@ const PrintComponent2 = React.forwardRef(({ data, dt }, ref) => {
       </p>
       <br />
       <p className="dahir">
-        Au titre de l'année : <b>{data.year_1}</b>
+        Au titre de l'année : <b>{data.year_1} </b>
+        {data.year_2 ? (
+          <span className="grt78">
+            ({data.duration_1}) <b>/</b> {data.year_2} ({data.duration_2})
+          </span>
+        ) : null}
       </p>
       <br />
       <div className="maininfos78" id="ghj6">

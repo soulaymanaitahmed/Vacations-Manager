@@ -807,7 +807,7 @@ function SingleEmployee(props) {
                               type="number"
                               className="input-vc44"
                               min={2020}
-                              max={2024}
+                              max={currentYear}
                               value={year}
                               onChange={(e) => setYear(e.target.value)}
                             />
@@ -974,7 +974,7 @@ function SingleEmployee(props) {
                                 type="number"
                                 className="input-vc44"
                                 min={2020}
-                                max={2024}
+                                max={currentYear - 1}
                                 value={secondYear}
                                 onChange={(e) =>
                                   setSecondYear(Number(e.target.value))
@@ -1474,9 +1474,10 @@ function SingleEmployee(props) {
               Année
             </div>
           </div>
-          {filCongsAll.map((c) => {
+          {filCongsAll.map((c, index) => {
             return (
               <div
+                key={index}
                 onClick={() => {
                   if (c.total_duration !== 0) {
                     setSingleConj(c);
