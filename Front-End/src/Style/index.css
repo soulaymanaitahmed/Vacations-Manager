@@ -27,3 +27,64 @@ button {
 *::-webkit-scrollbar-thumb:hover {
   background: #0b314a;
 }
+
+.confirm88 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  background-color: #0000003f;
+  z-index: 99;
+}
+.conf-card-99 {
+  width: 35rem;
+  height: 10rem;
+  background-color: #fff;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 2.5rem;
+  padding-bottom: 1.5rem;
+}
+.conf-text5 {
+  width: 100%;
+  text-align: center;
+  font-size: 1.05rem;
+}
+.conf-btn-77 {
+  width: 100%;
+  border-top: 1px solid silver;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4rem !important;
+}
+.cbtn5 {
+  width: 50%;
+  height: 2rem;
+  border: 1px solid silver;
+  border-top: none !important;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  font-size: 1rem;
+  font-weight: 100;
+  transition: all 300ms;
+}
+.cbtn5:hover {
+  background-color: #cecece;
+  color: #000;
+}
+.conf99 {
+  background-color: #e53535;
+  color: #fff;
+}
+.cancel99 {
+  background-color: #287c4b;
+  color: #fff;
+}

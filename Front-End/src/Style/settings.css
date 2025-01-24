@@ -50,53 +50,97 @@
 #type89 {
   background-color: #005c78;
 }
-.line88 {
+
+.main099 {
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 70px;
-}
-.line89 {
-  width: 40%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.input88 {
-  width: 300px;
-  box-sizing: border-box;
-  height: 40px;
-  padding-left: 20px;
-  padding-right: 20px;
-  border: 1px solid #16114e;
-  color: #16114e;
-  font-size: 0.97rem;
-  letter-spacing: 1px;
+  flex-direction: column;
   border-radius: 10px;
+  border: 1px solid silver;
+  box-sizing: border-box;
+  padding: 1rem;
 }
-.vis88 {
-  width: 70%;
-  height: 100%;
-  position: relative;
+.sub-lb099 {
+  width: 100%;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  height: 3rem;
+  border-bottom: 1px solid silver;
   display: flex;
+  justify-content: space-between;
   align-items: center;
 }
-#wi88 {
+.h099 {
   width: 100%;
-  padding-right: 45px;
+  display: flex;
+  justify-content: space-between;
+  height: 3rem;
 }
-.visib88 {
+.lb099 {
+  width: 45%;
+  height: 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+#lb099 {
+  width: 70%;
+}
+.hjbtu099 {
   position: absolute;
-  color: #16114e;
-  right: 15px;
-  font-size: 1.5rem;
+  right: 1rem;
   cursor: pointer;
 }
-#ghjtn33 {
+.inp099 {
+  width: 20rem;
+  height: 1.7rem;
   border: 1px solid silver;
-  border-radius: 10px;
+  border-radius: 5px;
+  padding-inline: 15px;
+}
+.inp099:disabled {
+  color: #000;
+}
+#lb099 {
+  width: 10rem;
+}
+.anct-099 {
+  display: flex;
+  gap: 2rem;
+}
+.act-o099 {
+  width: 7rem;
+  height: 2rem;
   box-sizing: border-box;
-  padding: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 7px;
+  border: 2px solid silver;
+}
+.mr099 {
+  margin-top: 3rem;
+}
+.mr088 {
+  margin-top: 1rem;
+}
+
+.lb099 label {
+  color: #313131;
+}
+.ed334 {
+  background-color: #005c78;
+  color: #fff;
+  border: none;
+}
+.kl334 {
+  background-color: #fff;
+}
+.rd334 {
+  background-color: #005c78;
+  color: #fff;
+  border: none;
 }

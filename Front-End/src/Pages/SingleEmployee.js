@@ -48,6 +48,7 @@ function SingleEmployee(props) {
   const dd = id / 45657;
 
   const [cal, setCal] = useState(false);
+  const [conf, setConf] = useState(false);
 
   const currentYear = new Date().getFullYear();
 
@@ -273,6 +274,7 @@ function SingleEmployee(props) {
   const cancel = async (id) => {
     try {
       const response = await axios.put(`${baseURL}/update-conge-cancel/${id}`);
+      setConf(false);
       fetchCongeData();
       setSingleConj(false);
     } catch (error) {
@@ -1189,6 +1191,27 @@ function SingleEmployee(props) {
         <div className="list-cong44">
           {singleConj ? (
             <div className="singleConj">
+              {conf ? (
+                <div className="confirm88">
+                  <div className="conf-card-99">
+                    <p className="conf-text5">Are you sure?</p>
+                    <div className="conf-btn-77">
+                      <button
+                        className="cbtn5 conf99"
+                        onClick={() => cancel(singleConj.id)}
+                      >
+                        Confirmer
+                      </button>
+                      <button
+                        className="cbtn5 cancel99"
+                        onClick={() => setConf(false)}
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
               <div className="cong-card44">
                 <button
                   className="lopph4"
@@ -1436,10 +1459,7 @@ function SingleEmployee(props) {
                   ) : null}
                   {singleConj.cancel === 0 && singleConj.decision < 5 ? (
                     <div className="vvbu1" id="llpng55">
-                      <button
-                        onClick={() => cancel(singleConj.id)}
-                        className="cncl55"
-                      >
+                      <button onClick={() => setConf(true)} className="cncl55">
                         Annuler cette demande
                       </button>
                     </div>

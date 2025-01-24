@@ -1,10 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "../Style/print.css";
 import rm from "../Images/rm.png";
 import lg from "../Images/bg1.png";
-import settings from "../Settings.json";
 
 const PrintComponent2 = React.forwardRef(({ data, dt }, ref) => {
+  const getBaseURL = () => {
+    if (process.env.NODE_ENV === "development") {
+      const { protocol, hostname } = window.location;
+      const port = 7766;
+      return `${protocol}//${hostname}:${port}`;
+    } else {
+      return "https://your-backend-url.com";
+    }
+  };
+  const baseURL = getBaseURL();
+  const [settings, setSettings] = useState({
+    delegue_gender: 1,
+    delegue: "",
+    etablissement: "",
+  });
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/settings`);
+      if (response.data.length > 0) {
+        setSettings(response.data[0]);
+      } else {
+        console.error("No settings found in response");
+      }
+    } catch (err) {
+      console.error("Error fetching settings:", err);
+    }
+  };
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     const day = String(date.getDate()).padStart(2, "0");

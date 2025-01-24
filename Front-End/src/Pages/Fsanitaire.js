@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 import { MdOutlineCancel } from "react-icons/md";
-import { MdDeleteOutline } from "react-icons/md";
+
+import { AiFillDelete } from "react-icons/ai";
 import { GiConfirmed } from "react-icons/gi";
 import { FiEdit } from "react-icons/fi";
 
@@ -242,7 +243,7 @@ function Fsanitaire() {
                     id="delete11"
                     onDoubleClick={() => deleteFSanitaire(item.id)}
                   >
-                    <MdDeleteOutline className="ft1" />
+                    <AiFillDelete className="ft1" />
                     Supprimer
                   </button>
                 )}
@@ -340,7 +341,7 @@ function Fsanitaire() {
                         deleteType(item.id);
                       }}
                     >
-                      <MdDeleteOutline className="ft1" />
+                      <AiFillDelete className="ft1" />
                       Supprimer
                     </button>
                   )}

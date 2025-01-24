@@ -11,6 +11,7 @@ import "../Style/users.css";
 function Users() {
   const [addUser, setAddUser] = useState(false);
   const [passVisible, setPassVisible] = useState(false);
+  const [conf, setConf] = useState(false);
 
   const [filter1, setFilter1] = useState("*");
   const [users, setUsers] = useState([]);
@@ -31,6 +32,7 @@ function Users() {
     setUsername(user?.username || "");
     setPassword(user?.password || "");
     setType(user?.type || "client");
+    setPassVisible(false);
   }, [user]);
 
   useEffect(() => {
@@ -108,6 +110,7 @@ function Users() {
     try {
       const response = await axios.delete(`${baseURL}/users/${id}`);
       console.log("User deleted successfully:", response.data);
+      setConf(false);
       setAddUser(false);
       setUser(null);
       fetchUsers();
@@ -152,6 +155,24 @@ function Users() {
 
   return (
     <div className="users-cont">
+      {conf == true && user ? (
+        <div className="confirm88">
+          <div className="conf-card-99">
+            <p className="conf-text5">Are you sure?</p>
+            <div className="conf-btn-77">
+              <button
+                className="cbtn5 conf99"
+                onClick={() => handleDeleteUser(user.id)}
+              >
+                Delete
+              </button>
+              <button className="cbtn5 cancel99" onClick={() => setConf(false)}>
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="user-list-header">
         <h3 className="user-header">Utilisateurs</h3>
         <div className="searcher">
@@ -496,7 +517,7 @@ function Users() {
               <div
                 className="add-btn-user2"
                 id="add-btn-id"
-                onClick={() => handleDeleteUser(user.id)}
+                onClick={() => setConf(true)}
               >
                 <MdDelete className="add-btn-delete" />
               </div>

@@ -1178,6 +1178,41 @@ app.delete("/users/:id", (req, res) => {
   });
 });
 
+// ------------------------------------------ Settings ---------------------------------
+app.get("/settings", (req, res) => {
+  const getAllTypesQuery = `SELECT * FROM infos`;
+  db.query(getAllTypesQuery, (err, results) => {
+    if (err) {
+      console.error("Error fetching settings:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).send(results);
+  });
+});
+app.put("/settings", (req, res) => {
+  const { delegue, delegue_gender, etablissement } = req.body;
+
+  const updateQuery = `
+    UPDATE infos
+    SET delegue = ?, delegue_gender = ?, etablissement = ?
+    WHERE id = 1
+  `;
+
+  db.query(
+    updateQuery,
+    [delegue, delegue_gender, etablissement],
+    (err, results) => {
+      if (err) {
+        console.error("Error updating settings:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+      res.status(200).send("Settings updated successfully.");
+    }
+  );
+});
+
 // ------------------------------------------ API ------------------------------------
 const PORT = process.env.PORT || 7766;
 
