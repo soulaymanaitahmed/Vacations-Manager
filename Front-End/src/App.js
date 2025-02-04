@@ -96,7 +96,7 @@ function App() {
                 id={isActive("/dashboard")}
               >
                 <MdSpaceDashboard className="nav_icon" />
-                <p className="nav-link">Dashboard</p>
+                <p className="nav-link">Les demandes</p>
               </div>
             )}
             {userInfo.type_ac === 15 ? (

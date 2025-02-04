@@ -10,18 +10,9 @@ import axios from "axios";
 import "./Style/login.css";
 import logo1 from "./Images/deleg-logo.png";
 
-const LoginPage = () => {
-  const getBaseURL = () => {
-    if (process.env.NODE_ENV === "development") {
-      const { protocol, hostname } = window.location;
-      const port = 7766;
-      return `${protocol}//${hostname}:${port}`;
-    } else {
-      return "https://your-backend-url.com";
-    }
-  };
-  const baseURL = getBaseURL();
+import { baseURL } from "./config";
 
+const LoginPage = () => {
   const [choi, setChoi] = useState(0);
   const [pass, setPass] = useState(false);
 

@@ -8,20 +8,11 @@ import { AiFillDelete } from "react-icons/ai";
 import { GiConfirmed } from "react-icons/gi";
 import { FiEdit } from "react-icons/fi";
 
+import { baseURL } from "../config";
+
 import "../Style/grades.css";
 
 function Grades() {
-  const getBaseURL = () => {
-    if (process.env.NODE_ENV === "development") {
-      const { protocol, hostname } = window.location;
-      const port = 7766;
-      return `${protocol}//${hostname}:${port}`;
-    } else {
-      return "https://your-backend-url.com";
-    }
-  };
-  const baseURL = getBaseURL();
-
   const [corp, setCorp] = useState("");
   const [corpEdited, setCorpEdited] = useState("");
   const [corps, setCorps] = useState([]);

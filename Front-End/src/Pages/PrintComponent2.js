@@ -4,17 +4,9 @@ import "../Style/print.css";
 import rm from "../Images/rm.png";
 import lg from "../Images/bg1.png";
 
+import { baseURL } from "../config";
+
 const PrintComponent2 = React.forwardRef(({ data, dt }, ref) => {
-  const getBaseURL = () => {
-    if (process.env.NODE_ENV === "development") {
-      const { protocol, hostname } = window.location;
-      const port = 7766;
-      return `${protocol}//${hostname}:${port}`;
-    } else {
-      return "https://your-backend-url.com";
-    }
-  };
-  const baseURL = getBaseURL();
   const [settings, setSettings] = useState({
     delegue_gender: 1,
     delegue: "",

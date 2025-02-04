@@ -4,18 +4,9 @@ import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import "../Style/vacation.css";
 
-const Vacations = () => {
-  const getBaseURL = () => {
-    if (process.env.NODE_ENV === "development") {
-      const { protocol, hostname } = window.location;
-      const port = 7766;
-      return `${protocol}//${hostname}:${port}`;
-    } else {
-      return "https://your-backend-url.com";
-    }
-  };
-  const baseURL = getBaseURL();
+import { baseURL } from "../config";
 
+const Vacations = () => {
   const [ho, setHo] = useState([]);
   const [value1, onChange1] = useState(new Date());
   const currentYear = new Date().getFullYear();

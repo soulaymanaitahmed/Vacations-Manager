@@ -5,20 +5,11 @@ import { BiEdit } from "react-icons/bi";
 import { MdVisibilityOff } from "react-icons/md";
 import { MdVisibility } from "react-icons/md";
 
+import { baseURL } from "../config";
+
 import "../Style/settings.css";
 
 function Settings(props) {
-  const getBaseURL = () => {
-    if (process.env.NODE_ENV === "development") {
-      const { protocol, hostname } = window.location;
-      const port = 7766;
-      return `${protocol}//${hostname}:${port}`;
-    } else {
-      return "https://your-backend-url.com";
-    }
-  };
-  const baseURL = getBaseURL();
-
   const id = props.id;
   const type = props.type;
 
@@ -140,8 +131,8 @@ function Settings(props) {
         </h4>
         <div className="h099">
           <div className="lb099">
-            <label>Username</label>
-            {editor ? (
+            <label>{type === 15 ? "PPR" : "Username"}</label>
+            {editor && type !== 15 ? (
               <input
                 type="text"
                 className="inp099"
@@ -152,7 +143,7 @@ function Settings(props) {
               <input
                 type="text"
                 className="inp099"
-                value={employee.username}
+                value={type === 15 ? employee.ppr : employee.username}
                 disabled
               />
             )}
@@ -188,72 +179,74 @@ function Settings(props) {
           </div>
         </div>
       </div>
-      <div className="main099 mr099">
-        <h4 className="sub-lb099">
-          <span>Informations sur l'établissement</span>
-          <span className="anct-099">
-            {editor2 ? (
-              <>
+      {type === 20 ? (
+        <div className="main099 mr099">
+          <h4 className="sub-lb099">
+            <span>Informations sur l'établissement</span>
+            <span className="anct-099">
+              {editor2 ? (
+                <>
+                  <button
+                    className="act-o099 kl334"
+                    onClick={() => setEditor2(false)}
+                  >
+                    Annuler
+                  </button>
+                  <button className="act-o099 rd334" onClick={updateSettings}>
+                    Confirmer
+                  </button>
+                </>
+              ) : (
                 <button
-                  className="act-o099 kl334"
-                  onClick={() => setEditor2(false)}
+                  className="act-o099 ed334"
+                  onClick={() => setEditor2(true)}
                 >
-                  Annuler
+                  <BiEdit /> Edit
                 </button>
-                <button className="act-o099 rd334" onClick={updateSettings}>
-                  Confirmer
-                </button>
-              </>
-            ) : (
-              <button
-                className="act-o099 ed334"
-                onClick={() => setEditor2(true)}
+              )}
+            </span>
+          </h4>
+          <div className="h099 mr088">
+            <div className="lb099">
+              <label>Directeur / Délégué(e)</label>
+              <input
+                type="text"
+                className="inp099"
+                value={deleg}
+                disabled={!editor2}
+                onChange={(e) => setDeleg(e.target.value)}
+              />
+            </div>
+            <div className="lb099">
+              <label>Etablissement</label>
+              <input
+                type="text"
+                className="inp099"
+                value={etab}
+                disabled={!editor2}
+                onChange={(e) => setEtab(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="h099 mr088">
+            <div className="lb099">
+              <label>Directeur / Délégué(e) gender</label>
+              <select
+                type="text"
+                className="inp099"
+                value={gen}
+                disabled={!editor2}
+                onChange={(e) => setGen(e.target.value)}
+                id="lb099"
               >
-                <BiEdit /> Edit
-              </button>
-            )}
-          </span>
-        </h4>
-        <div className="h099 mr088">
-          <div className="lb099">
-            <label>Directeur / Délégué(e)</label>
-            <input
-              type="text"
-              className="inp099"
-              value={deleg}
-              disabled={!editor2}
-              onChange={(e) => setDeleg(e.target.value)}
-            />
-          </div>
-          <div className="lb099">
-            <label>Etablissement</label>
-            <input
-              type="text"
-              className="inp099"
-              value={etab}
-              disabled={!editor2}
-              onChange={(e) => setEtab(e.target.value)}
-            />
+                <option value={1}>Male</option>
+                <option value={2}>Female</option>
+              </select>
+            </div>
+            <div className="lb099"></div>
           </div>
         </div>
-        <div className="h099 mr088">
-          <div className="lb099">
-            <label>Directeur / Délégué(e) gender</label>
-            <select
-              type="text"
-              className="inp099"
-              value={gen}
-              disabled={!editor2}
-              onChange={(e) => setGen(e.target.value)}
-              id="lb099"
-            >
-              <option value={1}>Male</option>
-              <option value={2}>Female</option>
-            </select>
-          </div>
-          <div className="lb099"></div>
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 }

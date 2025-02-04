@@ -8,6 +8,8 @@ import axios from "axios";
 
 import "../Style/users.css";
 
+import { baseURL } from "../config";
+
 function Users() {
   const [addUser, setAddUser] = useState(false);
   const [passVisible, setPassVisible] = useState(false);
@@ -46,17 +48,6 @@ function Users() {
       )
     );
   }, [searchTerm, users]);
-
-  const getBaseURL = () => {
-    if (process.env.NODE_ENV === "development") {
-      const { protocol, hostname } = window.location;
-      const port = 7766;
-      return `${protocol}//${hostname}:${port}`;
-    } else {
-      return "https://your-backend-url.com";
-    }
-  };
-  const baseURL = getBaseURL();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

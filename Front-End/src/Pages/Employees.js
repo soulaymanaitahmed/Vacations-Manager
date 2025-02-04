@@ -13,20 +13,11 @@ import { MdDelete } from "react-icons/md";
 
 import PrintComponent3 from "./PrintComponent3";
 
+import { baseURL } from "../config";
+
 import "../Style/employee.css";
 
 function Employees() {
-  const getBaseURL = () => {
-    if (process.env.NODE_ENV === "development") {
-      const { protocol, hostname } = window.location;
-      const port = 7766;
-      return `${protocol}//${hostname}:${port}`;
-    } else {
-      return "https://your-backend-url.com";
-    }
-  };
-  const baseURL = getBaseURL();
-
   const printRefs = useRef(null);
 
   const handlePrint = useReactToPrint({

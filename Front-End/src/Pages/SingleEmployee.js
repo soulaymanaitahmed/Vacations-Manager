@@ -30,19 +30,10 @@ import PrintComponent2 from "./PrintComponent2";
 import VacationsMini from "./VacationsMini";
 import "../Style/employee.css";
 
+import { baseURL } from "../config";
+
 function SingleEmployee(props) {
   const tp = props.type;
-
-  const getBaseURL = () => {
-    if (process.env.NODE_ENV === "development") {
-      const { protocol, hostname } = window.location;
-      const port = 7766;
-      return `${protocol}//${hostname}:${port}`;
-    } else {
-      return "https://your-backend-url.com";
-    }
-  };
-  const baseURL = getBaseURL();
 
   const { id } = useParams();
   const dd = id / 45657;

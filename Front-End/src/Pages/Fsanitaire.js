@@ -9,18 +9,9 @@ import { FiEdit } from "react-icons/fi";
 
 import "../Style/grades.css";
 
-function Fsanitaire() {
-  const getBaseURL = () => {
-    if (process.env.NODE_ENV === "development") {
-      const { protocol, hostname } = window.location;
-      const port = 7766;
-      return `${protocol}//${hostname}:${port}`;
-    } else {
-      return "https://your-backend-url.com";
-    }
-  };
-  const baseURL = getBaseURL();
+import { baseURL } from "../config";
 
+function Fsanitaire() {
   const [type, setType] = useState("");
   const [typeEdited, setTypeEdited] = useState("");
   const [types, setTypes] = useState([]);
