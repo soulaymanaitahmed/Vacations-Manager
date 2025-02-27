@@ -10,6 +10,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 
 import { HiMiniBuildingOffice2 } from "react-icons/hi2";
+import { PiCalendarCheckFill } from "react-icons/pi";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaGraduationCap } from "react-icons/fa6";
 import { MdSpaceDashboard } from "react-icons/md";
@@ -34,6 +35,7 @@ const Settings = lazy(() => import("./Pages/Settings"));
 const NotAuth = lazy(() => import("./Pages/NotAuth"));
 const NotFound = lazy(() => import("./Pages/NotFound"));
 const Dashboardd = lazy(() => import("./Pages/Dashboardd"));
+const VacationsPersonnel = lazy(() => import("./Pages/VacationsPersonnel"));
 
 const ProtectedRoute = ({ children, allowedTypes, userType }) => {
   if (!allowedTypes.includes(userType)) {
@@ -100,17 +102,30 @@ function App() {
               </div>
             )}
             {userInfo.type_ac === 15 ? (
-              <div
-                onClick={() => {
-                  const gg = userInfo.id * 45657;
-                  navigate(`/personnels/${gg}`);
-                }}
-                className="links1"
-                id={isActive("/personnels")}
-              >
-                <FaUserDoctor className="nav_icon" />
-                <p className="nav-link">Mes vacances</p>
-              </div>
+              <>
+                <div
+                  onClick={() => {
+                    const gg = userInfo.id * 45657;
+                    navigate(`/personnels/${gg}`);
+                  }}
+                  className="links1"
+                  id={isActive("/personnels")}
+                >
+                  <FaUserDoctor className="nav_icon" />
+                  <p className="nav-link">Mes vacances</p>
+                </div>
+                <div
+                  onClick={() => {
+                    const gg = userInfo.id * 45657;
+                    navigate(`/vacations-personnel/${gg}`);
+                  }}
+                  className="links1"
+                  id={isActive("/vacations-personnel")}
+                >
+                  <PiCalendarCheckFill className="nav_icon" />
+                  <p className="nav-link">Résumer</p>
+                </div>
+              </>
             ) : (
               <div
                 onClick={() => navigate("/personnels")}
@@ -177,7 +192,7 @@ function App() {
                       ? "RH"
                       : userInfo.type_ac === 20
                       ? "Administrateur"
-                      : userInfo.type_ac === 10
+                      : userInfo.type_ac === 0
                       ? "Invité"
                       : "Inconnu"}
                   </p>
@@ -207,7 +222,7 @@ function App() {
                 path="/dashboard"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[20, 10, 1, 2, 3, 4]}
+                    allowedTypes={[20, 0, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
                     <Dashboardd type={userInfo.type_ac} />
@@ -218,7 +233,7 @@ function App() {
                 path="/personnels"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[20, 10, 1, 2, 3, 4]}
+                    allowedTypes={[20, 0, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
                     <Employees />
@@ -229,7 +244,7 @@ function App() {
                 path="/personnels/:id"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[15, 20, 10, 1, 2, 3, 4]}
+                    allowedTypes={[15, 20, 0, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
                     <SingleEmployee type={userInfo.type_ac} />
@@ -273,7 +288,7 @@ function App() {
                 path="/vacances"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[15, 20, 10, 1, 2, 3, 4]}
+                    allowedTypes={[15, 20, 0, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
                     {userInfo.type_ac === 15 ? (
@@ -285,10 +300,21 @@ function App() {
                 }
               />
               <Route
+                path="/vacations-personnel/:id"
+                element={
+                  <ProtectedRoute
+                    allowedTypes={[15, 20, 0, 1, 2, 3, 4]}
+                    userType={userInfo.type_ac}
+                  >
+                    {userInfo.type_ac === 15 ? <VacationsPersonnel /> : null}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/parametres"
                 element={
                   <ProtectedRoute
-                    allowedTypes={[15, 20, 10, 1, 2, 3, 4]}
+                    allowedTypes={[15, 20, 0, 1, 2, 3, 4]}
                     userType={userInfo.type_ac}
                   >
                     <Settings id={userInfo.id} type={userInfo.type_ac} />
@@ -325,7 +351,7 @@ function App() {
                               ? "RH"
                               : userInfo.type_ac === 20
                               ? "Administrateur"
-                              : userInfo.type_ac === 10
+                              : userInfo.type_ac === 0
                               ? "Invité"
                               : "Inconnu"}
                           </span>

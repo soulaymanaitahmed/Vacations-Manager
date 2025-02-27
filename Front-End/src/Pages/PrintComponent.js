@@ -132,8 +132,8 @@ const PrintComponent = React.forwardRef(({ data }, ref) => {
       </div>
       <br />
       <p className="dahir">
-        A la Délégation dun Ministére de la Santé et de la Protection Sociale
-        àle Province d'Ouarzazate, pur en bénéficier à compter:
+        A la Délégation dun Ministére de la Santé et de la Protection Sociale à
+        la Province d'Ouarzazate, pur en bénéficier à compter:
       </p>
       <br />
       <div className="maininfos78">

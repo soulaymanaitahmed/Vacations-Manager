@@ -25,7 +25,7 @@ function Users() {
   const [prenom, setPrenom] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [type, setType] = useState(10);
+  const [type, setType] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -184,7 +184,7 @@ function Users() {
             required
           >
             <option value={"*"}>Tous</option>
-            <option value={10}>Invité</option>
+            <option value={0}>Invité</option>
             <option value={1}>Bureau d'ordre</option>
             <option value={2}>Chef archaic</option>
             <option value={3}>Le délégué</option>
@@ -284,7 +284,7 @@ function Users() {
                       ? "RH"
                       : us.type === 20
                       ? "Admin"
-                      : us.type === 10
+                      : us.type === 0
                       ? "Invité"
                       : us.type}
                   </span>
@@ -386,7 +386,7 @@ function Users() {
                 onChange={(e) => setType(e.target.value)}
                 required
               >
-                <option value={10}>Invité</option>
+                <option value={0}>Invité</option>
                 <option value={1}>Bureau d'ordre</option>
                 <option value={2}>Chef archaic</option>
                 <option value={3}>Le délégué</option>
@@ -493,7 +493,7 @@ function Users() {
                 onChange={(e) => setType(e.target.value)}
                 required
               >
-                <option value={10}>Invité</option>
+                <option value={0}>Invité</option>
                 <option value={1}>Bureau d'ordre</option>
                 <option value={2}>Chef archaic</option>
                 <option value={3}>Le délégué</option>

@@ -192,6 +192,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   padding: 2%;
   box-sizing: border-box;
   background-color: #ffffff6b;
@@ -845,14 +846,18 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   position: relative;
 }
+
+.kknh55:nth-child(odd) {
+  background-color: #ffffff;
+}
+
 .kknh55 {
   width: 100%;
   box-sizing: border-box;
-  height: 50px;
-  background-color: #fff;
+  height: 60px;
+  background-color: #ffffff00;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   display: flex;
@@ -873,6 +878,7 @@
 }
 .can3425 {
   text-decoration: line-through;
+  color: #ad584d !important;
 }
 .suv-div44 {
   height: 100%;
@@ -1241,7 +1247,7 @@
   top: 45px;
   border-radius: 10px;
   border: none;
-  cursor: help;
+  cursor: pointer;
 }
 .inspectr-per {
   font-size: 1.5rem;

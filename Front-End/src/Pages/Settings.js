@@ -89,7 +89,7 @@ function Settings(props) {
 
   useEffect(() => {
     if (editor) {
-      setUse(employee.username);
+      setUse(employee.email);
       setPas(employee.password);
     }
   }, [editor]);
@@ -131,8 +131,8 @@ function Settings(props) {
         </h4>
         <div className="h099">
           <div className="lb099">
-            <label>{type === 15 ? "PPR" : "Username"}</label>
-            {editor && type !== 15 ? (
+            <label>{type === 15 ? "Email" : "Username"}</label>
+            {editor ? (
               <input
                 type="text"
                 className="inp099"
@@ -143,7 +143,7 @@ function Settings(props) {
               <input
                 type="text"
                 className="inp099"
-                value={type === 15 ? employee.ppr : employee.username}
+                value={type === 15 ? employee.email : employee.username}
                 disabled
               />
             )}
@@ -155,7 +155,7 @@ function Settings(props) {
                 type={pass ? "text" : "password"}
                 className="inp099"
                 value={use}
-                onChange={(e) => setUse(e.target.value)}
+                onChange={(e) => setPas(e.target.value)}
               />
             ) : (
               <input

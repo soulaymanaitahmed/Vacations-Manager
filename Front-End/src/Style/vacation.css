@@ -70,6 +70,7 @@ abbr {
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 .vac-list > div {
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
@@ -81,6 +82,17 @@ abbr {
   grid-template-rows: repeat(4, 1fr);
   gap: 10px;
   justify-items: center;
+}
+.olpo5 {
+  width: 100%;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 10px;
+}
+#koiy44 {
+  width: 400px !important;
+  background-color: #ffffff00;
+  box-shadow: none;
 }
 .kklr5 {
   width: 100%;
@@ -133,7 +145,22 @@ abbr {
   padding: 5px;
   font-size: 1rem;
   border-radius: 5px;
+  width: 30px;
+  text-align: center;
   color: black;
+}
+.bnk1234f3 {
+  width: 100%;
+  height: 60px;
+  background-color: #fff;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 10px;
+  color: #222222;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid silver;
 }
 #servh1255 {
   background-color: #f3f3f3;

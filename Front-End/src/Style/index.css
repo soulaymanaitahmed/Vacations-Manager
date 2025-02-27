@@ -88,3 +88,7 @@ button {
   background-color: #287c4b;
   color: #fff;
 }
+
+.calendar-month {
+  width: 335px !important;
+}

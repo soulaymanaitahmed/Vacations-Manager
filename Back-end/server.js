@@ -30,7 +30,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ------------------------------------------ Login ----------------------------------
+// ------------------------------------------ Login ------------------------------
 app.post("/users/login", (req, res) => {
   const { username, password, rememberMe, choi } = req.body;
 
@@ -70,7 +70,7 @@ app.post("/users/login", (req, res) => {
   });
 });
 
-// ------------------------------------------ Holidays ----------------------------------
+// ------------------------------------------ Holidays ---------------------------
 app.get("/vacationstotal", (req, res) => {
   const currentYear = parseInt(req.query.year);
   const getVacationsQuery = `
@@ -266,7 +266,7 @@ app.put("/changeDecision", (req, res) => {
   });
 });
 
-// ------------------------------------------ Vacations ----------------------------------
+// ------------------------------------------ Vacations --------------------------
 app.post("/add-conge", (req, res) => {
   const {
     dd,
@@ -410,8 +410,36 @@ app.put("/update-conge-cancel/:id", (req, res) => {
     res.send("Conge record updated successfully");
   });
 });
+app.get("/vac-pers/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const yr = parseInt(req.query.year, 10);
 
-// ------------------------------------------ Holidays ----------------------------------
+  if (isNaN(id) || isNaN(yr)) {
+    return res.status(400).send("Invalid ID or year");
+  }
+
+  let query = `
+    SELECT id, type, start_at, end_at, total_duration, duration_after
+    FROM conges 
+    WHERE personnel_id = ? 
+    AND decision = 5 
+    AND cancel = 0 
+    AND quitter = 0 
+    AND total_duration > 0
+    AND YEAR(start_at) = ? 
+  `;
+
+  const queryParams = [id, yr];
+
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      return res.status(500).send("Database error");
+    }
+    res.json(results);
+  });
+});
+
+// ------------------------------------------ Holidays ---------------------------
 app.get("/vac", (req, res) => {
   const year = req.query.year;
   const getHolidaysByYearQuery = `
@@ -503,43 +531,49 @@ app.delete("/vac/:id", (req, res) => {
     res.status(200).json({ message: "Holiday deleted successfully" });
   });
 });
-// ------------------------------------------ Employees ----------------------------------
+
+// ------------------------------------------ Employees --------------------------
 app.post("/employees", (req, res) => {
-  const { nom, prenom, cin, ppr, phone, affec, type, gradeSel, dtRec, gan } =
-    req.body;
+  const {
+    nom,
+    prenom,
+    cin,
+    ppr,
+    phone,
+    affec,
+    type,
+    gradeSel,
+    dtRec,
+    gan,
+    email,
+  } = req.body;
 
   const checkIfExistsQuery = `
     SELECT * FROM personnels 
-    WHERE (nom = ? AND prenom = ?) OR cin = ? OR ppr = ? OR phone = ?
+    WHERE (nom = ? AND prenom = ?) OR cin = ? OR ppr = ? OR phone = ? OR email = ?
   `;
+
   db.query(
     checkIfExistsQuery,
-    [nom, prenom, cin, ppr, phone],
+    [nom, prenom, cin, ppr, phone, email],
     (err, results) => {
       if (err) {
         console.error("Error checking if employee exists:", err);
-        res.status(500).json({ error: "Internal server error" });
-        return;
+        return res.status(500).json({ error: "Internal server error" });
       }
 
       let nameExists = false;
       let cinExists = false;
       let pprExists = false;
       let phoneExists = false;
+      let emailExists = false;
 
       results.forEach((result) => {
-        if (result.nom === nom && result.prenom === prenom) {
-          nameExists = true;
-        }
-        if (result.cin === cin) {
-          cinExists = true;
-        }
-        if (result.ppr === ppr) {
-          pprExists = true;
-        }
-        if (result.phone === phone) {
-          phoneExists = true;
-        }
+        if (result.nom === nom && result.prenom === prenom) nameExists = true;
+        if (result.cin === cin) cinExists = true;
+        if (result.ppr === ppr) pprExists = true;
+        if (result.phone === phone) phoneExists = true;
+        if (result.email === email) emailExists = true;
       });
 
       let errorCode = 0;
@@ -547,30 +581,44 @@ app.post("/employees", (req, res) => {
       if (cinExists) errorCode += 2;
       if (pprExists) errorCode += 4;
       if (phoneExists) errorCode += 8;
+      if (emailExists) errorCode += 16;
 
       if (errorCode > 0) {
-        res
+        return res
           .status(400)
-          .json({ error: `Employee already exists`, code: errorCode });
-        return;
+          .json({ error: "Employee already exists", code: errorCode });
       }
 
       const createEmployeeQuery = `
-      INSERT INTO personnels (nom, prenom, cin, ppr, phone, affectation, type, grade, date_affect, gander) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+        INSERT INTO personnels (nom, prenom, cin, ppr, phone, affectation, type, grade, date_affect, gander, email) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
       db.query(
         createEmployeeQuery,
-        [nom, prenom, cin, ppr, phone, affec, type, gradeSel, dtRec, gan],
+        [
+          nom,
+          prenom,
+          cin,
+          ppr,
+          phone,
+          affec,
+          type,
+          gradeSel,
+          dtRec,
+          gan,
+          email,
+        ],
         (err, result) => {
           if (err) {
             console.error("Error creating employee:", err);
-            res.status(500).json({ error: "Internal server error" });
-            return;
+            return res.status(500).json({ error: "Internal server error" });
           }
 
           console.log("Employee created successfully");
-          res.status(201).json({ message: "Employee created successfully" });
+          return res
+            .status(201)
+            .json({ message: "Employee created successfully" });
         }
       );
     }
@@ -643,14 +691,26 @@ app.get("/employee/:id", (req, res) => {
 });
 app.put("/employees/:id", (req, res) => {
   const { id } = req.params;
-  const { nom, prenom, cin, ppr, phone, affec, type, gradeSel, dtRec, gan } =
-    req.body;
+  const {
+    nom,
+    prenom,
+    cin,
+    ppr,
+    phone,
+    affec,
+    type,
+    gradeSel,
+    dtRec,
+    gan,
+    email,
+  } = req.body;
 
   const checkIfExistsQuery = `
     SELECT * FROM personnels 
-    WHERE (cin = ? OR ppr = ? OR phone = ?) AND id <> ?
+    WHERE (cin = ? OR ppr = ? OR phone = ? OR email = ?) AND id <> ?
   `;
-  db.query(checkIfExistsQuery, [cin, ppr, phone, id], (err, results) => {
+
+  db.query(checkIfExistsQuery, [cin, ppr, phone, email, id], (err, results) => {
     if (err) {
       console.error("Error checking if employee exists:", err);
       res.status(500).json({ error: "Internal server error" });
@@ -660,23 +720,20 @@ app.put("/employees/:id", (req, res) => {
     let cinExists = false;
     let pprExists = false;
     let phoneExists = false;
+    let emailExists = false;
 
     results.forEach((result) => {
-      if (result.cin === cin) {
-        cinExists = true;
-      }
-      if (result.ppr === ppr) {
-        pprExists = true;
-      }
-      if (result.phone === phone) {
-        phoneExists = true;
-      }
+      if (result.cin === cin) cinExists = true;
+      if (result.ppr === ppr) pprExists = true;
+      if (result.phone === phone) phoneExists = true;
+      if (result.email === email) emailExists = true;
     });
 
     let errorCode = 0;
     if (cinExists) errorCode += 2;
     if (pprExists) errorCode += 4;
     if (phoneExists) errorCode += 8;
+    if (emailExists) errorCode += 16;
 
     if (errorCode > 0) {
       res.status(400).json({ error: `Conflicting data`, code: errorCode });
@@ -685,7 +742,7 @@ app.put("/employees/:id", (req, res) => {
 
     const updateEmployeeQuery = `
       UPDATE personnels 
-      SET nom = ?, prenom = ?, cin = ?, ppr = ?, phone = ?, affectation = ?, type = ?, grade = ?, date_affect = ?, gander =?
+      SET nom = ?, prenom = ?, cin = ?, ppr = ?, phone = ?, affectation = ?, type = ?, grade = ?, date_affect = ?, gander = ?, email = ?
       WHERE id = ?
     `;
     const queryParams = [
@@ -699,6 +756,7 @@ app.put("/employees/:id", (req, res) => {
       gradeSel,
       dtRec,
       gan,
+      email,
       id,
     ];
 
@@ -740,7 +798,7 @@ app.delete("/employees/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Types ----------------------------------
+// ------------------------------------------ Types ------------------------------
 app.post("/types", (req, res) => {
   const { type } = req.body;
   const checkIfExistsQuery = `SELECT * FROM types WHERE type = ?`;
@@ -815,7 +873,7 @@ app.delete("/types/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Formation Sanitaire ----------------------------------
+// ------------------------------------------ Formation Sanitaire ----------------
 app.post("/formation_sanitaires", (req, res) => {
   const { fSanitaire } = req.body;
   const checkIfExistsQuery = `SELECT * FROM formation_sanitaires WHERE formation_sanitaire = ?`;
@@ -897,7 +955,7 @@ app.delete("/formation_sanitaires/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Grades ----------------------------------
+// ------------------------------------------ Grades -----------------------------
 app.post("/grades", (req, res) => {
   const { grade, corp } = req.body;
   const checkIfExistsQuery = `SELECT * FROM grades WHERE grade = ? AND corp_id = ?`;
@@ -987,7 +1045,7 @@ app.delete("/grades/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Corps ----------------------------------
+// ------------------------------------------ Corps ------------------------------
 app.post("/corps", (req, res) => {
   const { corp } = req.body;
   const checkIfExistsQuery = `SELECT * FROM corps WHERE corp = ?`;
@@ -1062,7 +1120,7 @@ app.delete("/corps/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Users ----------------------------------
+// ------------------------------------------ Users ------------------------------
 app.get("/users", (req, res) => {
   const { type } = req.query;
   let getUsersQuery = `
@@ -1178,7 +1236,7 @@ app.delete("/users/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Settings ---------------------------------
+// ------------------------------------------ Settings ---------------------------
 app.get("/settings", (req, res) => {
   const getAllTypesQuery = `SELECT * FROM infos`;
   db.query(getAllTypesQuery, (err, results) => {
@@ -1213,7 +1271,7 @@ app.put("/settings", (req, res) => {
   );
 });
 
-// ------------------------------------------ API ------------------------------------
+// ------------------------------------------ API --------------------------------
 const PORT = process.env.PORT || 7766;
 
 app.listen(PORT, "0.0.0.0", () => {

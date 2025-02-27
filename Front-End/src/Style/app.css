@@ -173,6 +173,7 @@
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   border: 0.5px solid #27374d76;
+  border-left: none;
   font-size: 0.9rem;
   color: #27374d;
   box-sizing: border-box;

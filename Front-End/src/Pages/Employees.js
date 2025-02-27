@@ -39,6 +39,7 @@ function Employees() {
   const [cin, setCin] = useState("");
   const [ppr, setPpr] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [affec, setAffect] = useState("");
   const [type, setType] = useState("");
   const [corpSel, setCorpSel] = useState("");
@@ -154,6 +155,7 @@ function Employees() {
         cin,
         ppr,
         phone,
+        email,
         affec,
         type,
         gradeSel,
@@ -166,6 +168,7 @@ function Employees() {
       setCin("");
       setPpr("");
       setPhone("");
+      setEmail("");
       setAffect("");
       setType("");
       setCorpSel("");
@@ -204,6 +207,9 @@ function Employees() {
           case 8:
             errorMessage = "Un employé avec ce N° téléphone existe déjà.";
             break;
+          case 16:
+            errorMessage = "Un employé avec cet email existe déjà.";
+            break;
           default:
             errorMessage = "Une erreur inconnue s'est produite.";
         }
@@ -222,6 +228,7 @@ function Employees() {
         cin,
         ppr,
         phone,
+        email,
         affec,
         type,
         gradeSel,
@@ -234,6 +241,7 @@ function Employees() {
       setCin("");
       setPpr("");
       setPhone("");
+      setEmail("");
       setAffect("");
       setType("");
       setCorpSel("");
@@ -265,6 +273,9 @@ function Employees() {
           case 8:
             errorMessage = "Un employé avec ce N° téléphone existe déjà.";
             break;
+          case 16:
+            errorMessage = "Un employé avec cet email existe déjà.";
+            break;
           default:
             errorMessage = "Une erreur inconnue s'est produite.";
         }
@@ -281,11 +292,11 @@ function Employees() {
       const response = await axios.delete(
         `${baseURL}/employees/${peronEdit.id}`
       );
-      console.log(response.data);
       setPrenom("");
       setNom("");
       setCin("");
       setPpr("");
+      setEmail("");
       setAffect("");
       setType("");
       setCorpSel("");
@@ -370,6 +381,7 @@ function Employees() {
             setCin("");
             setPpr("");
             setPhone("");
+            setEmail("");
             setAffect("");
             setType("");
             setCorpSel("");
@@ -545,6 +557,20 @@ function Employees() {
                 />
               </div>
               <div className="input-lab1">
+                <label className="ggv1" for="email">
+                  Email
+                </label>
+                <input
+                  className="person-input"
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                />
+              </div>
+              <div className="input-lab1">
                 <label className="ggv1" for="corp">
                   Corp
                 </label>
@@ -605,6 +631,7 @@ function Employees() {
                   setCin("");
                   setPpr("");
                   setPhone("");
+                  setEmail("");
                   setAffect("");
                   setType("");
                   setCorpSel("");
@@ -684,6 +711,7 @@ function Employees() {
                         setNom(peron.nom);
                         setCin(peron.cin);
                         setPpr(peron.ppr);
+                        setEmail(peron.email);
                         setPhone(peron.phone);
                         setAffect(peron.affectation);
                         setType(peron.type);
@@ -858,6 +886,21 @@ function Employees() {
                     minLength={10}
                     required
                     name="phone"
+                    disabled={peronEditor ? false : true}
+                  />
+                </div>
+                <div className="kklm6">
+                  <label className="mmpr22" for="email">
+                    Email
+                  </label>
+                  <input
+                    className="hhtb6"
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                    name="email"
                     disabled={peronEditor ? false : true}
                   />
                 </div>
