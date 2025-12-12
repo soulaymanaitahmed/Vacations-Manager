@@ -506,9 +506,7 @@ function SingleEmployee(props) {
   useEffect(() => {
     if (congsAll.length > 0 || filter2 !== 20) {
       const filteredConges = congsAll.filter((conge) => {
-        const startYear = new Date(conge.start_at).getFullYear();
-        const endYear = new Date(conge.end_at).getFullYear();
-        return startYear === filter2 || endYear === filter2;
+        return conge.year_1 === filter2;
       });
       setFilCongsAll(filteredConges);
     }
@@ -1402,7 +1400,7 @@ function SingleEmployee(props) {
                       </span>
                     </div>
                   ) : null}
-                  {singleConj.decision === tp && singleConj.cancel !== 2 ? (
+                  {/* {singleConj.decision === tp - 1 && singleConj.cancel !== 2 ? (
                     <div className="actions-btn99">
                       <button
                         className="ddh-btn99 valdsh29"
@@ -1417,7 +1415,7 @@ function SingleEmployee(props) {
                         Valider
                       </button>
                     </div>
-                  ) : null}
+                  ) : null} */}
                   {singleConj.decision < 5 &&
                   singleConj.decision >= 0 &&
                   singleConj.cancel === 0 ? (
@@ -1509,7 +1507,7 @@ function SingleEmployee(props) {
                   id="S11"
                 >
                   {c.id}
-                  {c.cancel !== 2 && c.decision === tp ? (
+                  {c.cancel !== 2 && c.decision === tp - 1 ? (
                     <HiBellAlert className="alr5467" />
                   ) : null}
                 </div>

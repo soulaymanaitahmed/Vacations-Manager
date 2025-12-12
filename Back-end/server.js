@@ -74,10 +74,18 @@ app.post("/users/login", (req, res) => {
 app.get("/vacationstotal", (req, res) => {
   const currentYear = parseInt(req.query.year);
   const getVacationsQuery = `
-    SELECT type, COUNT(*) AS total
+    SELECT 
+      conges.type,
+      types.type AS type_name,
+      types.fs_id,
+      formation_sanitaires.id AS id_sanitaire,
+      formation_sanitaires.formation_sanitaire,
+      COUNT(*) AS total
     FROM conges
+    LEFT JOIN types ON conges.type = types.id
+    LEFT JOIN formation_sanitaires ON types.fs_id = formation_sanitaires.id
     WHERE YEAR(start_at) = ?
-    GROUP BY type
+    GROUP BY conges.type
   `;
 
   db.query(getVacationsQuery, [currentYear], (err, results) => {
@@ -86,13 +94,13 @@ app.get("/vacationstotal", (req, res) => {
       res.status(500).json({ error: "Internal server error" });
       return;
     }
-
-    const formattedResults = results.map((row) => ({ [row.type]: row.total }));
-    res.status(200).json(formattedResults);
+    res.status(200).json(results);
   });
 });
 app.get("/filteredVacations", (req, res) => {
   const type = req.query.type;
+  const decisionValue = type - 1;
+
   let query = `
     SELECT 
       conges.*,
@@ -105,26 +113,24 @@ app.get("/filteredVacations", (req, res) => {
       corps.corp AS corp_name,
       corps.corp_nbr,
       formation_sanitaires.formation_sanitaire,
-      types.type AS type_name
+      formation_sanitaires.id AS id_sanitaire,
+      types.type AS type_name,
+      types.id AS type_id,
+      types.fs_id
     FROM conges
     JOIN personnels ON conges.personnel_id = personnels.id
     JOIN grades ON personnels.grade = grades.id
     JOIN corps ON grades.corp_id = corps.id
-    LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
-    LEFT JOIN types ON conges.type = types.id
+    JOIN types ON personnels.type = types.id
+    LEFT JOIN formation_sanitaires ON types.fs_id = formation_sanitaires.id
+    WHERE conges.decision = ? AND conges.cancel != 2
   `;
-  if (type !== "20") {
-    query += `
-      WHERE (conges.decision <= ? AND conges.decision > ? - 1) 
-      OR conges.decision = ? + 20
-    `;
-  }
-  const queryParams = type !== "20" ? [type, type, type] : [];
-  db.query(query, queryParams, (err, results) => {
+
+  // Execute the query with the type parameter
+  db.query(query, [decisionValue], (err, results) => {
     if (err) {
-      console.error("Error fetching filtered vacations:", err);
-      res.status(500).json({ error: "Internal server error" });
-      return;
+      console.error(err);
+      return res.status(500).json({ error: "Database error" });
     }
     res.status(200).json(results);
   });
@@ -143,14 +149,17 @@ app.get("/filteredVacationsByDecision", (req, res) => {
       grades.grade AS grade_name,
       corps.corp AS corp_name,
       corps.corp_nbr,
+      types.type AS type_name,
+      types.id AS type_id,
+      types.fs_id,
       formation_sanitaires.formation_sanitaire,
-      types.type AS type_name
+      formation_sanitaires.id AS id_sanitaire
     FROM conges
     JOIN personnels ON conges.personnel_id = personnels.id
     JOIN grades ON personnels.grade = grades.id
     JOIN corps ON grades.corp_id = corps.id
-    LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
-    LEFT JOIN types ON conges.type = types.id
+    JOIN types ON personnels.type = types.id
+    LEFT JOIN formation_sanitaires ON types.fs_id = formation_sanitaires.id
     WHERE conges.decision = 5
     AND conges.end_at >= ?
   `;
@@ -177,16 +186,20 @@ app.get("/vacation/:id", (req, res) => {
       grades.grade AS grade_name,
       corps.corp AS corp_name,
       corps.corp_nbr,
+      types.type AS type_name,
+      types.id AS type_id,
+      types.fs_id,
       formation_sanitaires.formation_sanitaire,
-      types.type AS type_name
+      formation_sanitaires.id AS id_sanitaire
     FROM conges
     JOIN personnels ON conges.personnel_id = personnels.id
     JOIN grades ON personnels.grade = grades.id
     JOIN corps ON grades.corp_id = corps.id
-    LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
-    LEFT JOIN types ON conges.type = types.id
+    JOIN types ON personnels.type = types.id
+    LEFT JOIN formation_sanitaires ON types.fs_id = formation_sanitaires.id
     WHERE conges.id = ?
   `;
+
   db.query(query, [vacationId], (err, result) => {
     if (err) {
       console.error("Error fetching vacation:", err);
@@ -196,7 +209,7 @@ app.get("/vacation/:id", (req, res) => {
     if (result.length === 0) {
       res.status(404).json({ error: "Vacation not found" });
     } else {
-      res.status(200).json(result[0]); // Return only one result
+      res.status(200).json(result[0]);
     }
   });
 });
@@ -214,7 +227,7 @@ app.put("/updateRequests", (req, res) => {
     queryParams = [20 + parseInt(type), ids];
   } else if (acc === 1) {
     query = `UPDATE conges SET decision = ? WHERE id IN (?)`;
-    queryParams = [parseInt(type) + 1, ids];
+    queryParams = [1, ids]; // Always set to 1 regardless of type
   } else {
     return res.status(400).json({ error: "Invalid acc value" });
   }
@@ -224,30 +237,6 @@ app.put("/updateRequests", (req, res) => {
       return res.status(500).json({ error: "Internal server error" });
     }
     res.status(200).json({ message: "Requests updated successfully" });
-  });
-});
-app.put("/updateRequest", (req, res) => {
-  const { id, type, acc } = req.body;
-  if (!id) {
-    return res.status(400).json({ error: "Invalid id" });
-  }
-  let query = "";
-  let queryParams = [];
-  if (acc === 0) {
-    query = `UPDATE conges SET decision = ? WHERE id = ?`;
-    queryParams = [20 + parseInt(type), id];
-  } else if (acc === 1) {
-    query = `UPDATE conges SET decision = ? WHERE id = ?`;
-    queryParams = [parseInt(type) + 1, id];
-  } else {
-    return res.status(400).json({ error: "Invalid acc value" });
-  }
-  db.query(query, queryParams, (err, results) => {
-    if (err) {
-      console.error("Error updating request:", err);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-    res.status(200).json({ message: "Request updated successfully" });
   });
 });
 app.put("/changeDecision", (req, res) => {
@@ -368,13 +357,16 @@ app.get("/conge/:personnel_id", (req, res) => {
       corps.corp AS corp_name,
       corps.corp_nbr,
       formation_sanitaires.formation_sanitaire,
-      types.type AS type_name
+      formation_sanitaires.id AS id_sanitaire,
+      types.type AS type_name,
+      types.id AS type_id,
+      types.fs_id
     FROM conges
     JOIN personnels ON conges.personnel_id = personnels.id
     JOIN grades ON personnels.grade = grades.id
     JOIN corps ON grades.corp_id = corps.id
-    LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
-    LEFT JOIN types ON conges.type = types.id
+    JOIN types ON personnels.type = types.id
+    LEFT JOIN formation_sanitaires ON types.fs_id = formation_sanitaires.id
     WHERE conges.personnel_id = ?
     ORDER BY conges.demand_date DESC
   `;
@@ -383,7 +375,8 @@ app.get("/conge/:personnel_id", (req, res) => {
 
   db.query(query, queryParams, (err, results) => {
     if (err) {
-      return res.status(500).send("Database error");
+      console.error("Database error:", err);
+      return res.status(500).json({ error: "Database error" });
     }
     res.json(results);
   });
@@ -439,7 +432,7 @@ app.get("/vac-pers/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Holidays ---------------------------
+// ------------------------------------------ Calendar --------------------------
 app.get("/vac", (req, res) => {
   const year = req.query.year;
   const getHolidaysByYearQuery = `
@@ -532,21 +525,10 @@ app.delete("/vac/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Employees --------------------------
+// ------------------------------------------ Employees -------------------------
 app.post("/employees", (req, res) => {
-  const {
-    nom,
-    prenom,
-    cin,
-    ppr,
-    phone,
-    affec,
-    type,
-    gradeSel,
-    dtRec,
-    gan,
-    email,
-  } = req.body;
+  const { nom, prenom, cin, ppr, phone, type, gradeSel, dtRec, gan, email } =
+    req.body;
 
   const checkIfExistsQuery = `
     SELECT * FROM personnels 
@@ -590,25 +572,13 @@ app.post("/employees", (req, res) => {
       }
 
       const createEmployeeQuery = `
-        INSERT INTO personnels (nom, prenom, cin, ppr, phone, affectation, type, grade, date_affect, gander, email) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO personnels (nom, prenom, cin, ppr, phone, type, grade, date_affect, gander, email) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       db.query(
         createEmployeeQuery,
-        [
-          nom,
-          prenom,
-          cin,
-          ppr,
-          phone,
-          affec,
-          type,
-          gradeSel,
-          dtRec,
-          gan,
-          email,
-        ],
+        [nom, prenom, cin, ppr, phone, type, gradeSel, dtRec, gan, email],
         (err, result) => {
           if (err) {
             console.error("Error creating employee:", err);
@@ -633,19 +603,24 @@ app.get("/employees", (req, res) => {
     grades.grade AS grade_name,
     corps.corp AS corp_name,
     corps.corp_nbr,
+    types.type AS type_name,
+    types.id AS type_id,
     formation_sanitaires.formation_sanitaire,
-    types.type AS type_name
+    formation_sanitaires.id AS id_sanitaire,
+    types.fs_id
   FROM personnels
   INNER JOIN grades ON personnels.grade = grades.id
   INNER JOIN corps ON grades.corp_id = corps.id
-  LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
-  LEFT JOIN types ON personnels.type = types.id
+  INNER JOIN types ON personnels.type = types.id
+  LEFT JOIN formation_sanitaires ON types.fs_id = formation_sanitaires.id
   `;
+
   const queryParams = [];
   if (id && id !== "*") {
     query += ` WHERE corps.id = ?`;
     queryParams.push(id);
   }
+
   db.query(query, queryParams, (err, results) => {
     if (err) {
       console.error("Error fetching employees:", err);
@@ -664,13 +639,16 @@ app.get("/employee/:id", (req, res) => {
     grades.grade AS grade_name,
     corps.corp AS corp_name,
     corps.corp_nbr,
+    types.type AS type_name,
+    types.id AS type_id,
     formation_sanitaires.formation_sanitaire,
-    types.type AS type_name
+    formation_sanitaires.id AS id_sanitaire,
+    types.fs_id
   FROM personnels
   INNER JOIN grades ON personnels.grade = grades.id
   INNER JOIN corps ON grades.corp_id = corps.id
-  LEFT JOIN formation_sanitaires ON personnels.affectation = formation_sanitaires.id
-  LEFT JOIN types ON personnels.type = types.id
+  INNER JOIN types ON personnels.type = types.id
+  LEFT JOIN formation_sanitaires ON types.fs_id = formation_sanitaires.id
   WHERE personnels.id = ?
   `;
 
@@ -691,19 +669,8 @@ app.get("/employee/:id", (req, res) => {
 });
 app.put("/employees/:id", (req, res) => {
   const { id } = req.params;
-  const {
-    nom,
-    prenom,
-    cin,
-    ppr,
-    phone,
-    affec,
-    type,
-    gradeSel,
-    dtRec,
-    gan,
-    email,
-  } = req.body;
+  const { nom, prenom, cin, ppr, phone, type, gradeSel, dtRec, gan, email } =
+    req.body;
 
   const checkIfExistsQuery = `
     SELECT * FROM personnels 
@@ -742,7 +709,7 @@ app.put("/employees/:id", (req, res) => {
 
     const updateEmployeeQuery = `
       UPDATE personnels 
-      SET nom = ?, prenom = ?, cin = ?, ppr = ?, phone = ?, affectation = ?, type = ?, grade = ?, date_affect = ?, gander = ?, email = ?
+      SET nom = ?, prenom = ?, cin = ?, ppr = ?, phone = ?, type = ?, grade = ?, date_affect = ?, gander = ?, email = ?
       WHERE id = ?
     `;
     const queryParams = [
@@ -751,7 +718,6 @@ app.put("/employees/:id", (req, res) => {
       cin,
       ppr,
       phone,
-      affec,
       type,
       gradeSel,
       dtRec,
@@ -798,11 +764,11 @@ app.delete("/employees/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Types ------------------------------
+// ---------------------------------------------- Types -------------------------
 app.post("/types", (req, res) => {
-  const { type } = req.body;
-  const checkIfExistsQuery = `SELECT * FROM types WHERE type = ?`;
-  db.query(checkIfExistsQuery, [type], (err, results) => {
+  const { type, formation_sanitaire } = req.body;
+  const checkIfExistsQuery = `SELECT * FROM types WHERE type = ? AND fs_id = ?`;
+  db.query(checkIfExistsQuery, [type, formation_sanitaire], (err, results) => {
     if (err) {
       console.error("Error checking if type exists:", err);
       res.status(500).json({ error: "Internal server error" });
@@ -812,8 +778,8 @@ app.post("/types", (req, res) => {
       res.status(400).json({ error: "Type already exists" });
       return;
     }
-    const createTypeQuery = `INSERT INTO types (type) VALUES (?)`;
-    db.query(createTypeQuery, [type], (err, result) => {
+    const createTypeQuery = `INSERT INTO types (type, fs_id) VALUES (?, ?)`;
+    db.query(createTypeQuery, [type, formation_sanitaire], (err, result) => {
       if (err) {
         console.error("Error creating type:", err);
         res.status(500).json({ error: "Internal server error" });
@@ -825,6 +791,21 @@ app.post("/types", (req, res) => {
   });
 });
 app.get("/types", (req, res) => {
+  const getAllTypesQuery = `
+    SELECT types.*, formation_sanitaires.formation_sanitaire
+    FROM types
+    JOIN formation_sanitaires ON types.fs_id = formation_sanitaires.id
+  `;
+  db.query(getAllTypesQuery, (err, results) => {
+    if (err) {
+      console.error("Error fetching types:", err);
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+app.get("/typesun", (req, res) => {
   const getAllTypesQuery = `SELECT * FROM types`;
   db.query(getAllTypesQuery, (err, results) => {
     if (err) {
@@ -837,10 +818,23 @@ app.get("/types", (req, res) => {
 });
 app.put("/types/:id", (req, res) => {
   const { id } = req.params;
-  const { typeEdited } = req.body;
+  const { type, formation_sanitaire_id } = req.body;
 
-  const updateTypeQuery = `UPDATE types SET type = ? WHERE id = ?`;
-  db.query(updateTypeQuery, [typeEdited, id], (err, result) => {
+  // Initialize variables for the query
+  let updateTypeQuery;
+  let queryParams;
+
+  if (formation_sanitaire_id === undefined || formation_sanitaire_id === null) {
+    // Update only the type if formation_sanitaire_id is not provided or is null
+    updateTypeQuery = `UPDATE types SET type = ? WHERE id = ?`;
+    queryParams = [type, id];
+  } else {
+    // Update both fields if formation_sanitaire_id is provided
+    updateTypeQuery = `UPDATE types SET type = ?, fs_id = ? WHERE id = ?`;
+    queryParams = [type, formation_sanitaire_id, id];
+  }
+
+  db.query(updateTypeQuery, queryParams, (err, result) => {
     if (err) {
       console.error("Error updating type:", err);
       res.status(500).json({ error: "Internal server error" });
@@ -873,86 +867,98 @@ app.delete("/types/:id", (req, res) => {
   });
 });
 
-// ------------------------------------------ Formation Sanitaire ----------------
-app.post("/formation_sanitaires", (req, res) => {
-  const { fSanitaire } = req.body;
+// ------------------------------- Formation Sanitaire --------------------------
+app.post("/formations-sanitaires", (req, res) => {
+  const { formation_sanitaire } = req.body;
   const checkIfExistsQuery = `SELECT * FROM formation_sanitaires WHERE formation_sanitaire = ?`;
-  db.query(checkIfExistsQuery, [fSanitaire], (err, results) => {
+  db.query(checkIfExistsQuery, [formation_sanitaire], (err, results) => {
     if (err) {
-      console.error("Error checking if formation_sanitaire exists:", err);
+      console.error("Error checking if formation sanitaire exists:", err);
       res.status(500).json({ error: "Internal server error" });
       return;
     }
     if (results.length > 0) {
-      res.status(400).json({ error: "Formation_sanitaire already exists" });
+      res.status(400).json({ error: "Formation sanitaire already exists" });
       return;
     }
-    const createFSanitaireQuery = `INSERT INTO formation_sanitaires (formation_sanitaire) VALUES (?)`;
-    db.query(createFSanitaireQuery, [fSanitaire], (err, result) => {
-      if (err) {
-        console.error("Error creating formation_sanitaire:", err);
-        res.status(500).json({ error: "Internal server error" });
-        return;
+    const createFormationSanitaireQuery = `INSERT INTO formation_sanitaires (formation_sanitaire) VALUES (?)`;
+    db.query(
+      createFormationSanitaireQuery,
+      [formation_sanitaire],
+      (err, result) => {
+        if (err) {
+          console.error("Error creating formation sanitaire:", err);
+          res.status(500).json({ error: "Internal server error" });
+          return;
+        }
+        console.log("Formation sanitaire created successfully");
+        res
+          .status(201)
+          .json({ message: "Formation sanitaire created successfully" });
       }
-      console.log("Formation_sanitaire created successfully");
-      res
-        .status(201)
-        .json({ message: "Formation_sanitaire created successfully" });
-    });
+    );
   });
 });
-app.get("/formation_sanitaires", (req, res) => {
-  const getAllTypesQuery = `SELECT * FROM  formation_sanitaires`;
-  db.query(getAllTypesQuery, (err, results) => {
+app.get("/formations-sanitaires", (req, res) => {
+  const getAllFormationsSanitairesQuery = `SELECT * FROM formation_sanitaires`;
+  db.query(getAllFormationsSanitairesQuery, (err, results) => {
     if (err) {
-      console.error("Error fetching formation sanitaire:", err);
+      console.error("Error fetching formations sanitaires:", err);
       res.status(500).json({ error: "Internal server error" });
       return;
     }
     res.status(200).json(results);
   });
 });
-app.put("/formation_sanitaires/:id", (req, res) => {
+app.put("/formations-sanitaires/:id", (req, res) => {
   const { id } = req.params;
-  const { fs } = req.body;
+  const { formation_sanitaire } = req.body;
 
-  const updateGradeQuery = `UPDATE formation_sanitaires SET formation_sanitaire = ? WHERE id = ?`;
-  db.query(updateGradeQuery, [fs, id], (err, result) => {
-    if (err) {
-      console.error("Error updating formation sanitaires:", err);
-      res.status(500).json({ error: "Internal server error" });
-      return;
+  const updateFormationSanitaireQuery = `UPDATE formation_sanitaires SET formation_sanitaire = ? WHERE id = ?`;
+  db.query(
+    updateFormationSanitaireQuery,
+    [formation_sanitaire, id],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating formation sanitaire:", err);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+      }
+
+      if (result.affectedRows === 0) {
+        res.status(404).json({ error: "Formation sanitaire not found" });
+        return;
+      }
+
+      console.log("Formation sanitaire updated successfully");
+      res
+        .status(200)
+        .json({ message: "Formation sanitaire updated successfully" });
     }
-
-    if (result.affectedRows === 0) {
-      res.status(404).json({ error: "Formation sanitaires not found" });
-      return;
-    }
-
-    console.log("Formation sanitaires updated successfully");
-    res
-      .status(200)
-      .json({ message: "Formation sanitaires updated successfully" });
-  });
+  );
 });
-app.delete("/formation_sanitaires/:id", (req, res) => {
-  const fSanitaireId = req.params.id;
-  const deleteFSanitaireQuery = `DELETE FROM formation_sanitaires WHERE id = ?`;
-  db.query(deleteFSanitaireQuery, [fSanitaireId], (err, result) => {
-    if (err) {
-      console.error("Error deleting formation_sanitaire:", err);
-      return res.status(500).json({ error: "Internal server error" });
+app.delete("/formations-sanitaires/:id", (req, res) => {
+  const formationSanitaireId = req.params.id;
+  const deleteFormationSanitaireQuery = `DELETE FROM formation_sanitaires WHERE id = ?`;
+  db.query(
+    deleteFormationSanitaireQuery,
+    [formationSanitaireId],
+    (err, result) => {
+      if (err) {
+        console.error("Error deleting formation sanitaire:", err);
+        return res.status(500).json({ error: "Internal server error" });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(400).json({
+          error:
+            "Formation sanitaire is referenced in another table and cannot be deleted",
+        });
+      }
+      res
+        .status(200)
+        .json({ message: "Formation sanitaire deleted successfully" });
     }
-    if (result.affectedRows === 0) {
-      return res.status(400).json({
-        error:
-          "Formation_sanitaire is referenced in another table and cannot be deleted",
-      });
-    }
-    res
-      .status(200)
-      .json({ message: "Formation_sanitaire deleted successfully" });
-  });
+  );
 });
 
 // ------------------------------------------ Grades -----------------------------

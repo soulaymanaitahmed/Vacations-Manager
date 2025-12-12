@@ -10,6 +10,7 @@ import { baseURL } from "../config";
 
 function Dashboardd(props) {
   const tpp = props.type;
+  const gg = tpp - 1;
 
   const [requests, setRequests] = useState([]);
   const [outEpl, setOutEpl] = useState([]);
@@ -154,7 +155,7 @@ function Dashboardd(props) {
                 <span className="dsh8764 dsh11">
                   {r.cancel === 2 ? (
                     <p className="kkfdyj665">Annuler</p>
-                  ) : r.decision > tpp && r.decision < 10 ? (
+                  ) : r.decision >= tpp && r.decision < 10 ? (
                     <span className="val-dsh55">✔</span>
                   ) : r.decision >= 20 ? (
                     <span
@@ -163,7 +164,7 @@ function Dashboardd(props) {
                     >
                       ✖
                     </span>
-                  ) : r.decision === tpp ? (
+                  ) : r.decision === gg ? (
                     <input
                       id={`checkbox-${r.id}`}
                       type="checkbox"

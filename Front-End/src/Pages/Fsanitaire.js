@@ -4,44 +4,68 @@ import axios from "axios";
 import { MdOutlineCancel } from "react-icons/md";
 
 import { AiFillDelete } from "react-icons/ai";
+
 import { GiConfirmed } from "react-icons/gi";
 import { FiEdit } from "react-icons/fi";
 
-import "../Style/grades.css";
-
 import { baseURL } from "../config";
 
-function Fsanitaire() {
+import "../Style/grades.css";
+
+function FormationSanitaire() {
+  const [formationSanitaire, setFormationSanitaire] = useState("");
+  const [formationSanitaireEdited, setFormationSanitaireEdited] = useState("");
+  const [formationsSanitaires, setFormationsSanitaires] = useState([]);
+  const [formationSanitaireExist, setFormationSanitaireExist] = useState(false);
+  const [formationSanitaireEdit, setFormationSanitaireEdit] = useState(false);
+  const [formationSanitaireDelete, setFormationSanitaireDelete] =
+    useState(false);
+
+  const [formationSanitaireSelect, setFormationSanitaireSelect] = useState("");
+  const [formationSanitaireSelectEdit, setFormationSanitaireSelectEdit] =
+    useState("");
+
+  const [typesAll, setTypesAll] = useState([]);
   const [type, setType] = useState("");
-  const [typeEdited, setTypeEdited] = useState("");
-  const [types, setTypes] = useState([]);
   const [typeExist, setTypeExist] = useState(false);
   const [typeEdit, setTypeEdit] = useState(false);
-  const [typeDelete, setTypeDelete] = useState(false);
-
-  const [fSanitaireAll, setFSanitaireAll] = useState([]);
-  const [fSanitaire, setFSanitaire] = useState("");
-  const [fSanitaireExist, setFSanitaireExist] = useState(false);
-  const [fSanitaireEdit, setFSanitaireEdit] = useState(false);
-  const [fSanitaireEdited, setFSanitaireEdited] = useState("false");
+  const [typeEdited, setTypeEdited] = useState("false");
 
   useEffect(() => {
+    fetchFormationsSanitaires();
     fetchTypes();
-    fetchFSanitaires();
   }, []);
   useEffect(() => {
-    setTypeExist(false);
-  }, [type]);
+    setFormationSanitaireExist(false);
+  }, [formationSanitaire]);
 
+  const sendFormationSanitaire = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`${baseURL}/formations-sanitaires`, {
+        formation_sanitaire: formationSanitaire,
+      });
+      console.log(response.data);
+      setFormationSanitaireExist(false);
+      setFormationSanitaire("");
+      fetchFormationsSanitaires();
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setFormationSanitaireExist(true);
+      } else {
+        console.error(error);
+      }
+    }
+  };
   const sendType = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(`${baseURL}/types`, {
-        type,
+        type: type,
+        formation_sanitaire: formationSanitaireSelect,
       });
       console.log(response.data);
       setTypeExist(false);
-      setType("");
       fetchTypes();
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -51,93 +75,69 @@ function Fsanitaire() {
       }
     }
   };
-
-  const sendFSanitaire = async (e) => {
-    e.preventDefault();
+  const fetchFormationsSanitaires = async () => {
     try {
-      const response = await axios.post(`${baseURL}/formation_sanitaires`, {
-        fSanitaire: fSanitaire,
-      });
-      console.log(response.data);
-      setFSanitaireExist(false);
-      setFSanitaire("");
-      fetchFSanitaires();
+      const response = await axios.get(`${baseURL}/formations-sanitaires`);
+      setFormationsSanitaires(response.data);
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        setFSanitaireExist(true);
-      } else {
-        console.error(error);
-      }
+      console.error("Error fetching formations sanitaires:", error);
     }
   };
-
   const fetchTypes = async () => {
     try {
       const response = await axios.get(`${baseURL}/types`);
-      setTypes(response.data);
+      setTypesAll(response.data);
     } catch (error) {
       console.error("Error fetching types:", error);
     }
   };
-
-  const fetchFSanitaires = async () => {
+  const updateFormationSanitaire = async (id) => {
     try {
-      const response = await axios.get(`${baseURL}/formation_sanitaires`);
-      setFSanitaireAll(response.data);
+      const response = await axios.put(
+        `${baseURL}/formations-sanitaires/${id}`,
+        {
+          formation_sanitaire: formationSanitaireEdited,
+        }
+      );
+      console.log(response.data);
+      fetchFormationsSanitaires();
+      setFormationSanitaireEdit(false);
     } catch (error) {
-      console.error("Error fetching fSanitaires:", error);
+      console.error("Error deleting formation sanitaire:", error);
     }
   };
-
+  const deleteFormationSanitaire = async (id) => {
+    try {
+      const response = await axios.delete(
+        `${baseURL}/formations-sanitaires/${id}`
+      );
+      console.log(response.data);
+      fetchFormationsSanitaires();
+      setFormationSanitaireDelete(false);
+    } catch (error) {
+      setFormationSanitaireDelete(true);
+    }
+  };
   const updateType = async (id) => {
     try {
       const response = await axios.put(`${baseURL}/types/${id}`, {
-        typeEdited,
+        type: typeEdited,
+        formation_sanitaire_id: formationSanitaireSelectEdit,
       });
       console.log(response.data);
       fetchTypes();
       setTypeEdit(false);
     } catch (error) {
-      console.error("Error deleting type:", error);
+      console.error("Error updating type:", error);
     }
   };
-
   const deleteType = async (id) => {
     try {
       const response = await axios.delete(`${baseURL}/types/${id}`);
       console.log(response.data);
-      setTypeDelete(false);
       fetchTypes();
     } catch (error) {
-      setTypeDelete(true);
-    }
-  };
-
-  const updateFSanitaire = async (id) => {
-    try {
-      const response = await axios.put(
-        `${baseURL}/formation_sanitaires/${id}`,
-        {
-          fs: fSanitaireEdited,
-        }
-      );
-      console.log(response.data);
-      fetchFSanitaires();
-      setFSanitaireEdit(false);
-    } catch (error) {
-      console.error("Error updating formation sanitaires:", error);
-    }
-  };
-
-  const deleteFSanitaire = async (id) => {
-    try {
-      const response = await axios.delete(
-        `${baseURL}/formation_sanitaires/${id}`
-      );
-      console.log(response.data);
-      fetchFSanitaires();
-    } catch (error) {
-      console.error("Error deleting fSanitaire:", error);
+      console.error("Error deleting type:", error);
     }
   };
 
@@ -156,52 +156,88 @@ function Fsanitaire() {
       <br />
       <div className="user-show1">
         <div className="grade-list">
-          <h3 className="hdd6">Formation Sanitaire</h3>
-          <form className="grade-add" onSubmit={sendFSanitaire}>
+          <h3>Types</h3>
+          <form className="grade-add" onSubmit={sendType}>
             <input
               type="text"
               className="grade-input"
-              placeholder="Formation Sanitaire"
+              placeholder="Type"
               minLength={2}
               maxLength={50}
               onChange={(e) => {
-                setFSanitaire(e.target.value);
+                setType(e.target.value);
               }}
               required
             />
+            <select
+              name="formation-sanitaire-select"
+              className="corp-select"
+              id="kkiuyb236"
+              value={formationSanitaireSelect}
+              onChange={(e) => setFormationSanitaireSelect(e.target.value)}
+              required
+            >
+              <option>Select Formation Sanitaire</option>
+              {formationsSanitaires.map((fs) => {
+                return (
+                  <option key={fs.id} value={fs.id}>
+                    {fs.formation_sanitaire}
+                  </option>
+                );
+              })}
+            </select>
             <button type="submit" className="btn-grade">
               Ajouter
             </button>
           </form>
-          {fSanitaireExist ? <p className="alert1">Grade existe déjà</p> : null}
+          {typeExist ? <p className="alert1">Type existe déjà</p> : null}
           <div className="corps-show">
-            {fSanitaireAll.map((item) => (
+            {typesAll.map((item) => (
               <div key={item.id} className="corp-item">
-                {item.id !== fSanitaireEdit ? (
+                {item.id !== typeEdit ? (
                   <input
                     type="text"
                     className="corp-dd"
                     id="ggll1"
-                    value={item.formation_sanitaire}
+                    value={item.formation_sanitaire + " - " + item.type}
                     disabled
                   />
                 ) : (
-                  <input
-                    type="text"
-                    className="corp-dd"
-                    id="ggll1"
-                    value={fSanitaireEdited}
-                    onChange={(e) => setFSanitaireEdited(e.target.value)}
-                  />
+                  <>
+                    <input
+                      type="text"
+                      className="corp-dd"
+                      id="edd5"
+                      value={typeEdited}
+                      onChange={(e) => setTypeEdited(e.target.value)}
+                    />
+                    <select
+                      name="formation-sanitaire-selectedit1"
+                      className="corp-dd1"
+                      value={formationSanitaireSelectEdit}
+                      onChange={(e) =>
+                        setFormationSanitaireSelectEdit(e.target.value)
+                      }
+                    >
+                      {formationsSanitaires.map((fs) => (
+                        <option key={fs.id} value={fs.id}>
+                          {fs.formation_sanitaire}
+                        </option>
+                      ))}
+                    </select>
+                  </>
                 )}
-                {item.id !== fSanitaireEdit ? (
+                {item.id !== typeEdit ? (
                   <button
                     className="grade-all-btn"
                     id="edit11"
                     onClick={() => {
-                      setFSanitaireEdit(item.id);
-                      setFSanitaireEdited(item.formation_sanitaire);
-                      setTypeEdit(false);
+                      setTypeEdit(item.id);
+                      setTypeEdited(item.type);
+                      setFormationSanitaireSelectEdit(
+                        item.formation_sanitaire_id
+                      );
+                      setFormationSanitaireEdit(false);
                     }}
                   >
                     <FiEdit className="ft1" />
@@ -211,18 +247,19 @@ function Fsanitaire() {
                   <button
                     className="grade-all-btn"
                     id="confirm11"
-                    onClick={() => updateFSanitaire(item.id)}
+                    onClick={() => updateType(item.id)}
                   >
                     <GiConfirmed className="ft1" />
                     Confirmer
                   </button>
                 )}
-                {item.id === fSanitaireEdit ? (
+                {item.id === typeEdit ? (
                   <button
                     className="grade-all-btn"
                     onClick={() => {
-                      setFSanitaireEdit(false);
-                      setFSanitaireEdited("");
+                      setTypeEdit(false);
+                      setTypeEdited("");
+                      setFormationSanitaireSelectEdit("");
                     }}
                   >
                     <MdOutlineCancel className="ft1" />
@@ -232,7 +269,7 @@ function Fsanitaire() {
                   <button
                     className="grade-all-btn"
                     id="delete11"
-                    onDoubleClick={() => deleteFSanitaire(item.id)}
+                    onDoubleClick={() => deleteType(item.id)}
                   >
                     <AiFillDelete className="ft1" />
                     Supprimer
@@ -243,60 +280,75 @@ function Fsanitaire() {
           </div>
         </div>
         <div className="corps-list">
-          <h3 className="hdd6">Types</h3>
-          <form className="grade-add" onSubmit={sendType}>
+          <h3>Formation Sanitaire</h3>
+          <form className="grade-add" onSubmit={sendFormationSanitaire}>
             <input
               type="text"
               className="grade-input"
-              placeholder="Type"
+              placeholder="Formation Sanitaires"
               minLength={2}
               maxLength={50}
               required
-              value={type}
+              value={formationSanitaire}
               onChange={(e) => {
-                setType(e.target.value);
+                setFormationSanitaire(e.target.value);
               }}
             />
             <button type="submit" className="btn-grade" id="ggm">
               Ajouter
             </button>
           </form>
-          {typeExist ? <p className="alert1">Type existe déjà</p> : null}
-          {typeDelete ? (
+          {formationSanitaireExist ? (
+            <p className="alert1">Formation Sanitaires existe déjà</p>
+          ) : null}
+          {formationSanitaireDelete ? (
             <p className="alert1">
-              Vous ne pouvez pas supprimer une type utilisé
+              Vous ne pouvez pas supprimer Formation Sanitaire car elle est
+              utilisée par un ou plusieurs types.
             </p>
           ) : null}
           <div className="corps-show">
-            {types.map((item) => {
+            {formationsSanitaires.map((item) => {
               return (
                 <div key={item.id} className="corp-item">
-                  {item.id !== typeEdit ? (
+                  {item.id !== formationSanitaireEdit ? (
                     <input
                       type="text"
                       className="corp-dd"
-                      value={item.type}
+                      value={item.formation_sanitaire}
                       disabled
                     />
                   ) : (
                     <input
                       type="text"
                       className="corp-dd"
-                      value={typeEdited}
+                      value={formationSanitaireEdited}
                       onChange={(e) => {
-                        setTypeEdited(e.target.value);
+                        setFormationSanitaireEdited(e.target.value);
                       }}
                     />
                   )}
-                  {item.id !== typeEdit ? (
+                  {item.id !== formationSanitaireEdit ? (
                     <button
                       className="grade-all-btn"
                       id="edit11"
                       onClick={() => {
-                        setTypeEdit(item.id);
-                        setTypeEdited(item.type);
-                        setFSanitaireEdit(false);
+                        setFormationSanitaireEdit(item.id);
+                        setFormationSanitaireEdited(item.formation_sanitaire);
+                        setTypeEdit(false);
                       }}
+                      disabled={
+                        item.formation_sanitaire_nbr === 1 ||
+                        item.formation_sanitaire_nbr === 2 ||
+                        item.formation_sanitaire_nbr === 3
+                      }
+                      style={
+                        item.formation_sanitaire_nbr === 1 ||
+                        item.formation_sanitaire_nbr === 2 ||
+                        item.formation_sanitaire_nbr === 3
+                          ? { backgroundColor: "silver" }
+                          : null
+                      }
                     >
                       <FiEdit className="ft1" />
                       Edit
@@ -306,19 +358,19 @@ function Fsanitaire() {
                       className="grade-all-btn"
                       id="confirm11"
                       onClick={() => {
-                        updateType(item.id);
+                        updateFormationSanitaire(item.id);
                       }}
                     >
                       <GiConfirmed className="ft1" />
                       Confirmer
                     </button>
                   )}
-                  {item.id === typeEdit ? (
+                  {item.id === formationSanitaireEdit ? (
                     <button
                       className="grade-all-btn"
                       onClick={() => {
-                        setTypeEdit(false);
-                        setTypeEdited("");
+                        setFormationSanitaireEdit(false);
+                        setFormationSanitaireEdited("");
                       }}
                     >
                       <MdOutlineCancel className="ft1" />
@@ -329,8 +381,20 @@ function Fsanitaire() {
                       className="grade-all-btn"
                       id="delete11"
                       onDoubleClick={() => {
-                        deleteType(item.id);
+                        deleteFormationSanitaire(item.id);
                       }}
+                      disabled={
+                        item.formation_sanitaire_nbr === 1 ||
+                        item.formation_sanitaire_nbr === 2 ||
+                        item.formation_sanitaire_nbr === 3
+                      }
+                      style={
+                        item.formation_sanitaire_nbr === 1 ||
+                        item.formation_sanitaire_nbr === 2 ||
+                        item.formation_sanitaire_nbr === 3
+                          ? { backgroundColor: "#f6727fb3" }
+                          : null
+                      }
                     >
                       <AiFillDelete className="ft1" />
                       Supprimer
@@ -346,4 +410,4 @@ function Fsanitaire() {
   );
 }
 
-export default Fsanitaire;
+export default FormationSanitaire;

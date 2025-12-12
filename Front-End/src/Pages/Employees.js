@@ -116,7 +116,7 @@ function Employees() {
   };
   const fetchFSanitaires = async () => {
     try {
-      const response = await axios.get(`${baseURL}/formation_sanitaires`);
+      const response = await axios.get(`${baseURL}/formations-sanitaires`);
       setFSanitaireAll(response.data);
     } catch (error) {
       console.error("Error fetching fSanitaires:", error);
@@ -156,7 +156,6 @@ function Employees() {
         ppr,
         phone,
         email,
-        affec,
         type,
         gradeSel,
         dtRec,
@@ -448,29 +447,7 @@ function Employees() {
                   <option value={2}>Mademoiselle & Madame</option>
                 </select>
               </div>
-              <div className="input-lab1">
-                <label className="ggv1" for="aff">
-                  Type
-                </label>
-                <select
-                  name="aff"
-                  className="person-input"
-                  value={type}
-                  onChange={(e) => {
-                    setType(e.target.value);
-                  }}
-                  required
-                >
-                  <option>Select Type</option>
-                  {types.map((cr) => {
-                    return (
-                      <option key={cr.id} value={cr.id}>
-                        {cr.type}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
+
               <div className="input-lab1">
                 <label className="ggv1" for="aff">
                   Affectation
@@ -484,7 +461,7 @@ function Employees() {
                   }}
                   required
                 >
-                  <option>Select formation sanitaire</option>
+                  <option value={""}>Select formation sanitaire</option>
                   {fSanitaireAll.map((cr) => {
                     return (
                       <option key={cr.id} value={cr.id}>
@@ -494,6 +471,33 @@ function Employees() {
                   })}
                 </select>
               </div>
+              <div className="input-lab1">
+                <label className="ggv1" for="type">
+                  Type
+                </label>
+                <select
+                  name="type"
+                  className="person-input"
+                  value={type}
+                  onChange={(e) => {
+                    setType(e.target.value);
+                  }}
+                  required
+                  disabled={affec ? false : true}
+                >
+                  <option>Select type</option>
+                  {types
+                    .filter((cr) => cr.fs_id.toString() === affec.toString())
+                    .map((cr) => {
+                      return (
+                        <option key={cr.id} value={cr.id}>
+                          {cr.type}
+                        </option>
+                      );
+                    })}
+                </select>
+              </div>
+
               <div className="input-lab1">
                 <label className="ggv1" for="nom">
                   Date de recrutement
