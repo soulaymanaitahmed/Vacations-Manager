@@ -351,3 +351,32 @@
 .ptrb567 {
   font-size: 1.2rem;
 }
+
+.pwa-install-btn {
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 8px 15px;
+  box-sizing: border-box;
+  border: 1px dashed #138076;
+  border-radius: 10px;
+  background: rgba(19, 128, 118, 0.08);
+  color: #0b314a;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 200ms, color 200ms;
+}
+
+.pwa-install-btn:hover {
+  background-color: #164863;
+  color: #fff;
+  border-color: #164863;
+}
+
+.pwa-install-btn__icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}

@@ -23,6 +23,7 @@ import { FaUsersGear } from "react-icons/fa6";
 import logo from "./Images/bg1.png";
 import "./Style/app.css";
 import settings from "./Settings.json";
+import { InstallAppButton } from "./pwaInstall";
 
 const Users = lazy(() => import("./Pages/Users"));
 const Grades = lazy(() => import("./Pages/Grades"));
@@ -199,6 +200,7 @@ function App() {
                 </div>
               </div>
               <div className="nav-user-actions">
+                <InstallAppButton />
                 <div className="links1" id="selected2" onClick={Logout}>
                   <HiOutlineLogout className="nav_icon" />
                   <p className="nav-link">Se déconnecter</p>

@@ -11,6 +11,7 @@ import "./Style/login.css";
 import logo1 from "./Images/deleg-logo.png";
 
 import { baseURL } from "./config";
+import { InstallAppButton } from "./pwaInstall";
 
 const LoginPage = () => {
   const [choi, setChoi] = useState(0);
@@ -56,7 +57,7 @@ const LoginPage = () => {
     } catch (error) {
       console.error(
         "Error:",
-        error.response ? error.response.data : error.message
+        error.response ? error.response.data : error.message,
       );
       setAlr(true);
     }
@@ -64,10 +65,13 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
+      <div className="pwa-install-login-wrap">
+        <InstallAppButton variant="login" />
+      </div>
       <div className="section77">
         <div className="logo77">
           <img className="logoimg77" alt="Logo IMG" src={logo1} width="80px" />
-          <span className="bbrjdndt77">Délégation de santé ouarzazate</span>
+          <span className="bbrjdndt77">Login Page</span>
         </div>
         {choi === 0 ? (
           <div className="choi77">
@@ -104,8 +108,8 @@ const LoginPage = () => {
               {choi === 1
                 ? "Espace des administrateurs"
                 : choi === 2
-                ? "Espace du personnel"
-                : null}
+                  ? "Espace du personnel"
+                  : null}
             </h3>
             <div className="inputs77">
               <label className="lab77">
